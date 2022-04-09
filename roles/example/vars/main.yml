@@ -1,0 +1,30 @@
+---
+loop_items:
+  - a
+  - b
+  - c
+
+loop_nested_items:
+  - a
+  - [b, c]
+  - d
+
+loop_nested2_items:
+  - a
+  - [b, [c, d]]
+  - [e, f]
+
+list_foo:
+  - fo
+  - foo
+  - fooo
+
+list_bar:
+  - bar
+  - baar
+  - baaar
+
+dictionary:
+  foo: a
+  bar: b
+  baz: c

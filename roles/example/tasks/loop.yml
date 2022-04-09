@@ -1,0 +1,104 @@
+---
+- name: with_list
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  with_list: "{{ loop_items }}"
+
+- name: with_list -> loop
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  loop: "{{ loop_items }}"
+
+- name: with_items
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  with_items: "{{ loop_nested_items }}"
+
+- name: with_items -> loop
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  loop: "{{ loop_nested_items | flatten(levels=1) }}"
+
+- name: with_indexed_items
+  ansible.builtin.debug:
+    msg: "{{ item.0 }} - {{ item.1 }}"
+  with_indexed_items: "{{ loop_nested_items }}"
+
+- name: with_indexed_items -> loop
+  ansible.builtin.debug:
+    msg: "{{ index }} - {{ item }}"
+  loop: "{{ loop_nested_items | flatten(levels=1) }}"
+  loop_control:
+    index_var: index
+
+- name: with_flattened
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  with_flattened: "{{ loop_nested2_items }}"
+
+- name: with_flattened -> loop
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  loop: "{{ loop_nested2_items | flatten }}"
+
+- name: with_together
+  ansible.builtin.debug:
+    msg: "{{ item.0 }} - {{ item.1 }}"
+  with_together:
+    - "{{ list_foo }}"
+    - "{{ list_bar }}"
+
+- name: with_together -> loop
+  ansible.builtin.debug:
+    msg: "{{ item.0 }} - {{ item.1 }}"
+  loop: "{{ list_foo | zip(list_bar) | list }}"
+
+# TODO: 没看懂这个, 之后用到再说吧
+- name: with_together -> loop
+  ansible.builtin.debug:
+    msg: "{{ item.0 }} - {{ item.1 }} - {{ item.2 }}"
+  loop: "{{ data[0] | zip(*data[1:]) | list }}"
+  vars:
+    data:
+      - ['a', 'b', 'c']
+      - ['d', 'e', 'f']
+      - ['g', 'h', 'i']
+
+- name: with_dict
+  ansible.builtin.debug:
+    msg: "{{ item.key }} - {{ item.value }}"
+  with_dict: "{{ dictionary }}"
+
+- name: with_dict -> loop (option 1)
+  ansible.builtin.debug:
+    msg: "{{ item.key }} - {{ item.value }}"
+  loop: "{{ dictionary | dict2items }}"
+
+- name: with_dict -> loop (option 2)
+  ansible.builtin.debug:
+    msg: "{{ item.0 }} - {{ item.1 }}"
+  loop: "{{ dictionary | dictsort }}"
+
+- name: with_sequence
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  with_sequence: start=0 end=4 stride=2 format=testuser%02x
+
+- name: with_sequence -> loop
+  ansible.builtin.debug:
+    msg: "{{ 'testuser%02x' | format(item) }}"
+  # range is exclusive of the end point
+  loop: "{{ range(0, 4 + 1, 2)|list }}"
+
+# # TODO: 这个也没搞明白, 不过这个都没用过, 以后再说
+# - name: with_subelements
+#   ansible.builtin.debug:
+#     msg: "{{ item.0.name }} - {{ item.1 }}"
+#   with_subelements:
+#     - "{{ users }}"
+#     - mysql.hosts
+
+# - name: with_subelements -> loop
+#   ansible.builtin.debug:
+#     msg: "{{ item.0.name }} - {{ item.1 }}"
+#   loop: "{{ users | subelements('mysql.hosts') }}"
