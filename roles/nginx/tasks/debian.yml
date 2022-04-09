@@ -1,0 +1,34 @@
+---
+- name: install the prerequisites
+  apt:
+    name: "{{ nginx_apt_prerequisites }}"
+    state: present
+
+- name: import apt key
+  apt_key:
+    url: "{{ apt_key.url }}"
+    id: "{{ apt_key.id }}"
+    file: "{{ apt_key.file }}"
+    state: present
+  vars:
+    apt_key: "{{ nginx_apt_release_channels[nginx_apt_packaging_team].apt_key }}"
+  when: nginx_apt_packaging_team in ['nginx_org', 'xtom_com']
+
+- name: add apt repo
+  apt_repository:
+    repo: "{{ nginx_apt_release_channels[nginx_apt_packaging_team][nginx_apt_release_channel] }}"
+    filename: "{{ nginx_apt_packaging_team }}"
+    state: present
+  when: nginx_apt_packaging_team in ['nginx_org', 'xtom_com']
+
+- name: add apt_preferences (APT pinning)
+  copy:
+    dest: /etc/apt/preferences.d/99nginx
+    content: "{{ nginx_apt_release_channels[nginx_apt_packaging_team].pinning }}"
+  when: nginx_apt_packaging_team in ['nginx_org', 'xtom_com']
+
+- name: install nginx package
+  apt:
+    name: nginx-extras
+    default_release: "{{ nginx_apt_packaging_team }}"
+    state: present

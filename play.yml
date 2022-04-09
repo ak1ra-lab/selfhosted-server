@@ -1,4 +1,5 @@
 ---
-- hosts: localhost
+- hosts: local
   roles:
-    - role: example
+    - role: nginx
+      nginx_apt_packaging_team: nginx_org
