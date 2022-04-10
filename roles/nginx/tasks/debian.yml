@@ -6,9 +6,10 @@
 
 - name: import apt key
   apt_key:
+    # data: "{{ loopup('file', nginx_apt_packaging_team) }}"
     url: "{{ apt_key.url }}"
     id: "{{ apt_key.id }}"
-    file: "{{ apt_key.file }}"
+    keyring: "{{ apt_key.keyring }}"
     state: present
   vars:
     apt_key: "{{ nginx_apt_release_channels[nginx_apt_packaging_team].apt_key }}"

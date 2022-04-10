@@ -7,33 +7,34 @@ nginx_apt_prerequisites:
   - gnupg2
   - lsb-release
 
-# nginx_apt_packaging_team can be one of: debian, nginx.org, xtom.com
-# when nginx_apt_packaging_team set to debian, install nginx from official debian apt repo
+# nginx_apt_packaging_team 可以是: debian, nginx_org, xtom_com
+# 此项设置为 debian 时, 表示不添加额外 apt repo 直接从官方源安装
 nginx_apt_packaging_team: nginx_org
+# debian 官方源只有 stable, xtom_com 只有 mainline
+# nginx_org 同时提供 stable, mainline channel
 nginx_apt_release_channel: mainline
 
 nginx_apt_release_channels:
-  # https://nginx.org/packages/debian/dists
+  # https://nginx.org/en/linux_packages.html#Debian
   nginx_org:
     apt_key:
       url: https://nginx.org/keys/nginx_signing.key
       id: 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
-      file: /usr/share/keyrings/nginx-archive-keyring.gpg
-    stable: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian {{ ansible_distribution_release }} nginx"
-    mainline: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/mainline/debian {{ ansible_distribution_release }} nginx"
+      keyring: /etc/apt/trusted.gpg.d/nginx-signing-key.asc
+    stable: "deb https://nginx.org/packages/debian {{ ansible_distribution_release }} nginx"
+    mainline: "deb https://nginx.org/packages/mainline/debian {{ ansible_distribution_release }} nginx"
     pinning: |
       Package: *
       Pin: origin nginx.org
       Pin-Priority: 900
 
-  # NOTE: This repo only contain mainline channel
-  # https://mirror-cdn.xtom.com/sb/nginx/dists/
+  # https://n.wtf/install.html
   xtom_com:
     apt_key:
       url: https://n.wtf/public.key
       id: 1604614B4A6C2B73654BB8B6C5215CAF0055522F
-      file: /usr/share/keyrings/n.wtf.asc
-    mainline: "deb [signed-by=/usr/share/keyrings/n.wtf.asc] https://mirror-cdn.xtom.com/sb/nginx/ {{ ansible_distribution_release }} main"
+      keyring: /etc/apt/trusted.gpg.d/sb-professional-services.asc
+    mainline: "deb https://mirror-cdn.xtom.com/sb/nginx/ {{ ansible_distribution_release }} main"
     pinning: |
       Package: *
       Pin: origin mirror-cdn.xtom.com
