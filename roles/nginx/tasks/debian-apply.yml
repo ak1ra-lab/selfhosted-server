@@ -9,7 +9,6 @@
     # data: "{{ loopup('file', nginx_apt_packaging_team) }}"
     url: "{{ apt_key.url }}"
     id: "{{ apt_key.id }}"
-    keyring: "{{ apt_key.keyring }}"
     state: present
   vars:
     apt_key: "{{ nginx_apt_release_channels[nginx_apt_packaging_team].apt_key }}"
@@ -30,6 +29,5 @@
 
 - name: install nginx package
   apt:
-    name: nginx-extras
-    default_release: "{{ nginx_apt_packaging_team }}"
+    name: "{{ nginx_apt_release_channels[nginx_apt_packaging_team].packages }}"
     state: present

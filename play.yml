@@ -1,5 +1,6 @@
 ---
-- hosts: local
+- hosts: lab
   roles:
     - role: nginx
+      nginx_state: present
       nginx_apt_packaging_team: nginx_org
