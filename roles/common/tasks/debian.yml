@@ -1,0 +1,13 @@
+---
+- name: install the prerequisites
+  ansible.builtin.apt:
+    name: "{{ common_apt_prerequisites }}"
+    update_cache: true
+    state: present
+
+- name: add apt repo
+  ansible.builtin.template:
+    src: "{{ ansible_distribution_release }}.list.j2"
+    dest: /etc/apt/sources.list
+    force: true
+    backup: true

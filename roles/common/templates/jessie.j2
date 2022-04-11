@@ -1,0 +1,12 @@
+# Debian 8 (jessie)
+deb {{ common_apt_repo_url }}/debian/ jessie main contrib non-free
+deb-src {{ common_apt_repo_url }}/debian/ jessie main contrib non-free
+
+deb {{ common_apt_repo_url }}/debian/ jessie-updates main contrib non-free
+deb-src {{ common_apt_repo_url }}/debian/ jessie-updates main contrib non-free
+
+deb {{ common_apt_repo_url }}/debian-security/ jessie/updates main contrib non-free
+deb-src {{ common_apt_repo_url }}/debian-security/ jessie/updates main contrib non-free
+
+deb {{ common_apt_repo_url }}/debian/ jessie-backports main contrib non-free
+deb-src {{ common_apt_repo_url }}/debian/ jessie-backports main contrib non-free

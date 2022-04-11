@@ -1,0 +1,12 @@
+# Debian 9 (stretch)
+deb {{ common_apt_repo_url }}/debian/ stretch main contrib non-free
+deb-src {{ common_apt_repo_url }}/debian/ stretch main contrib non-free
+
+deb {{ common_apt_repo_url }}/debian/ stretch-updates main contrib non-free
+deb-src {{ common_apt_repo_url }}/debian/ stretch-updates main contrib non-free
+
+deb {{ common_apt_repo_url }}/debian-security/ stretch/updates main contrib non-free
+deb-src {{ common_apt_repo_url }}/debian-security/ stretch/updates main contrib non-free
+
+deb {{ common_apt_repo_url }}/debian/ stretch-backports main contrib non-free
+deb-src {{ common_apt_repo_url }}/debian/ stretch-backports main contrib non-free

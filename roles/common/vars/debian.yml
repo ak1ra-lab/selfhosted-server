@@ -1,0 +1,22 @@
+---
+
+common_apt_prerequisites:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - debian-archive-keyring
+  - gnupg2
+  - lsb-release
+
+# 启用 https 需要安装 apt-transport-https
+common_apt_repo_schema: https
+
+# 此项设置为下方 common_apt_repo_domains 的任意一个 key
+common_apt_repo_domain_ref: fastly
+common_apt_repo_domains:
+  fastly: deb.debian.org
+  aliyun: mirrors.aliyun.com
+  tencentcloud: mirrors.cloud.tencent.com
+  ustc: mirrors.ustc.edu.cn
+
+common_apt_repo_url: "{{ common_apt_repo_schema }}://{{ common_apt_repo_domains[common_apt_repo_domain_ref] }}"
