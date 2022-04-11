@@ -16,7 +16,7 @@ nginx_state: present
 
 # nginx_apt_packaging_team 可以是: debian, nginx_org, xtom_com
 # 此项设置为 debian 时, 表示不添加额外 apt repo 直接从官方源安装
-nginx_apt_packaging_team: nginx_org
+nginx_apt_packaging_team: xtom_com
 
 # debian 官方源只有 stable, xtom_com 只有 mainline
 # nginx_org 同时提供 stable, mainline channel
@@ -36,8 +36,8 @@ nginx_apt_release_channels:
       Pin: origin nginx.org
       Pin-Priority: 900
     packages:
+      # 这个 repo 中的 nginx 没有拆开, 只有一个名为 nginx 的 package
       - nginx
-      - nginx-common
 
   # https://n.wtf/install.html
   xtom_com:
@@ -50,5 +50,6 @@ nginx_apt_release_channels:
       Pin: origin mirror-cdn.xtom.com
       Pin-Priority: 900
     packages:
+      # 这个 repo 中的 nginx 有被拆开为多个 package, 其中 nginx-common 为一些配置文件
       - nginx-extras
       - nginx-common

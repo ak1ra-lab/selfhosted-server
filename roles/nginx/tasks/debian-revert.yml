@@ -1,6 +1,6 @@
 ---
 - name: remove apt key
-  apt_key:
+  ansible.builtin.apt_key:
     id: "{{ apt_key.id }}"
     state: absent
   vars:
@@ -8,20 +8,20 @@
   when: nginx_apt_packaging_team in ['nginx_org', 'xtom_com']
 
 - name: remove apt repo
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "{{ nginx_apt_release_channels[nginx_apt_packaging_team][nginx_apt_release_channel] }}"
     filename: "{{ nginx_apt_packaging_team }}"
     state: absent
   when: nginx_apt_packaging_team in ['nginx_org', 'xtom_com']
 
 - name: remove apt_preferences (APT pinning)
-  file:
+  ansible.builtin.file:
     path: /etc/apt/preferences.d/99nginx
     state: absent
   when: nginx_apt_packaging_team in ['nginx_org', 'xtom_com']
 
 - name: remove nginx package
-  apt:
+  ansible.builtin.apt:
     name: "{{ nginx_apt_release_channels[nginx_apt_packaging_team].packages }}"
     autoremove: yes
     # NOTE: This will remove config file
