@@ -17,3 +17,10 @@
     name: "{{ common_apt_packages }}"
     update_cache: true
     state: present
+
+- name: force apt use IPv4
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/99force-ipv4
+    content: Acquire::ForceIPv4 "true";
+    state: present
+  when: common_apt_force_ipv4 == 'true'

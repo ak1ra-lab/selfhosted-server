@@ -81,3 +81,6 @@ common_apt_repo_domains:
   sjtu: mirror.sjtu.edu.cn
 
 common_apt_repo_url: "{{ common_apt_repo_schema }}://{{ common_apt_repo_domains[common_apt_repo_domain_ref] }}"
+
+# 强制 apt 使用 IPv4
+common_apt_force_ipv4: true
