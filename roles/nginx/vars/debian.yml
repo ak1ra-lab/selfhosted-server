@@ -32,7 +32,7 @@ nginx_apt_release_channels:
     stable: "deb https://nginx.org/packages/debian {{ ansible_distribution_release }} nginx"
     mainline: "deb https://nginx.org/packages/mainline/debian {{ ansible_distribution_release }} nginx"
     pinning: |
-      Package: *
+      Package: nginx
       Pin: origin nginx.org
       Pin-Priority: 900
     packages:
@@ -46,7 +46,7 @@ nginx_apt_release_channels:
       id: 1604614B4A6C2B73654BB8B6C5215CAF0055522F
     mainline: "deb https://mirror-cdn.xtom.com/sb/nginx/ {{ ansible_distribution_release }} main"
     pinning: |
-      Package: *
+      Package: nginx-*
       Pin: origin mirror-cdn.xtom.com
       Pin-Priority: 900
     packages:

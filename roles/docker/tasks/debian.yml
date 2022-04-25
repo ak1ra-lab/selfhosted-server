@@ -1,0 +1,38 @@
+---
+- name: import apt key
+  ansible.builtin.apt_key:
+    url: "{{ docker_apt_key.url }}"
+    id: "{{ docker_apt_key.id }}"
+    state: present
+
+- name: add apt repo
+  ansible.builtin.apt_repository:
+    repo: "{{ docker_apt_repo }}"
+    filename: docker
+    state: present
+
+- name: add apt_preferences (APT pinning)
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/99docker
+    content: |
+      Package: docker-*
+      Pin: origin {{ docker_repo_url | urlsplit('hostname') }}
+      Pin-Priority: 900
+
+- name: install docker-ce packages
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - docker-compose-plugin
+      # https://docs.docker.com/engine/security/rootless/
+      # require docker-ce version >= 20.10
+      # - docker-ce-rootless-extras
+    state: latest
+
+- name: install docker-ce (x86_64 only) plugins
+  ansible.builtin.apt:
+    name:
+      - docker-scan-plugin
+    state: latest
+  when: ansible_architecture == 'x86_64'

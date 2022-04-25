@@ -1,0 +1,5 @@
+---
+- name: restart dockerd
+  ansible.builtin.service:
+    name: docker
+    state: restarted
