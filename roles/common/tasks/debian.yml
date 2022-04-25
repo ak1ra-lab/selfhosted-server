@@ -11,3 +11,9 @@
     dest: /etc/apt/sources.list
     force: true
     backup: true
+
+- name: install common packages
+  ansible.builtin.apt:
+    name: "{{ common_apt_packages }}"
+    update_cache: true
+    state: present

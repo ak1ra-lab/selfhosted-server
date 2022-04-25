@@ -6,3 +6,48 @@
 # tasks to apply changes
 - include_tasks: debian.yml
   when: ansible_facts['os_family']|lower == 'debian'
+
+- name: adjust /etc/sysctl.conf
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    ignoreerrors: true
+  # ref: https://sysctl-explorer.net/
+  loop:
+    - name: net.core.default_qdisc
+      value: fq      # default 'pfifo_fast'
+    - name: net.core.busy_read
+      value: '50'    # default 0 (disable)
+    - name: net.core.busy_poll
+      value: '50'    # default 0 (disable)
+    - name: net.ipv4.ip_forward
+      value: '1'     # default 0 (disable)
+    - name: net.ipv4.tcp_fastopen
+      value: '3'     # TFO is enabled for both clients and servers, default 1
+    - name: net.ipv4.tcp_slow_start_after_idle
+      value: '0'     # default 1
+    - name: vm.dirty_ratio
+      value: '30'
+    - name: vm.dirty_background_ratio
+      value: '10'
+    - name: vm.swappiness
+      value: '30'    # default 60
+
+- name: load tcp_bbr module
+  ansible.builtin.lineinfile:
+    path: /etc/modules
+    regexp: "^#? ?tcp_bbr$"
+    line: "tcp_bbr"
+    state: present
+  when: ansible_kernel >= '4.9.0'
+
+- name: enable tcp_bbr
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    - name: net.ipv4.tcp_congestion_control
+      value: bbr
+  when: ansible_kernel >= '4.9.0'

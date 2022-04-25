@@ -1,6 +1,8 @@
 ---
-- hosts: lab
+- hosts: node01
   roles:
-    - role: nginx
-      nginx_state: present
-      nginx_apt_packaging_team: nginx_org
+    - role: common
+      common_apt_repo_domain_ref: tencentcloud
+    # - role: nginx
+    #   nginx_state: present
+    #   nginx_apt_packaging_team: nginx_org

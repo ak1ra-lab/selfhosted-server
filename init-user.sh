@@ -21,7 +21,8 @@ apt-get install -y \
     curl \
     debian-archive-keyring \
     gnupg2 \
-    lsb-release
+    lsb-release \
+    sudo
 
 # create sudo group
 if ! grep -q sudo /etc/group; then
