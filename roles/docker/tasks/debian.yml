@@ -28,6 +28,7 @@
       # https://docs.docker.com/engine/security/rootless/
       # require docker-ce version >= 20.10
       # - docker-ce-rootless-extras
+      - skopeo
     state: latest
 
 - name: install docker-ce (x86_64 only) plugins

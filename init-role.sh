@@ -11,7 +11,7 @@ fi
 if [[ -d $BASE_DIR/$NAME ]]; then
     code $BASE_DIR/$NAME/tasks/main.yml
 else
-    mkdir -p $BASE_DIR/$NAME/{templates,tasks,handlers,vars}
+    mkdir -p $BASE_DIR/$NAME/{files,handlers,templates,tasks,vars}
     tree $BASE_DIR/$NAME
 fi
 

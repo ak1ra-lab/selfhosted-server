@@ -39,6 +39,7 @@ common_apt_packages:
   - less
   - locales
   - logrotate
+  - ncdu
   - ntp
   - p7zip
   - p7zip-full
