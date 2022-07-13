@@ -1,0 +1,7 @@
+[Unit]
+Description=Certbot
+Documentation=https://certbot.eff.org/docs
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/certbot -q renew
+PrivateTmp=true

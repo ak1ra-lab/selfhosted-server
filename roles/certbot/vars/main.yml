@@ -1,0 +1,27 @@
+---
+certbot_install_source: pypi
+
+# https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins
+certbot_dns_plugin: cloudflare
+certbot_dns_propagation_seconds: 30
+
+certbot_dir: /etc/letsencrypt
+certbot_credentials: "{{ certbot_dir }}/credentials/{{ certbot_dns_plugin }}.ini"
+
+certbot_domain: example.com
+certbot_email: "certbot@{{ certbot_domain }}"
+
+# credentials
+## https://certbot-dns-cloudflare.readthedocs.io/en/stable/
+certbot_dns_cloudflare_api_token:
+
+## https://certbot-dns-cloudxns.readthedocs.io/
+certbot_dns_cloudxns_api_key:
+certbot_dns_cloudxns_secret_key:
+
+## https://certbot-dns-digitalocean.readthedocs.io/
+certbot_dns_digitalocean_token:
+
+## https://certbot-dns-linode.readthedocs.io/
+certbot_dns_linode_key:
+certbot_dns_linode_version:

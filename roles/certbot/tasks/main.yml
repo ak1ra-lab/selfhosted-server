@@ -1,0 +1,33 @@
+---
+# tasks to apply changes
+- include_tasks: install.yml
+
+- name: ensure certbot credentials dir exist
+  ansible.builtin.file:
+    path: "{{ certbot_credentials | dirname }}"
+    state: directory
+    mode: "0700"
+
+- name: template certbot dns plugin credentials
+  ansible.builtin.template:
+    src: "{{ certbot_dns_plugin }}.ini.j2"
+    dest: "{{ certbot_credentials }}"
+    mode: "0600"
+
+- name: execute certbot with dns plugin options
+  ansible.builtin.command:
+    argv:
+      - certbot
+      - certonly
+      - --non-interactive
+      - --agree-tos
+      - "--email={{ certbot_email }}"
+      - "--domain={{ certbot_domain }},*.{{ certbot_domain }}"
+      - "--dns-cloudflare"
+      - "--dns-{{ certbot_dns_plugin }}-credentials={{ certbot_credentials }}"
+      - "--dns-{{ certbot_dns_plugin }}-propagation-seconds={{ certbot_dns_propagation_seconds }}"
+    creates:
+      - "{{ certbot_dir }}/live/{{ certbot_domain }}/privkey.pem"
+      - "{{ certbot_dir }}/live/{{ certbot_domain }}/fullchain.pem"
+      - "{{ certbot_dir }}/live/{{ certbot_domain }}/chain.pem"
+      - "{{ certbot_dir }}/live/{{ certbot_domain }}/cert.pem"
