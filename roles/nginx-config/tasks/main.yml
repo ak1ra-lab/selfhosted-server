@@ -1,0 +1,50 @@
+---
+- name: check /etc/nginx/.ansible-managed
+  ansible.builtin.stat:
+    path: /etc/nginx/.ansible-managed
+  register: ansible_managed
+
+- name: backup previous nginx config files
+  community.general.archive:
+    path: /etc/nginx
+    dest: "/etc/nginx.{{ ansible_date_time.iso8601_basic_short }}.tgz"
+    remove: true
+  when: not ansible_managed.stat.exists
+
+- name: ensure directories exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /etc/nginx
+    - /etc/nginx/conf.d
+    - /etc/nginx/modules-enabled
+    - /etc/nginx/sites-enabled
+  when: not ansible_managed.stat.exists
+
+- name: check /etc/nginx/dhparam.pem
+  ansible.builtin.stat:
+    path: /etc/nginx/dhparam.pem
+  register: stat_dhpram
+
+- name: create /etc/nginx/dhparam.pem for later use
+  ansible.builtin.command: openssl dhparam -out /etc/nginx/dhparam.pem 2048
+  when:
+    - not ansible_managed.stat.exists
+    - not stat_dhpram.stat.exists
+
+- name: copy nginx base config
+  ansible.builtin.copy:
+    # if it does not end with "/", the directory itself with all contents is copied.
+    src: nginx
+    dest: /etc/
+  notify:
+    - test new nginx config
+    - reload nginx config
+  when: not ansible_managed.stat.exists
+
+- name: mark nginx config has managed by ansible
+  ansible.builtin.file:
+    path: /etc/nginx/.ansible-managed
+    state: touch
+  when: not ansible_managed.stat.exists
