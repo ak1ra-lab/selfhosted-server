@@ -59,7 +59,7 @@ function add_ssh_key() {
     test -d $user_home_dir/.ssh || mkdir -p $user_home_dir/.ssh
     curl -sL $ssh_public_key_url | tee -a $user_home_dir/.ssh/authorized_keys
 
-    chown -R "${user}." $user_home_dir/.ssh
+    chown -R "${username}." $user_home_dir/.ssh
     chmod 0700 $user_home_dir/.ssh
     chmod 0600 $user_home_dir/.ssh/*
 }
