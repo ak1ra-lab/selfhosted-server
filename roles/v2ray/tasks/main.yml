@@ -1,0 +1,10 @@
+---
+# git submodule add https://github.com/v2fly/fhs-install-v2ray.git roles/v2ray/files/fhs-install-v2ray
+- name: copy fhs-install-v2ray/install-release.sh
+  ansible.builtin.copy:
+    src: fhs-install-v2ray/install-release.sh
+    dest: /usr/local/sbin/fhs-install-v2ray.sh
+    mode: 0755
+
+- name: run fhs-install-v2ray.sh on remote
+  ansible.builtin.command: "/usr/local/sbin/fhs-install-v2ray.sh"

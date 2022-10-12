@@ -1,0 +1,3 @@
+[submodule "roles/v2ray/files/fhs-install-v2ray"]
+	path = roles/v2ray/files/fhs-install-v2ray
+	url = https://github.com/v2fly/fhs-install-v2ray.git
