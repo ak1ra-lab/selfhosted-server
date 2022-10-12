@@ -1,0 +1,58 @@
+server {
+    listen                  {{ nginx_config_listen_https }} ssl http2;
+    {% if nginx_config_listen_ipv6 -%}
+    listen                  [::]:{{ nginx_config_listen_https }} ssl http2;
+    {% endif -%}
+    server_name             {{ nginx_config_server_name }};
+    root                    {{ nginx_config_root }};
+
+    # SSL
+    ssl_certificate         {{ nginx_config_ssl_certificate }};
+    ssl_certificate_key     {{ nginx_config_ssl_certificate_key }};
+    ssl_trusted_certificate {{ nginx_config_ssl_trusted_certificate }};
+
+    # security
+    include                 nginxconfig.io/security.conf;
+
+    {% if nginx_config_server_type == "static" -%}
+    # static site
+    location {{ nginx_config_location_modifier }} {{ nginx_config_location_uri }} {
+        try_files $uri $uri/ {{ nginx_config_static_fallback }};
+    }
+    {% endif -%}
+
+    {% if nginx_config_server_type == "proxy" -%}
+    # reverse proxy
+    location {{ nginx_config_location_modifier }} {{ nginx_config_location_uri }} {
+        proxy_pass {{ nginx_config_proxy_upstream }};
+        include    nginxconfig.io/proxy.conf;
+    }
+    {% endif -%}
+
+    {% if nginx_config_server_type == "php" -%}
+    # php-fpm index.php fallback
+    location {{ nginx_config_location_modifier }} {{ nginx_config_location_uri }} {
+        try_files $uri $uri/ {{ nginx_config_php_index }}?$query_string;
+    }
+
+    location ~* \.php$ {
+        fastcgi_pass    {{ nginx_config_php_fastcgi }};
+        include         fastcgi_params;
+        fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+        fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
+    }
+    {% endif -%}
+
+    # additional config
+    include nginxconfig.io/general.conf;
+}
+
+server {
+    listen      {{ nginx_config_listen_http }};
+    listen      [::]:{{ nginx_config_listen_http }};
+    server_name {{ nginx_config_server_name }};
+
+    location / {
+        return 301 https://{{ nginx_config_server_name }}$request_uri;
+    }
+}

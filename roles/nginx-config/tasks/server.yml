@@ -1,0 +1,20 @@
+---
+- name: ensure directory exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ nginx_config_user }}"
+    group: "{{ nginx_config_group }}"
+    mode: "0755"
+  loop:
+    - "{{ nginx_config_root }}"
+
+- name: template server.conf.j2
+  ansible.builtin.template:
+    src: server.conf.j2
+    dest: "/etc/nginx/conf.d/{{ nginx_config_server_name }}.conf"
+    mode: "0644"
+  notify:
+    - change file permission
+    - test new nginx config
+    - reload nginx config

@@ -1,4 +1,17 @@
 ---
+- name: change file permission
+  ansible.builtin.file:
+    path: "{{ item }}"
+    recurse: true
+    # will set directories to 755, and files to 644
+    mode: "u=rwX,g=rX,o=rX"
+    owner: "{{ nginx_config_user }}"
+    group: "{{ nginx_config_group }}"
+  loop:
+    - /etc/nginx
+    - /var/log/nginx
+    - /var/www
+
 - name: test new nginx config
   ansible.builtin.command: /usr/sbin/nginx -t
   changed_when: false

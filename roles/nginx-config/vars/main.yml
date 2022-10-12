@@ -1,0 +1,7 @@
+---
+# nginx user
+nginx_config_user: nginx
+nginx_config_group: nginx
+
+# configure whether to template a server.conf
+nginx_config_template_server: true

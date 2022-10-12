@@ -4,10 +4,11 @@
     path: /etc/nginx/.ansible-managed
   register: ansible_managed
 
-- name: backup previous nginx config files
+- name: backup nginx config files
   community.general.archive:
     path: /etc/nginx
     dest: "/etc/nginx.{{ ansible_date_time.iso8601_basic_short }}.tgz"
+    mode: "0644"
     remove: true
   when: not ansible_managed.stat.exists
 
@@ -15,11 +16,14 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
+    owner: "{{ nginx_config_user }}"
+    group: "{{ nginx_config_group }}"
+    mode: "0755"
   loop:
     - /etc/nginx
     - /etc/nginx/conf.d
-    - /etc/nginx/modules-enabled
-    - /etc/nginx/sites-enabled
+    - /var/log/nginx
+    - /var/www
   when: not ansible_managed.stat.exists
 
 - name: check /etc/nginx/dhparam.pem
@@ -33,12 +37,21 @@
     - not ansible_managed.stat.exists
     - not stat_dhpram.stat.exists
 
+- name: template /etc/nginx/nginx.conf
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: "0644"
+  when: not ansible_managed.stat.exists
+
 - name: copy nginx base config
   ansible.builtin.copy:
     # if it does not end with "/", the directory itself with all contents is copied.
     src: nginx
     dest: /etc/
+    mode: preserve
   notify:
+    - change file permission
     - test new nginx config
     - reload nginx config
   when: not ansible_managed.stat.exists
@@ -47,4 +60,11 @@
   ansible.builtin.file:
     path: /etc/nginx/.ansible-managed
     state: touch
+    mode: "0644"
   when: not ansible_managed.stat.exists
+
+- include_vars: server.yml
+  when: nginx_config_template_server
+
+- include_tasks: server.yml
+  when: nginx_config_template_server
