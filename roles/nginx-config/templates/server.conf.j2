@@ -16,14 +16,14 @@ server {
 
     {% if nginx_config_server_type == "static" -%}
     # static site
-    location {{ nginx_config_location_modifier }} {{ nginx_config_location_uri }} {
+    location{% if nginx_config_location_modifier %} {{ nginx_config_location_modifier }}{% endif %} {{ nginx_config_location_uri }} {
         try_files $uri $uri/ {{ nginx_config_static_fallback }};
     }
     {% endif -%}
 
     {% if nginx_config_server_type == "proxy" -%}
     # reverse proxy
-    location {{ nginx_config_location_modifier }} {{ nginx_config_location_uri }} {
+    location{% if nginx_config_location_modifier %} {{ nginx_config_location_modifier }}{% endif %} {{ nginx_config_location_uri }} {
         proxy_pass {{ nginx_config_proxy_upstream }};
         include    nginxconfig.io/proxy.conf;
     }
@@ -31,7 +31,7 @@ server {
 
     {% if nginx_config_server_type == "php" -%}
     # php-fpm index.php fallback
-    location {{ nginx_config_location_modifier }} {{ nginx_config_location_uri }} {
+    location{% if nginx_config_location_modifier %} {{ nginx_config_location_modifier }}{% endif %} {{ nginx_config_location_uri }} {
         try_files $uri $uri/ {{ nginx_config_php_index }}?$query_string;
     }
 

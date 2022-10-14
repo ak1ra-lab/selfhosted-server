@@ -51,3 +51,21 @@
     - name: net.ipv4.tcp_congestion_control
       value: bbr
   when: ansible_kernel >= '4.9.0'
+
+- name: disable certain /etc/ssh/sshd_config entries for security reason
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    ## Specifies whether root can log in using ssh(1).  The argument must be yes, prohibit-password, forced-commands-only, or no.  The default is prohibit-password.
+    - { regexp: "^#?PermitRootLogin", line: "PermitRootLogin no" }
+    ## Specifies whether password authentication is allowed.  The default is yes.
+    - { regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no" }
+    ## Specifies whether TCP forwarding is permitted. The default is yes.
+    - { regexp: "^#?AllowTcpForwarding", line: "AllowTcpForwarding no" }
+    ## Specifies whether forwarding Unix domain sockets is permitted. The default is yes.
+    - { regexp: "^#?AllowStreamLocalForwarding", line: "AllowStreamLocalForwarding no" }
+    ## Specifies whether remote hosts are allowed to connect to ports forwarded for the client. The default is no.
+    - { regexp: "^#?GatewayPorts", line: "GatewayPorts no" }
