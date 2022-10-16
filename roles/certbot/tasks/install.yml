@@ -4,7 +4,7 @@
     name:
       - "certbot"
       - "python3-certbot-dns-{{ certbot_dns_plugin }}"
-    state: latest
+    state: present
   when: ansible_facts['os_family']|lower == 'debian' and certbot_install_source == "apt"
 
 # for Debian 10 (buster), certbot from apt repo is very old
@@ -14,7 +14,7 @@
       - "certbot"
       - "certbot-dns-{{ certbot_dns_plugin }}"
     executable: /usr/bin/pip3
-    state: latest
+    state: present
   when: certbot_install_source == "pypi"
 
 # copied from certbot apt package

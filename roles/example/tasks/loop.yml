@@ -34,7 +34,7 @@
 - name: with_flattened
   ansible.builtin.debug:
     msg: "{{ item }}"
-  with_flattened: "{{ loop_nested2_items }}"
+  with_community.general.flattened: "{{ loop_nested2_items }}"
 
 - name: with_flattened -> loop
   ansible.builtin.debug:

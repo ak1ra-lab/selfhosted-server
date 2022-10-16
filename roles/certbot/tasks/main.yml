@@ -1,6 +1,8 @@
 ---
 # tasks to apply changes
-- include_tasks: install.yml
+- name: install certbot
+  ansible.builtin.include_tasks: install.yml
+  when: certbot_install
 
 - name: ensure certbot credentials dir exist
   ansible.builtin.file:
@@ -26,8 +28,6 @@
       - "--dns-cloudflare"
       - "--dns-{{ certbot_dns_plugin }}-credentials={{ certbot_credentials }}"
       - "--dns-{{ certbot_dns_plugin }}-propagation-seconds={{ certbot_dns_propagation_seconds }}"
-    creates:
-      - "{{ certbot_dir }}/live/{{ certbot_domain }}/privkey.pem"
-      - "{{ certbot_dir }}/live/{{ certbot_domain }}/fullchain.pem"
-      - "{{ certbot_dir }}/live/{{ certbot_domain }}/chain.pem"
-      - "{{ certbot_dir }}/live/{{ certbot_domain }}/cert.pem"
+  notify:
+    - change certbot_cert_dirs permission
+    - change certbot_cert_files permission
