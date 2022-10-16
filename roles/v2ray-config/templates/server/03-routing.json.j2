@@ -1,0 +1,22 @@
+{
+    "routing": {
+        "domainStrategy": "AsIs",
+        "domainMatcher": "mph",
+        "rules": [
+            {
+                "type": "field",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    }
+}

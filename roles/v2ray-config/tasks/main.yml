@@ -1,0 +1,51 @@
+---
+# set_fact if curtain vars is not given
+- include_tasks: fact.yml
+
+- name: ensure directory exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  notify: change file permission
+  loop:
+    # There are no need to create v2ray_config_log_dir
+    # We are use DynamicUser=yes with logsDirectory, see templates/20-dynamic-user.conf.j2
+    - "{{ v2ray_config_etc_dir }}/{{ v2ray_config_type }}"
+    - "{{ v2ray_config_dat_dir }}"
+
+- name: template systemd service unit override
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ v2ray_config_systemd_dir }}/v2ray.service.d/{{ item | splitext | first }}"
+  loop:
+    - 20-dynamic-user.conf.j2
+  notify: systemctl daemon-reload
+
+- name: template client config
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ v2ray_config_etc_dir }}/{{ item | splitext | first }}"
+  loop:
+    - client/00-log.json.j2
+    - client/03-routing.json.j2
+    - client/05-inbounds.json.j2
+    - "client/06-outbounds-{{ v2ray_config_profile }}.json.j2"
+  notify:
+    - change file permission
+    - test v2ray config
+  when: v2ray_config_type == "client"
+
+- name: template server config
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ v2ray_config_etc_dir }}/{{ item | splitext | first }}"
+  loop:
+    - server/00-log.json.j2
+    - server/03-routing.json.j2
+    - "server/05-inbounds-{{ v2ray_config_profile }}.json.j2"
+    - server/06-outbounds.json.j2
+  notify:
+    - change file permission
+    - test v2ray config
+    - restart v2ray service
+  when: v2ray_config_type == "server"

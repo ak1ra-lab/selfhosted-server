@@ -1,0 +1,32 @@
+---
+- name: change file permission
+  ansible.builtin.file:
+    path: "{{ item }}"
+    recurse: true
+    # will set directories to 755, and files to 644
+    mode: "u=rwX,g=rX,o=rX"
+    owner: "{{ v2ray_config_user }}"
+    group: "{{ v2ray_config_group }}"
+  loop:
+    # There are no need to change permission for v2ray_config_log_dir
+    # We are use DynamicUser=yes with logsDirectory, see templates/20-dynamic-user.conf.j2
+    - "{{ v2ray_config_etc_dir }}"
+    - "{{ v2ray_config_dat_dir }}"
+
+- name: test v2ray config
+  ansible.builtin.command:
+    argv:
+      - "{{ v2ray_config_bin_dir }}/v2ray"
+      - test
+      - -confdir
+      - "{{ v2ray_config_etc_dir }}/{{ v2ray_config_type }}"
+  changed_when: false
+
+- name: restart v2ray service
+  ansible.builtin.service:
+    name: v2ray
+    state: restarted
+
+- name: systemctl daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true

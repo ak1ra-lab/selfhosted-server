@@ -1,11 +1,7 @@
 {
-    "log": {
-        "loglevel": "{{ v2ray_config_log_loglevel }}",
-        "access": "{{ v2ray_config_log_access }}",
-        "error": "{{ v2ray_config_log_error }}"
-    },
     "inbounds": [
         {
+            "tag": "mkcp",
             "listen": "{{ v2ray_config_mkcp_listen }}",
             "port": {{ v2ray_config_mkcp_port }},
             "protocol": "vmess",
@@ -36,35 +32,5 @@
                 "enabled": true
             }
         }
-    ],
-    "outbounds": [
-        {
-            "tag": "direct",
-            "protocol": "freedom"
-        },
-        {
-            "tag": "block",
-            "protocol": "blackhole"
-        }
-    ],
-    "routing": {
-        "domainStrategy": "AsIs",
-        "domainMatcher": "mph",
-        "rules": [
-            {
-                "type": "field",
-                "protocol": [
-                    "bittorrent"
-                ],
-                "outboundTag": "block"
-            },
-            {
-                "type": "field",
-                "ip": [
-                    "geoip:private"
-                ],
-                "outboundTag": "direct"
-            }
-        ]
-    }
+    ]
 }

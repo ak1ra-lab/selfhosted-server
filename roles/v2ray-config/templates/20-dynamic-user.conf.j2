@@ -1,0 +1,7 @@
+# Refer: https://www.freedesktop.org/software/systemd/man/systemd.exec.html#DynamicUser=
+[Service]
+User=
+DynamicUser=yes
+LogsDirectory=v2ray
+ExecStart=
+ExecStart={{ v2ray_config_bin_dir }}/v2ray run -confdir {{ v2ray_config_etc_dir }}/server

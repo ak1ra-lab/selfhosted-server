@@ -1,0 +1,20 @@
+---
+- name: generate random UUID if not given
+  ansible.builtin.set_fact:
+    v2ray_config_inbound_client_id: "{{ lookup('ansible.builtin.password', '/dev/null length=32') | to_uuid }}"
+  when: not v2ray_config_inbound_client_id
+
+- name: generate random mKCP seed if not given
+  ansible.builtin.set_fact:
+    v2ray_config_mkcp_seed: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+  when: v2ray_config_profile == "mkcp" and not v2ray_config_mkcp_seed
+
+- name: generate random QUIC key if not given
+  ansible.builtin.set_fact:
+    v2ray_config_quic_key: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+  when: v2ray_config_profile == "quic" and not v2ray_config_quic_key
+
+- name: generate random Trojan password if not given
+  ansible.builtin.set_fact:
+    v2ray_config_trojan_password: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+  when: v2ray_config_profile == "trojan" and not v2ray_config_trojan_password

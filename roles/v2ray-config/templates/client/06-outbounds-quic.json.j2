@@ -1,0 +1,36 @@
+{
+    "outbounds": [
+        {
+            "tag": "quic",
+            "protocol": "vmess",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "{{ ansible_host }}",
+                        "port": {{ v2ray_config_quic_port }},
+                        "users": [
+                            {
+                                "id": "{{ v2ray_config_inbound_client_id }}",
+                                "security": "auto"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "quic",
+                "security": "tls",
+                "tlsSettings": {
+                    "allowInsecure": false
+                },
+                "quicSettings": {
+                    "security": "{{ v2ray_config_quic_security }}",
+                    "key": "{{ v2ray_config_quic_key }}",
+                    "header": {
+                        "type": "{{ v2ray_config_quic_header_type }}"
+                    }
+                }
+            }
+        }
+    ]
+}

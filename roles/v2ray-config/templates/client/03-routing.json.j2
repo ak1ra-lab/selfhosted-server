@@ -1,0 +1,30 @@
+{
+    "routing": {
+        "domainStrategy": "AsIs",
+        "domainMatcher": "mph",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private",
+                    "geoip:cn"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:category-ads"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    }
+}

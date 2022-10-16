@@ -1,0 +1,43 @@
+{
+    "outbounds": [
+        {
+            "tag": "wss",
+            "protocol": "vmess",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "{{ ansible_host }}",
+                        "port": {{ v2ray_config_wss_tls_port }},
+                        "users": [
+                            {
+                                "id": "{{ v2ray_config_inbound_client_id }}",
+                                "security": "auto"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "ws",
+                "security": "tls",
+                "tlsSettings": {
+                    "allowInsecure": false
+                },
+                "wsSettings": {
+                    "headers": {
+                        "Host": "{{ v2ray_config_wss_host }}"
+                    },
+                    "path": "{{ v2ray_config_wss_path }}"
+                }
+            }
+        },
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        }
+    ]
+}

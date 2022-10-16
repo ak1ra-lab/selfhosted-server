@@ -1,0 +1,37 @@
+{
+    "outbounds": [
+        {
+            "tag": "tcp",
+            "protocol": "vmess",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "{{ ansible_host }}",
+                        "port": {{ v2ray_config_tcp_port }},
+                        "users": [
+                            {
+                                "id": "{{ v2ray_config_inbound_client_id }}",
+                                "security": "auto"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls",
+                "tlsSettings": {
+                    "allowInsecure": false
+                }
+            }
+        },
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        }
+    ]
+}
