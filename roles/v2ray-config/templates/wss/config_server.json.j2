@@ -1,0 +1,64 @@
+{
+    "log": {
+        "loglevel": "{{ v2ray_config_log_loglevel }}",
+        "access": "{{ v2ray_config_log_access }}",
+        "error": "{{ v2ray_config_log_error }}"
+    },
+    "inbounds": [
+        {
+            "listen": "{{ v2ray_config_wss_listen }}",
+            "port": {{ v2ray_config_wss_port }},
+            "protocol": "vmess",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "{{ v2ray_config_inbound_client_id }}"
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "ws",
+                "security": "none",
+                "wsSettings": {
+                    "headers": {
+                        "Host": "{{ v2ray_config_wss_host }}"
+                    },
+                    "path": "{{ v2ray_config_wss_path }}"
+                }
+            },
+            "sniffing": {
+                "enabled": true
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        }
+    ],
+    "routing": {
+        "domainStrategy": "AsIs",
+        "domainMatcher": "mph",
+        "rules": [
+            {
+                "type": "field",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    }
+}

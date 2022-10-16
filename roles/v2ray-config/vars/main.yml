@@ -1,0 +1,79 @@
+---
+# common settings
+# domain for WebSocket
+v2ray_config_domain: example.com
+
+# file permission
+v2ray_config_user: nobody
+v2ray_config_group: nogroup
+
+# file hierarchy inherited from gh:v2fly/fhs-install-v2ray
+v2ray_config_prefix: /usr/local
+v2ray_config_bin_dir: "{{ v2ray_config_prefix }}/bin"
+v2ray_config_dat_dir: "{{ v2ray_config_prefix }}/share/v2ray"
+v2ray_config_etc_dir: "{{ v2ray_config_prefix }}/etc/v2ray"
+v2ray_config_systemd_dir: /etc/systemd/system
+
+# ssl_certificate file hierarchy inherited from certbot
+v2ray_config_ssl_dir: "/etc/letsencrypt/live/{{ v2ray_config_domain }}"
+v2ray_config_ssl_certificate: "{{ v2ray_config_ssl_dir }}/fullchain.pem"
+v2ray_config_ssl_certificate_key: "{{ v2ray_config_ssl_dir }}/privkey.pem"
+v2ray_config_ssl_trusted_certificate: "{{ v2ray_config_ssl_dir }}/fullchain.pem"
+
+# logs
+v2ray_config_log_loglevel: warning
+v2ray_config_log_dir: /var/log/v2ray
+v2ray_config_log_access: "{{ v2ray_config_log_dir }}/access.log"
+v2ray_config_log_error: "{{ v2ray_config_log_dir }}/error.log"
+
+# profile settings
+# profile to choose, refer templates/
+v2ray_config_profile: wss
+
+# FIXME: region
+v2ray_config_server_address: "{{ region }}.srv.{{ v2ray_config_domain }}"
+
+# FIXME: inbounds[0].settings.clients[0].id
+v2ray_config_inbound_client_id:
+
+# VMess-WebSocket-TLS, use Nginx to reverse proxy
+v2ray_config_wss_listen: 127.0.0.1
+v2ray_config_wss_port: 1080
+v2ray_config_wss_tls_port: 443
+
+v2ray_config_wss_host: "srv.{{ v2ray_config_domain }}"
+v2ray_config_wss_path: /websocket
+
+# VMess-mKCPSeed
+v2ray_config_mkcp_listen: 0.0.0.0
+v2ray_config_mkcp_port: 10086
+
+# kcpSettings server
+v2ray_config_mkcp_uplinkCapacity: 1000
+v2ray_config_mkcp_downlinkCapacity: 1000
+v2ray_config_mkcp_congestion: true
+v2ray_config_mkcp_readBufferSize: 2
+v2ray_config_mkcp_writeBufferSize: 2
+v2ray_config_mkcp_header_type: utp
+# FIXME: random
+v2ray_config_mkcp_seed:
+
+# VMess-QUIC-TLS
+v2ray_config_quic_listen: 0.0.0.0
+v2ray_config_quic_port: 10010
+
+# quicSettings
+v2ray_config_quic_security: chacha20-poly1305
+# FIXME
+v2ray_config_quic_key:
+v2ray_config_quic_header_type: utp
+
+# VMess-TCP-TLS
+v2ray_config_tcp_listen: 0.0.0.0
+v2ray_config_tcp_port: 6443
+
+# VMess-Trojan-TLS
+v2ray_config_trojan_listen: 0.0.0.0
+v2ray_config_trojan_port: 8443
+# FIXME, no UUID here
+v2ray_config_trojan_password:

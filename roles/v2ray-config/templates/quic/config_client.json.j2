@@ -1,0 +1,88 @@
+{
+    "log": {
+        "loglevel": "{{ v2ray_config_log_loglevel }}"
+    },
+    "inbounds": [
+        {
+            "listen": "127.0.0.1",
+            "port": 1081,
+            "protocol": "socks",
+            "settings": {
+                "udp": true
+            },
+            "sniffing": {
+                "enabled": true
+            }
+        },
+        {
+            "listen": "127.0.0.1",
+            "port": 1082,
+            "protocol": "http",
+            "sniffing": {
+                "enabled": true
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "tag": "quic",
+            "protocol": "vmess",
+            "settings": {
+                "vnext": [
+                    {
+                        "address": "{{ v2ray_config_server_address }}",
+                        "port": {{ v2ray_config_quic_port }},
+                        "users": [
+                            {
+                                "id": "{{ v2ray_config_inbound_client_id }}",
+                                "security": "auto"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "quic",
+                "security": "tls",
+                "tlsSettings": {
+                    "allowInsecure": false
+                },
+                "quicSettings": {
+                    "security": "{{ v2ray_config_quic_security }}",
+                    "key": "{{ v2ray_config_quic_key }}",
+                    "header": {
+                        "type": "{{ v2ray_config_quic_header_type }}"
+                    }
+                }
+            }
+        }
+    ],
+    "routing": {
+        "domainStrategy": "AsIs",
+        "domainMatcher": "mph",
+        "rules": [
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private",
+                    "geoip:cn"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "outboundTag": "direct"
+            },
+            {
+                "type": "field",
+                "domain": [
+                    "geosite:category-ads"
+                ],
+                "outboundTag": "block"
+            }
+        ]
+    }
+}

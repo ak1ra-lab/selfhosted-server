@@ -1,0 +1,66 @@
+{
+    "log": {
+        "loglevel": "{{ v2ray_config_log_loglevel }}",
+        "access": "{{ v2ray_config_log_access }}",
+        "error": "{{ v2ray_config_log_error }}"
+    },
+    "inbounds": [
+        {
+            "listen": "{{ v2ray_config_trojan_listen }}",
+            "port": {{ v2ray_config_trojan_port }},
+            "protocol": "trojan",
+            "settings": {
+                "clients": [
+                    {
+                        "password": "{{ v2ray_config_trojan_password }}"
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls",
+                "tlsSettings": {
+                    "certificates": [
+                        {
+                            "certificateFile": "{{ v2ray_config_ssl_certificate }}",
+                            "keyFile": "{{ v2ray_config_ssl_certificate_key }}"
+                        }
+                    ]
+                }
+            },
+            "sniffing": {
+                "enabled": true
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        }
+    ],
+    "routing": {
+        "domainStrategy": "AsIs",
+        "domainMatcher": "mph",
+        "rules": [
+            {
+                "type": "field",
+                "protocol": [
+                    "bittorrent"
+                ],
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "direct"
+            }
+        ]
+    }
+}
