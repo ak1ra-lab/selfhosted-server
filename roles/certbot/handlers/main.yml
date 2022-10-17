@@ -18,5 +18,6 @@
     recurse: true
     # will set directories to 755, and files to 644
     mode: "u=rwX,g=rX,o=rX"
-  loop: "{{ certbot_archive_dir }}"
+  loop:
+    - "{{ certbot_archive_dir }}"
   when: certbot_cert_chmod

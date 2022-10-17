@@ -4,7 +4,7 @@
     argv:
       - "{{ v2ray_bin_dir }}/v2ray"
       - test
-      - -confdir
+      - -config
       - "{{ v2ray_etc_dir }}/config.json"
   changed_when: false
 

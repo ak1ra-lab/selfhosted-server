@@ -13,10 +13,10 @@
     - /var/www
 
 - include_tasks: base.yml
-  when: nginx_config_copy_base
+  when: nginx_config_template_base_config
 
 - include_vars: server.yml
-  when: nginx_config_template_server
+  when: nginx_config_template_server_config
 
 - include_tasks: server.yml
-  when: nginx_config_template_server
+  when: nginx_config_template_server_config

@@ -1,0 +1,63 @@
+---
+- name: playbook using ak1ra-lab/selfhosted-server roles
+  hosts: server0[1-3].srv.example.com
+  vars:
+    domain:
+      apex: example.com
+      www: www.example.com
+      srv: srv.example.com
+    certbot:
+      plugin: cloudflare
+      # place your cf_token with Zone.DNS permissions
+      token: "{{ cf_token }}"
+    v2ray:
+      profile: wss
+      wss_path: /websocket
+      wss_listen: 127.0.0.1
+      wss_port: 1080
+      uuid:
+  roles:
+    - role: common
+
+    - role: docker
+
+    - role: nginx
+      nginx_state: present
+      nginx_apt_packaging_team: nginx_org
+
+    # template base_config and server_config
+    - role: nginx-config
+      nginx_config_template_base_config: true
+      nginx_config_domain: "{{ domain.apex }}"
+      nginx_config_server_name: "{{ domain.www }}"
+      nginx_config_server_type: static
+
+    # template server_config
+    - role: nginx-config
+      nginx_config_template_base_config: false
+      nginx_config_domain: "{{ domain.srv }}"
+      nginx_config_server_name: "{{ domain.srv }}"
+      nginx_config_server_type: proxy
+      nginx_config_location_uri: "{{ v2ray.wss_path }}"
+      nginx_config_proxy_upstream: "http://{{ v2ray.wss_listen }}/{{ v2ray.wss_port }}"
+
+    - role: certbot
+      certbot_domain: "{{ domain.apex }}"
+      certbot_dns_plugin: "{{ certbot.plugin }}"
+      certbot_dns_cloudflare_api_token: "{{ certbot.token }}"
+      certbot_install: true
+      certbot_install_source: pypi
+
+    - role: certbot
+      certbot_domain: "{{ domain.srv }}"
+      certbot_dns_plugin: "{{ certbot.plugin }}"
+      certbot_dns_cloudflare_api_token: "{{ certbot.token }}"
+      certbot_install: false
+      certbot_cert_chmod: true
+
+    - role: v2ray
+
+    - role: v2ray-config
+      v2ray_config_profile: "{{ v2ray.profile }}"
+      v2ray_config_domain: "{{ domain.srv }}"
+      v2ray_config_inbound_client_id: "{{ v2ray.uuid }}"
