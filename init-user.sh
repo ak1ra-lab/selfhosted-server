@@ -64,23 +64,27 @@ function add_ssh_key() {
     chmod 0600 $user_home_dir/.ssh/*
 }
 
-# read required arguments
-while read -p "Please ENTER your username: " username; do
-    test -n "$username" && break
-    echo "username can not be empty!"
-done
+function main() {
+    # read required arguments
+    while read -p "Please ENTER your username: " username; do
+        test -n "$username" && break
+        echo "username can not be empty!"
+    done
 
-while read -p "Please ENTER your ssh_public_key_url or GitHub username: " ssh_public_key_url; do
-    test -n "$ssh_public_key_url" && break
-    echo "ssh_public_key_url can not be empty!"
-done
+    while read -p "Please ENTER your ssh_public_key_url or GitHub username: " ssh_public_key_url; do
+        test -n "$ssh_public_key_url" && break
+        echo "ssh_public_key_url can not be empty!"
+    done
 
-if echo "$ssh_public_key_url" | grep -qE '^https?://'; then
-    ssh_public_key_url="$ssh_public_key_url"
-else
-    ssh_public_key_url="https://github.com/${ssh_public_key_url}.keys"
-fi
+    if echo "$ssh_public_key_url" | grep -qE '^https?://'; then
+        ssh_public_key_url="$ssh_public_key_url"
+    else
+        ssh_public_key_url="https://github.com/${ssh_public_key_url}.keys"
+    fi
 
-apt_upgrade
-init_user
-add_ssh_key
+    apt_upgrade
+    init_user
+    add_ssh_key
+}
+
+main
