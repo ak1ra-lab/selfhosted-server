@@ -4,7 +4,87 @@
   ansible.builtin.copy:
     src: fhs-install-v2ray/install-release.sh
     dest: /usr/local/sbin/fhs-install-v2ray.sh
-    mode: 0755
+    mode: "0755"
 
-- name: run fhs-install-v2ray.sh on remote
-  ansible.builtin.command: "/usr/local/sbin/fhs-install-v2ray.sh"
+- name: include fact tasks
+  ansible.builtin.include_tasks: fact.yml
+
+- name: ensure temp directory for file download
+  ansible.builtin.tempfile:
+    prefix: v2ray-
+    state: directory
+  register: v2ray_asset_dir
+
+- name: get v2ray_asset_url dgst file
+  ansible.builtin.get_url:
+    url: "{{ v2ray_asset_url }}.dgst"
+    dest: "{{ v2ray_asset_dir.path }}/v2ray.zip.dgst"
+    mode: "0644"
+  when: not v2ray_asset_checksum
+
+- name: get v2ray_asset_dgst_content
+  ansible.builtin.command:
+    argv:
+      - awk
+      - '/^{{ v2ray_asset_checksum_algo | upper }}=/ {print $2}'
+      - "{{ v2ray_asset_dir.path }}/v2ray.zip.dgst"
+  register: v2ray_asset_dgst_content
+  when: not v2ray_asset_checksum
+  changed_when: false
+
+- name: set v2ray_asset_checksum
+  ansible.builtin.set_fact:
+    v2ray_asset_checksum: |
+      {% if v2ray_asset_checksum %}
+        {{ v2ray_asset_checksum }}
+      {% else %}
+        {{ v2ray_asset_checksum_algo }}:{{ v2ray_asset_dgst_content.stdout }}
+      {% endif %}
+
+- name: download v2ray_asset_url file
+  ansible.builtin.get_url:
+    url: "{{ v2ray_asset_url }}"
+    dest: "{{ v2ray_asset_dir.path }}/v2ray.zip"
+    checksum: "{{ v2ray_asset_checksum | trim }}"
+    mode: "0644"
+
+- name: unarchive v2ray_asset_url file
+  ansible.builtin.unarchive:
+    src: "{{ v2ray_asset_dir.path }}/v2ray.zip"
+    dest: "{{ v2ray_asset_dir.path }}"
+    remote_src: true
+
+- name: ensure v2ray directories exists
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ v2ray_bin_dir }}"
+    - "{{ v2ray_dat_dir }}"
+    - "{{ v2ray_etc_dir }}"
+    - "{{ v2ray_systemd_dir }}/v2ray.service.d"
+    - "{{ v2ray_systemd_dir }}/v2ray@.service.d"
+
+- name: copy v2ray files in remote_src
+  ansible.builtin.copy:
+    src: "{{ v2ray_asset_dir.path }}/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    remote_src: true
+  loop:
+    - { src: v2ray, dest: "{{ v2ray_bin_dir }}", mode: "0755" }
+    - { src: config.json, dest: "{{ v2ray_etc_dir }}", mode: "0644" }
+    - { src: geoip.dat, dest: "{{ v2ray_dat_dir }}", mode: "0644" }
+    - { src: geosite.dat, dest: "{{ v2ray_dat_dir }}", mode: "0644" }
+    - { src: systemd/system/v2ray.service, dest: "{{ v2ray_systemd_dir }}", mode: "0644" }
+    - { src: systemd/system/v2ray@.service, dest: "{{ v2ray_systemd_dir }}", mode: "0644" }
+  notify:
+    - test v2ray config
+    - systemctl daemon-reload
+    - systemctl disable v2ray.service
+
+- name: clean up temp files
+  ansible.builtin.file:
+    path: "{{ v2ray_asset_dir.path }}"
+    state: absent

@@ -1,14 +1,26 @@
 ---
-# fhs-install-v2ray.sh installed files
+# installed files
 #   /usr/local/bin/v2ray
-#   /usr/local/bin/v2ctl
 #   /usr/local/share/v2ray/geoip.dat
 #   /usr/local/share/v2ray/geosite.dat
 #   /usr/local/etc/v2ray/config.json
-#   /var/log/v2ray/access.log
-#   /var/log/v2ray/error.log
 #   /etc/systemd/system/v2ray.service
 #   /etc/systemd/system/v2ray@.service
 
 # common variables
-v2ray_version:
+v2ray_version: latest
+v2ray_repo: v2fly/v2ray-core
+v2ray_api_url: "https://api.github.com/repos/{{ v2ray_repo }}/releases/{{ v2ray_version }}"
+
+# set_fact
+v2ray_asset_name:
+v2ray_asset_url:
+v2ray_asset_checksum:
+v2ray_asset_checksum_algo: sha512
+
+# file hierarchy inherited from github.com/v2fly/fhs-install-v2ray
+v2ray_prefix: /usr/local
+v2ray_bin_dir: "{{ v2ray_prefix }}/bin"
+v2ray_dat_dir: "{{ v2ray_prefix }}/share/v2ray"
+v2ray_etc_dir: "{{ v2ray_prefix }}/etc/v2ray"
+v2ray_systemd_dir: /etc/systemd/system
