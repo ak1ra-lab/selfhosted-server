@@ -1,0 +1,9 @@
+---
+- name: systemctl daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: systemctl restart rsstt.service
+  ansible.builtin.service:
+    name: rsstt
+    state: restarted

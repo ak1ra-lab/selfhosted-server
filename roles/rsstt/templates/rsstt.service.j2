@@ -1,0 +1,17 @@
+ref: https://www.freedesktop.org/software/systemd/man/systemd.exec.html#DynamicUser=
+[Unit]
+Description=RSS-to-Telegram-Bot Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/rsstt.pid
+Environment="HOME=/nonexistent"
+DynamicUser=yes
+StateDirectory=rsstt
+ExecStart={{ rsstt_working_dir }}/venv/bin/python3 -m rsstt -c {{ rsstt_working_dir }}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

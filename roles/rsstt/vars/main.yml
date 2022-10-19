@@ -1,0 +1,17 @@
+---
+
+rsstt_working_dir: /var/lib/rsstt
+rsstt_systemd_dir: /etc/systemd/system
+
+# .env settings
+## Telegram bot token, get it from @BotFather
+rsstt_token:
+## Bot manager userid, get it from @userinfobot
+rsstt_manager:
+
+# Get Telegraph API access tokens from {{ rsstt_telegraph_token_url }}
+# If you have a lot of subscriptions, make sure to get at least 5 tokens.
+rsstt_telegraph_token: []
+# or set rsstt_telegraph_token_count to get ansible task automatically get it.
+rsstt_telegraph_token_url: "https://api.telegra.ph/createAccount?short_name=RSStT&author_name=Generated%20by%20RSStT&author_url=https%3A%2F%2Fgithub.com%2FRongronggg9%2FRSS-to-Telegram-Bot"
+rsstt_telegraph_token_count: 0
