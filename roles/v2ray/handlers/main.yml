@@ -11,9 +11,3 @@
 - name: systemctl daemon-reload
   ansible.builtin.systemd:
     daemon_reload: true
-
-- name: systemctl disable v2ray.service
-  ansible.builtin.service:
-    name: v2ray
-    state: stopped
-    enabled: false

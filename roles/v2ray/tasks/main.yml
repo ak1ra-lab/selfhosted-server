@@ -82,7 +82,6 @@
   notify:
     - test v2ray config
     - systemctl daemon-reload
-    - systemctl disable v2ray.service
 
 - name: clean up temp files
   ansible.builtin.file:
