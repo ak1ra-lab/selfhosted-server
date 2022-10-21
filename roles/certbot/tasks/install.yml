@@ -23,7 +23,9 @@
     # if path ends with "/", only inside contents of that directory are copied to destination.
     src: etc/
     dest: /etc/
-  notify: systemctl daemon-reload
+    mode: "u=rwX,g=rX,o=rX"
+  notify:
+    - systemctl daemon-reload
   when: certbot_install_source == "pypi"
 
 - name: start and enable systemd target certbot.timer

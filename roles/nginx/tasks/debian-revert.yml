@@ -23,7 +23,7 @@
 - name: remove nginx package
   ansible.builtin.apt:
     name: "{{ nginx_apt_release_channels[nginx_apt_packaging_team].packages }}"
-    autoremove: yes
+    autoremove: true
     # NOTE: This will remove config file
-    purge: yes
+    purge: true
     state: absent

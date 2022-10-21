@@ -22,11 +22,11 @@
                 "kcpSettings": {
                     "mtu": 1350,
                     "tti": 50,
-                    "uplinkCapacity": {{ v2ray_config_mkcp_uplinkCapacity }},
-                    "downlinkCapacity": {{ v2ray_config_mkcp_downlinkCapacity }},
-                    "congestion": {{ v2ray_config_mkcp_congestion }},
-                    "readBufferSize": {{ v2ray_config_mkcp_readBufferSize }},
-                    "writeBufferSize": {{ v2ray_config_mkcp_writeBufferSize }},
+                    "uplinkCapacity": 100,
+                    "downlinkCapacity": 1000,
+                    "congestion": true,
+                    "readBufferSize": 2,
+                    "writeBufferSize": 2,
                     "header": {
                         "type": "{{ v2ray_config_mkcp_header_type }}"
                     },

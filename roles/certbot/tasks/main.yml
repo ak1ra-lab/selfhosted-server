@@ -28,6 +28,27 @@
       - "--dns-cloudflare"
       - "--dns-{{ certbot_dns_plugin }}-credentials={{ certbot_credentials }}"
       - "--dns-{{ certbot_dns_plugin }}-propagation-seconds={{ certbot_dns_propagation_seconds }}"
-  notify:
-    - change certbot_cert_dirs permission
-    - change certbot_cert_files permission
+    creates:
+      # If a matching file already exists, this step *will not* be run.
+      - "{{ certbot_dir }}/live/{{ certbot_domain }}/privkey.pem"
+
+- name: change certbot_cert dirs and files permission
+  when: certbot_cert_chmod
+  block:
+    - name: change certbot_cert_dirs permission
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: "0755"
+      loop:
+        # /etc/letsencrypt/{live,archive}/
+        - "{{ certbot_live_dir | dirname }}"
+        - "{{ certbot_archive_dir | dirname }}"
+
+    - name: change certbot_cert_files permission
+      ansible.builtin.file:
+        path: "{{ item }}"
+        recurse: true
+        # will set directories to 755, and files to 644
+        mode: "u=rwX,g=rX,o=rX"
+      loop:
+        - "{{ certbot_archive_dir }}"

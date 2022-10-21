@@ -26,6 +26,7 @@
   ansible.builtin.copy:
     dest: /etc/apt/preferences.d/99nginx
     content: "{{ nginx_apt_release_channels[nginx_apt_packaging_team].pinning }}"
+    mode: "0644"
   when: nginx_apt_packaging_team in ['nginx_org', 'xtom_com']
 
 - name: install nginx package

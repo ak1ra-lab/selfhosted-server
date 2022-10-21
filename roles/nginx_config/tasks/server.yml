@@ -15,6 +15,5 @@
     dest: "/etc/nginx/conf.d/{{ nginx_config_server_name }}.conf"
     mode: "0644"
   notify:
-    - change file permission
     - test new nginx config
     - reload nginx config

@@ -4,6 +4,7 @@
 #   /usr/local/share/v2ray/geoip.dat
 #   /usr/local/share/v2ray/geosite.dat
 #   /usr/local/etc/v2ray/config.json
+#   /var/log/v2ray
 #   /etc/systemd/system/v2ray.service
 #   /etc/systemd/system/v2ray@.service
 
@@ -24,3 +25,6 @@ v2ray_bin_dir: "{{ v2ray_prefix }}/bin"
 v2ray_dat_dir: "{{ v2ray_prefix }}/share/v2ray"
 v2ray_etc_dir: "{{ v2ray_prefix }}/etc/v2ray"
 v2ray_systemd_dir: /etc/systemd/system
+
+# logs dir
+v2ray_log_dir: "/var/log/v2ray"

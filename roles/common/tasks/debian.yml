@@ -9,6 +9,7 @@
   ansible.builtin.template:
     src: "{{ ansible_distribution_release }}.list.j2"
     dest: /etc/apt/sources.list
+    mode: "0644"
     force: true
     backup: true
 
@@ -22,5 +23,6 @@
   ansible.builtin.copy:
     dest: /etc/apt/apt.conf.d/99force-ipv4
     content: Acquire::ForceIPv4 "true";
+    mode: "0644"
     state: present
   when: common_apt_force_ipv4 == 'true'

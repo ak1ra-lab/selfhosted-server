@@ -26,14 +26,14 @@
       nginx_apt_packaging_team: nginx_org
 
     # template base_config and server_config
-    - role: nginx-config
+    - role: nginx_config
       nginx_config_template_base_config: true
       nginx_config_domain: "{{ domain.apex }}"
       nginx_config_server_name: "{{ domain.www }}"
       nginx_config_server_type: static
 
     # template server_config
-    - role: nginx-config
+    - role: nginx_config
       nginx_config_template_base_config: false
       nginx_config_domain: "{{ domain.srv }}"
       nginx_config_server_name: "{{ domain.srv }}"
@@ -57,7 +57,7 @@
 
     - role: v2ray
 
-    - role: v2ray-config
+    - role: v2ray_config
       v2ray_config_profile: "{{ v2ray.profile }}"
       v2ray_config_domain: "{{ domain.srv }}"
       v2ray_config_inbound_client_id: "{{ v2ray.uuid }}"

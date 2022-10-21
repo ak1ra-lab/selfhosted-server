@@ -1,4 +1,7 @@
 ---
-# .ansible-lint
+warn_list:
+  - role-name
+  - yaml[line-length]
+
 skip_list:
   - name[casing]

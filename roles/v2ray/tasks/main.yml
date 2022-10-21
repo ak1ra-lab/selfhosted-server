@@ -15,33 +15,29 @@
     state: directory
   register: v2ray_asset_dir
 
-- name: get v2ray_asset_url dgst file
-  ansible.builtin.get_url:
-    url: "{{ v2ray_asset_url }}.dgst"
-    dest: "{{ v2ray_asset_dir.path }}/v2ray.zip.dgst"
-    mode: "0644"
+- name: set v2ray_asset_checksum when not given
   when: not v2ray_asset_checksum
+  block:
+    - name: get v2ray_asset_url dgst file
+      ansible.builtin.get_url:
+        url: "{{ v2ray_asset_url }}.dgst"
+        dest: "{{ v2ray_asset_dir.path }}/v2ray.zip.dgst"
+        mode: "0644"
 
-- name: get v2ray_asset_dgst_content
-  ansible.builtin.command:
-    argv:
-      - awk
-      - '/^{{ v2ray_asset_checksum_algo | upper }}=/ {print $2}'
-      - "{{ v2ray_asset_dir.path }}/v2ray.zip.dgst"
-  register: v2ray_asset_dgst_content
-  when: not v2ray_asset_checksum
-  changed_when: false
+    - name: get v2ray_asset_dgst_content
+      ansible.builtin.command:
+        argv:
+          - awk
+          - '/^{{ v2ray_asset_checksum_algo | upper }}=/ {print $2}'
+          - "{{ v2ray_asset_dir.path }}/v2ray.zip.dgst"
+      register: v2ray_asset_dgst_content
+      changed_when: false
 
-- name: set v2ray_asset_checksum
-  ansible.builtin.set_fact:
-    v2ray_asset_checksum: |
-      {% if v2ray_asset_checksum %}
-        {{ v2ray_asset_checksum }}
-      {% else %}
-        {{ v2ray_asset_checksum_algo }}:{{ v2ray_asset_dgst_content.stdout }}
-      {% endif %}
+    - name: set v2ray_asset_checksum
+      ansible.builtin.set_fact:
+        v2ray_asset_checksum: "{{ v2ray_asset_checksum_algo }}:{{ v2ray_asset_dgst_content.stdout }}"
 
-- name: download v2ray_asset_url file
+- name: download file from v2ray_asset_url with checksum
   ansible.builtin.get_url:
     url: "{{ v2ray_asset_url }}"
     dest: "{{ v2ray_asset_dir.path }}/v2ray.zip"
@@ -63,6 +59,7 @@
     - "{{ v2ray_bin_dir }}"
     - "{{ v2ray_dat_dir }}"
     - "{{ v2ray_etc_dir }}"
+    - "{{ v2ray_log_dir }}"
     - "{{ v2ray_systemd_dir }}/v2ray.service.d"
     - "{{ v2ray_systemd_dir }}/v2ray@.service.d"
 

@@ -1,0 +1,18 @@
+---
+- name: test v2ray config
+  ansible.builtin.command:
+    argv:
+      - "{{ v2ray_config_bin_dir }}/v2ray"
+      - test
+      - -confdir
+      - "{{ v2ray_config_etc_dir }}/{{ v2ray_config_type }}"
+  changed_when: false
+
+- name: restart v2ray service
+  ansible.builtin.service:
+    name: v2ray
+    state: restarted
+
+- name: systemctl daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true

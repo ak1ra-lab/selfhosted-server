@@ -18,6 +18,7 @@
       Package: docker-*
       Pin: origin {{ docker_repo_url | urlsplit('hostname') }}
       Pin-Priority: 900
+    mode: "0644"
 
 - name: install docker-ce packages
   ansible.builtin.apt:
@@ -29,11 +30,11 @@
       # require docker-ce version >= 20.10
       # - docker-ce-rootless-extras
       - skopeo
-    state: latest
+    state: present
 
 - name: install docker-ce (x86_64 only) plugins
   ansible.builtin.apt:
     name:
       - docker-scan-plugin
-    state: latest
+    state: present
   when: ansible_architecture == 'x86_64'

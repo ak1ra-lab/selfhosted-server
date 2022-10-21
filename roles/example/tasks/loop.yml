@@ -88,7 +88,7 @@
   ansible.builtin.debug:
     msg: "{{ 'testuser%02x' | format(item) }}"
   # range is exclusive of the end point
-  loop: "{{ range(0, 4 + 1, 2)|list }}"
+  loop: "{{ range(0, 4 + 1, 2) | list }}"
 
 # # TODO: 这个也没搞明白, 不过这个都没用过, 以后再说
 # - name: with_subelements

@@ -28,6 +28,5 @@
     dest: /etc/
     mode: preserve
   notify:
-    - change file permission
     - test new nginx config
     - reload nginx config

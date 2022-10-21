@@ -12,11 +12,14 @@
     - /var/log/nginx
     - /var/www
 
-- include_tasks: base.yml
+- name: include_tasks if nginx_config_template_base_config set to true
+  ansible.builtin.include_tasks: base.yml
   when: nginx_config_template_base_config
 
-- include_vars: server.yml
+- name: include_vars if nginx_config_template_server_config set to true
+  ansible.builtin.include_vars: server.yml
   when: nginx_config_template_server_config
 
-- include_tasks: server.yml
+- name: include_tasks if nginx_config_template_server_config set to true
+  ansible.builtin.include_tasks: server.yml
   when: nginx_config_template_server_config

@@ -47,12 +47,6 @@ v2ray_config_mkcp_listen: 0.0.0.0
 v2ray_config_mkcp_port: 10086
 
 # kcpSettings server
-v2ray_config_mkcp_uplinkCapacity: 1000
-v2ray_config_mkcp_downlinkCapacity: 1000
-# please use string type for this "boolean" value here
-v2ray_config_mkcp_congestion: "true"
-v2ray_config_mkcp_readBufferSize: 2
-v2ray_config_mkcp_writeBufferSize: 2
 v2ray_config_mkcp_header_type: utp
 # random if not given
 v2ray_config_mkcp_seed:

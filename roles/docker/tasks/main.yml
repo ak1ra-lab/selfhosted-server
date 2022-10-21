@@ -1,12 +1,14 @@
 ---
 # tasks to apply changes
-- include_tasks: debian.yml
+- name: include_tasks if os_family is debian
+  ansible.builtin.include_tasks: debian.yml
   when: ansible_facts['os_family']|lower == 'debian'
 
 - name: add /etc/docker/daemon.json
   ansible.builtin.template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
+    mode: "0644"
     force: true
   notify: restart dockerd
 
@@ -14,11 +16,11 @@
   ansible.builtin.command:
     cmd: "awk -F: '$NF !~ /nologin|false/ && $3 >= 1000 {print $1}' /etc/passwd"
   register: ansible_regular_user
-  changed_when: ansible_regular_user.rc != 0
+  changed_when: false
 
 - name: append 'docker' groups
   ansible.builtin.user:
-    name: "{{ item }}"
+    name: "{{ item | trim }}"
     groups:
       - docker
     append: true

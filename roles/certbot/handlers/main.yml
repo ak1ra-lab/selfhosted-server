@@ -2,22 +2,3 @@
 - name: systemctl daemon-reload
   ansible.builtin.systemd:
     daemon_reload: true
-
-- name: change certbot_cert_dirs permission
-  ansible.builtin.file:
-    path: "{{ item }}"
-    mode: "0755"
-  loop:
-    - "{{ certbot_live_dir | dirname }}"
-    - "{{ certbot_archive_dir | dirname }}"
-  when: certbot_cert_chmod
-
-- name: change certbot_cert_files permission
-  ansible.builtin.file:
-    path: "{{ item }}"
-    recurse: true
-    # will set directories to 755, and files to 644
-    mode: "u=rwX,g=rX,o=rX"
-  loop:
-    - "{{ certbot_archive_dir }}"
-  when: certbot_cert_chmod
