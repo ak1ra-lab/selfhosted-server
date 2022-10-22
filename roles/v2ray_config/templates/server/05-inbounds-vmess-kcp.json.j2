@@ -1,9 +1,8 @@
 {
     "inbounds": [
         {
-            "tag": "mkcp",
-            "listen": "{{ v2ray_config_mkcp_listen }}",
-            "port": {{ v2ray_config_mkcp_port }},
+            "tag": "{{ v2ray_config_profile }}",
+            "port": {{ v2ray_config_vmess_kcp_port }},
             "protocol": "vmess",
             "settings": {
                 "clients": [
@@ -23,9 +22,9 @@
                     "readBufferSize": 2,
                     "writeBufferSize": 2,
                     "header": {
-                        "type": "{{ v2ray_config_mkcp_header_type }}"
+                        "type": "{{ v2ray_config_vmess_kcp_header_type }}"
                     },
-                    "seed": "{{ v2ray_config_mkcp_seed }}"
+                    "seed": "{{ v2ray_config_vmess_kcp_seed }}"
                 }
             },
             "sniffing": {

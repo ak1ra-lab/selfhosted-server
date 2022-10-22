@@ -28,45 +28,47 @@ v2ray_config_log_error: "{{ v2ray_config_log_dir }}/error.log"
 
 # profile settings
 # profile to choose, refer templates/
-v2ray_config_profile: wss
+v2ray_config_profile: vmess-wss
 v2ray_config_type: server
 
 # inbounds[0].settings.clients[0].id
 v2ray_config_inbound_client_id:
 
 # VMess-WebSocket-TLS, use Nginx to reverse proxy
-v2ray_config_wss_listen: 127.0.0.1
-v2ray_config_wss_port: 1080
-v2ray_config_wss_tls_port: 443
-
-v2ray_config_wss_host: "{{ v2ray_config_domain }}"
-v2ray_config_wss_path: /websocket
+v2ray_config_vmess_wss_listen: 127.0.0.1
+v2ray_config_vmess_wss_port: 1080
+v2ray_config_vmess_wss_tls_port: 443
+# wsSettings
+v2ray_config_vmess_wss_host: "{{ v2ray_config_domain }}"
+v2ray_config_vmess_wss_path: /websocket
 
 # VMess-mKCPSeed
-v2ray_config_mkcp_listen: 0.0.0.0
-v2ray_config_mkcp_port: 10086
-
+v2ray_config_vmess_kcp_port: 10010
 # kcpSettings server
-v2ray_config_mkcp_header_type: utp
+v2ray_config_vmess_kcp_header_type: utp
 # random if not given
-v2ray_config_mkcp_seed:
+v2ray_config_vmess_kcp_seed:
 
 # VMess-QUIC-TLS
-v2ray_config_quic_listen: 0.0.0.0
-v2ray_config_quic_port: 10010
-
+v2ray_config_vmess_quic_port: 10020
 # quicSettings
-v2ray_config_quic_security: chacha20-poly1305
+v2ray_config_vmess_quic_security: chacha20-poly1305
 # random if not given
-v2ray_config_quic_key:
-v2ray_config_quic_header_type: utp
+v2ray_config_vmess_quic_key:
+v2ray_config_vmess_quic_header_type: utp
 
 # VMess-TCP-TLS
-v2ray_config_tcp_listen: 0.0.0.0
-v2ray_config_tcp_port: 6443
+v2ray_config_vmess_tcp_port: 6443
 
-# VMess-Trojan-TLS
-v2ray_config_trojan_listen: 0.0.0.0
-v2ray_config_trojan_port: 8443
+# Trojan-TCP-TLS
+v2ray_config_trojan_tcp_port: 7443
 # password, no UUID here, random if not given
-v2ray_config_trojan_password:
+v2ray_config_trojan_tcp_password:
+
+# Trojan-WSS-TLS
+v2ray_config_trojan_wss_port: 8443
+# password, no UUID here, random if not given
+v2ray_config_trojan_wss_password:
+# wsSettings
+v2ray_config_trojan_wss_host: "{{ v2ray_config_domain }}"
+v2ray_config_trojan_wss_path: /websocket

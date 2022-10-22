@@ -1,13 +1,13 @@
 {
     "outbounds": [
         {
-            "tag": "kcp",
+            "tag": "{{ v2ray_config_profile }}",
             "protocol": "vmess",
             "settings": {
                 "vnext": [
                     {
                         "address": "{{ ansible_host }}",
-                        "port": {{ v2ray_config_mkcp_port }},
+                        "port": {{ v2ray_config_vmess_kcp_port }},
                         "users": [
                             {
                                 "id": "{{ v2ray_config_inbound_client_id }}",
@@ -28,11 +28,19 @@
                     "readBufferSize": 2,
                     "writeBufferSize": 2,
                     "header": {
-                        "type": "{{ v2ray_config_mkcp_header_type }}"
+                        "type": "{{ v2ray_config_vmess_kcp_header_type }}"
                     },
-                    "seed": "{{ v2ray_config_mkcp_seed }}"
+                    "seed": "{{ v2ray_config_vmess_kcp_seed }}"
                 }
             }
+        },
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "block",
+            "protocol": "blackhole"
         }
     ]
 }

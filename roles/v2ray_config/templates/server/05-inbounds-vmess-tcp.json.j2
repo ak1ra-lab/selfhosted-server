@@ -1,0 +1,31 @@
+{
+    "inbounds": [
+        {
+            "tag": "{{ v2ray_config_profile }}",
+            "port": {{ v2ray_config_vmess_tcp_port }},
+            "protocol": "vmess",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "{{ v2ray_config_inbound_client_id }}"
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls",
+                "tlsSettings": {
+                    "certificates": [
+                        {
+                            "certificateFile": "{{ v2ray_config_ssl_certificate }}",
+                            "keyFile": "{{ v2ray_config_ssl_certificate_key }}"
+                        }
+                    ]
+                }
+            },
+            "sniffing": {
+                "enabled": true
+            }
+        }
+    ]
+}

@@ -1,19 +1,14 @@
 {
     "outbounds": [
         {
-            "tag": "tcp",
-            "protocol": "vmess",
+            "tag": "{{ v2ray_config_profile }}",
+            "protocol": "trojan",
             "settings": {
-                "vnext": [
+                "servers": [
                     {
                         "address": "{{ ansible_host }}",
-                        "port": {{ v2ray_config_tcp_port }},
-                        "users": [
-                            {
-                                "id": "{{ v2ray_config_inbound_client_id }}",
-                                "security": "auto"
-                            }
-                        ]
+                        "port": {{ v2ray_config_trojan_tcp_port }},
+                        "password": "{{ v2ray_config_trojan_tcp_password }}"
                     }
                 ]
             },

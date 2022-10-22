@@ -1,0 +1,38 @@
+{
+    "outbounds": [
+        {
+            "tag": "{{ v2ray_config_profile }}",
+            "protocol": "trojan",
+            "settings": {
+                "servers": [
+                    {
+                        "address": "{{ ansible_host }}",
+                        "port": {{ v2ray_config_trojan_wss_port }},
+                        "password": "{{ v2ray_config_trojan_wss_password }}"
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "ws",
+                "security": "tls",
+                "tlsSettings": {
+                    "allowInsecure": false
+                },
+                "wsSettings": {
+                    "headers": {
+                        "Host": "{{ v2ray_config_trojan_wss_host }}"
+                    },
+                    "path": "{{ v2ray_config_trojan_wss_path }}"
+                }
+            }
+        },
+        {
+            "tag": "direct",
+            "protocol": "freedom"
+        },
+        {
+            "tag": "block",
+            "protocol": "blackhole"
+        }
+    ]
+}

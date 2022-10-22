@@ -2,19 +2,34 @@
 - name: generate random UUID if not given
   ansible.builtin.set_fact:
     v2ray_config_inbound_client_id: "{{ lookup('ansible.builtin.password', '/dev/null length=32') | to_uuid }}"
-  when: not v2ray_config_inbound_client_id
+  when:
+    - not v2ray_config_inbound_client_id
+    - not v2ray_config_profile in ["trojan-tcp", "trojan-wss"]
 
 - name: generate random mKCP seed if not given
   ansible.builtin.set_fact:
-    v2ray_config_mkcp_seed: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
-  when: v2ray_config_profile == "mkcp" and not v2ray_config_mkcp_seed
+    v2ray_config_vmess_kcp_seed: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+  when:
+    - not v2ray_config_vmess_kcp_seed
+    - v2ray_config_profile == "vmess-kcp"
 
 - name: generate random QUIC key if not given
   ansible.builtin.set_fact:
-    v2ray_config_quic_key: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
-  when: v2ray_config_profile == "quic" and not v2ray_config_quic_key
+    v2ray_config_vmess_quic_key: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+  when:
+    - not v2ray_config_vmess_quic_key
+    - v2ray_config_profile == "vmess-quic"
 
-- name: generate random Trojan password if not given
+- name: generate random Trojan-TCP password if not given
   ansible.builtin.set_fact:
-    v2ray_config_trojan_password: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
-  when: v2ray_config_profile == "trojan" and not v2ray_config_trojan_password
+    v2ray_config_trojan_tcp_password: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+  when:
+    - not v2ray_config_trojan_tcp_password
+    - v2ray_config_profile == "trojan-tcp"
+
+- name: generate random Trojan-WebSocket password if not given
+  ansible.builtin.set_fact:
+    v2ray_config_trojan_wss_password: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+  when:
+    - not v2ray_config_trojan_wss_password
+    - v2ray_config_profile == "trojan-wss"

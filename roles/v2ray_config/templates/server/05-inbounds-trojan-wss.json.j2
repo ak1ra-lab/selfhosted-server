@@ -1,19 +1,18 @@
 {
     "inbounds": [
         {
-            "tag": "quic",
-            "listen": "{{ v2ray_config_quic_listen }}",
-            "port": {{ v2ray_config_quic_port }},
-            "protocol": "vmess",
+            "tag": "{{ v2ray_config_profile }}",
+            "port": {{ v2ray_config_trojan_wss_port }},
+            "protocol": "trojan",
             "settings": {
                 "clients": [
                     {
-                        "id": "{{ v2ray_config_inbound_client_id }}"
+                        "password": "{{ v2ray_config_trojan_wss_password }}"
                     }
                 ]
             },
             "streamSettings": {
-                "network": "quic",
+                "network": "ws",
                 "security": "tls",
                 "tlsSettings": {
                     "certificates": [
@@ -23,12 +22,11 @@
                         }
                     ]
                 },
-                "quicSettings": {
-                    "security": "{{ v2ray_config_quic_security }}",
-                    "key": "{{ v2ray_config_quic_key }}",
-                    "header": {
-                        "type": "{{ v2ray_config_quic_header_type }}"
-                    }
+                "wsSettings": {
+                    "headers": {
+                        "Host": "{{ v2ray_config_trojan_wss_host }}"
+                    },
+                    "path": "{{ v2ray_config_trojan_wss_path }}"
                 }
             },
             "sniffing": {

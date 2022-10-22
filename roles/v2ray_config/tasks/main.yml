@@ -55,7 +55,7 @@
     - restart v2ray service
   when: v2ray_config_type == "server"
 
-- name: template nginx server config when v2ray_config_profile is wss
+- name: template nginx server config when v2ray_config_profile is vmess-wss
   ansible.builtin.include_role:
     name: nginx_config
   vars:
@@ -63,9 +63,9 @@
     nginx_config_domain: "{{ v2ray_config_domain }}"
     nginx_config_server_name: "{{ v2ray_config_domain }}"
     nginx_config_server_type: proxy
-    nginx_config_location_uri: "{{ v2ray_config_wss_path }}"
-    nginx_config_proxy_upstream: "http://{{ v2ray_config_wss_listen }}:{{ v2ray_config_wss_port }}"
-  when: v2ray_config_profile == "wss"
+    nginx_config_location_uri: "{{ v2ray_config_vmess_wss_path }}"
+    nginx_config_proxy_upstream: "http://{{ v2ray_config_vmess_wss_listen }}:{{ v2ray_config_vmess_wss_port }}"
+  when: v2ray_config_profile == "vmess-wss"
 
 - name: ensure v2ray service is started and enabled
   ansible.builtin.service:

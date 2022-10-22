@@ -11,7 +11,7 @@
       # place your cf_token with Zone.DNS permissions
       token: "{{ cf_token }}"
     v2ray:
-      profile: wss
+      profile: vmess-wss
       uuid:
   roles:
     - role: common

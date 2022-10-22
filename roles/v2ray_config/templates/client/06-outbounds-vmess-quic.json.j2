@@ -1,13 +1,13 @@
 {
     "outbounds": [
         {
-            "tag": "wss",
+            "tag": "{{ v2ray_config_profile }}",
             "protocol": "vmess",
             "settings": {
                 "vnext": [
                     {
                         "address": "{{ ansible_host }}",
-                        "port": {{ v2ray_config_wss_tls_port }},
+                        "port": {{ v2ray_config_vmess_quic_port }},
                         "users": [
                             {
                                 "id": "{{ v2ray_config_inbound_client_id }}",
@@ -18,16 +18,17 @@
                 ]
             },
             "streamSettings": {
-                "network": "ws",
+                "network": "quic",
                 "security": "tls",
                 "tlsSettings": {
                     "allowInsecure": false
                 },
-                "wsSettings": {
-                    "headers": {
-                        "Host": "{{ v2ray_config_wss_host }}"
-                    },
-                    "path": "{{ v2ray_config_wss_path }}"
+                "quicSettings": {
+                    "security": "{{ v2ray_config_vmess_quic_security }}",
+                    "key": "{{ v2ray_config_vmess_quic_key }}",
+                    "header": {
+                        "type": "{{ v2ray_config_vmess_quic_header_type }}"
+                    }
                 }
             }
         },

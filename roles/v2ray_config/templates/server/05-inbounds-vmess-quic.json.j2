@@ -1,9 +1,8 @@
 {
     "inbounds": [
         {
-            "tag": "tcp",
-            "listen": "{{ v2ray_config_tcp_listen }}",
-            "port": {{ v2ray_config_tcp_port }},
+            "tag": "{{ v2ray_config_profile }}",
+            "port": {{ v2ray_config_vmess_quic_port }},
             "protocol": "vmess",
             "settings": {
                 "clients": [
@@ -13,7 +12,7 @@
                 ]
             },
             "streamSettings": {
-                "network": "tcp",
+                "network": "quic",
                 "security": "tls",
                 "tlsSettings": {
                     "certificates": [
@@ -22,6 +21,13 @@
                             "keyFile": "{{ v2ray_config_ssl_certificate_key }}"
                         }
                     ]
+                },
+                "quicSettings": {
+                    "security": "{{ v2ray_config_vmess_quic_security }}",
+                    "key": "{{ v2ray_config_vmess_quic_key }}",
+                    "header": {
+                        "type": "{{ v2ray_config_vmess_quic_header_type }}"
+                    }
                 }
             },
             "sniffing": {
