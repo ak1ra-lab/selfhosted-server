@@ -1,8 +1,8 @@
 
-# Ansible role `certbot`
+# Ansible Role `certbot`
 
 主要使用 dns plugin 来生成 wildcard cert,
-目前我的域名托管在 Cloudflare 上, 因此 certbot_dns_plugin 默认值为 cloudflare, 即 dns-cloudflare 插件.
+目前我的域名托管在 Cloudflare 上, 因此 `certbot_dns_plugin` 默认值为 `cloudflare`, 即安装和使用 `dns-cloudflare` 插件.
 
 ## tasks
 
@@ -21,9 +21,6 @@ $ certbot certonly \
     --domain='example.com,*.example.com' \
     --dns-cloudflare-propagation-seconds=30
 ```
-
-* TODO: 添加 rsync cron job 同步证书文件至其它节点
-    * 若给 ansible 节点间做 ssh 互信, 存在安全隐患
 
 ## vars
 

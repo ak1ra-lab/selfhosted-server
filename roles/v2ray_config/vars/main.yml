@@ -3,10 +3,6 @@
 # domain for WebSocket
 v2ray_config_domain: example.com
 
-# file permission
-v2ray_config_user: nobody
-v2ray_config_group: nogroup
-
 # file hierarchy inherited from gh:v2fly/fhs-install-v2ray
 v2ray_config_prefix: /usr/local
 v2ray_config_bin_dir: "{{ v2ray_config_prefix }}/bin"
