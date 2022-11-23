@@ -1,4 +1,12 @@
 ---
+- name: force apt use IPv4
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/99force-ipv4
+    content: Acquire::ForceIPv4 "true";
+    mode: "0644"
+    state: present
+  when: common_apt_force_ipv4 == 'true'
+
 - name: install the prerequisites
   ansible.builtin.apt:
     name: "{{ common_apt_prerequisites }}"
@@ -18,11 +26,3 @@
     name: "{{ common_apt_packages }}"
     update_cache: true
     state: present
-
-- name: force apt use IPv4
-  ansible.builtin.copy:
-    dest: /etc/apt/apt.conf.d/99force-ipv4
-    content: Acquire::ForceIPv4 "true";
-    mode: "0644"
-    state: present
-  when: common_apt_force_ipv4 == 'true'
