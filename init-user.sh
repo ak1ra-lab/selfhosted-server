@@ -54,37 +54,57 @@ function init_user() {
 }
 
 function add_ssh_key() {
-    # add user ssh_key
-    local user_home_dir=$(awk -F: '$1 ~ /^'$username'/ {print $(NF-1)}' /etc/passwd)
-    test -d $user_home_dir/.ssh || mkdir -p $user_home_dir/.ssh
-    curl -sL $ssh_public_key_url | tee -a $user_home_dir/.ssh/authorized_keys
+    local ssh_public_key_content="$*"
 
-    chown -R "${username}." $user_home_dir/.ssh
-    chmod 0700 $user_home_dir/.ssh
-    chmod 0600 $user_home_dir/.ssh/*
+    local user_perm=$(awk -F: '$1 ~ /^'$username'/ {print $3":"$4}' /etc/passwd)
+    local user_home_dir=$(awk -F: '$1 ~ /^'$username'/ {print $(NF-1)}' /etc/passwd)
+    local user_ssh_dir="$user_home_dir/.ssh"
+
+    test -d $user_ssh_dir || mkdir -p $user_ssh_dir
+    echo "$ssh_public_key_content" | tee -a $user_ssh_dir/authorized_keys
+
+    chown -R $user_perm $user_ssh_dir
+    find $user_ssh_dir -type d -exec chmod 700 "{}" \;
+    find $user_ssh_dir -type f -exec chmod 600 "{}" \;
 }
 
 function main() {
     # read required arguments
-    while read -p "Please ENTER your username: " username; do
+    while read -p "Please ENTER the username of the user you want to create: " username; do
         test -n "$username" && break
         echo "username can not be empty!"
     done
 
-    while read -p "Please ENTER your ssh_public_key_url or GitHub username: " ssh_public_key_url; do
-        test -n "$ssh_public_key_url" && break
-        echo "ssh_public_key_url can not be empty!"
-    done
+    local ssh_public_key_content=""
+    local openssh_format_regex='^(ssh-(rsa|ed25519)|ecdsa-sha2-nistp(256|384|521)|(sk-ecdsa-sha2-nistp256|sk-ssh-ed25519)@openssh\.com)'
+    while read -p "Please ENTER your ssh_public_key, Can be a GitHub username, OpenSSH format public key url or public key content: " ssh_public_key; do
+        # OpenSSH format public key content
+        if echo "$ssh_public_key" | grep -qE "$openssh_format_regex"; then
+            ssh_public_key_content="$ssh_public_key"
+            break
+        fi
 
-    if echo "$ssh_public_key_url" | grep -qE '^https?://'; then
-        ssh_public_key_url="$ssh_public_key_url"
-    else
-        ssh_public_key_url="https://github.com/${ssh_public_key_url}.keys"
-    fi
+        # GitHub username or public key url
+        local ssh_public_key_url=""
+        if echo "$ssh_public_key" | grep -qE '^https?://'; then
+            ssh_public_key_url="$ssh_public_key"
+        else
+            # arbitrary input, must be a valid GitHub username
+            ssh_public_key_url="https://github.com/${ssh_public_key}.keys"
+        fi
+
+        ssh_public_key_content="$(curl -sL $ssh_public_key_url)"
+        if echo "$ssh_public_key_content" | grep -qE "$openssh_format_regex"; then
+            break
+        else
+            echo "ssh_public_key_content format mismatch, please re-ENTER"
+            echo "ssh_public_key_content = $ssh_public_key_content"
+        fi
+    done
 
     apt_upgrade
     init_user
-    add_ssh_key
+    add_ssh_key "$ssh_public_key_content"
 }
 
 main
