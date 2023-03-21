@@ -5,7 +5,7 @@ if ! awk -F= '/^ID=/ {print $2}' /etc/os-release | grep -qE '(debian|ubuntu)'; t
     exit 1
 fi
 
-if [ `id -u` -ne 0 ]; then
+if [ $(id -u) -ne 0 ]; then
     echo "Please run this script as root or prefix with sudo"
     exit 2
 fi
@@ -24,14 +24,16 @@ function apt_upgrade() {
 }
 
 function init_user() {
+    local username="$1"
     # create sudo group
     if ! grep -q sudo /etc/group; then
         groupadd --system sudo
     fi
 
     # modify /etc/sudoers
-    sed -i 's%^#? *@includedir +/etc/sudoers\.d%@includedir /etc/sudoers.d%' /etc/sudoers
+    test -d /etc/sudoers.d || mkdir -p /etc/sudoers.d
     echo "%sudo ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/sudo
+    sed -i 's%^#? *@includedir +/etc/sudoers\.d%@includedir /etc/sudoers.d%' /etc/sudoers
 
     # create user
     if ! grep -qE '^'$username':' /etc/passwd; then
@@ -48,13 +50,14 @@ function init_user() {
     # set user password
     # password=$(openssl rand -base64 15)
     local password=$(dd if=/dev/urandom bs=3 count=5 2>/dev/null | base64)
-    echo "$username:$password" | tee $user_password_file \
-        | chpasswd --crypt-method SHA512
+    echo "$username:$password" | tee $user_password_file |
+        chpasswd --crypt-method SHA512
     echo "user_password_file saved at $user_password_file"
 }
 
 function add_ssh_key() {
-    local ssh_public_key_content="$*"
+    local username="$1"
+    local ssh_public_key_content="$2"
 
     local user_perm=$(awk -F: '$1 ~ /^'$username'/ {print $3":"$4}' /etc/passwd)
     local user_home_dir=$(awk -F: '$1 ~ /^'$username'/ {print $(NF-1)}' /etc/passwd)
@@ -103,8 +106,8 @@ function main() {
     done
 
     apt_upgrade
-    init_user
-    add_ssh_key "$ssh_public_key_content"
+    init_user "$username"
+    add_ssh_key "$username" "$ssh_public_key_content"
 }
 
 main
