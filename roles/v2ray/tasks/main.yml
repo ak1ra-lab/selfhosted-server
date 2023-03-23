@@ -28,7 +28,7 @@
       ansible.builtin.command:
         argv:
           - awk
-          - '/^{{ v2ray_asset_checksum_algo | upper }}=/ {print $2}'
+          - '/^{{ v2ray_asset_checksum_algo_prefix[v2ray_asset_checksum_algo] }}=/ {print $2}'
           - "{{ v2ray_asset_dir.path }}/v2ray.zip.dgst"
       register: v2ray_asset_dgst_content
       changed_when: false

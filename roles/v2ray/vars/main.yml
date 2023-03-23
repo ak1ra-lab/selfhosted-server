@@ -17,7 +17,14 @@ v2ray_api_url: "https://api.github.com/repos/{{ v2ray_repo }}/releases/{{ v2ray_
 v2ray_asset_name:
 v2ray_asset_url:
 v2ray_asset_checksum:
+# md5, sha1, sha256, sha512
 v2ray_asset_checksum_algo: sha512
+# algorithm name in .dgst file has changed to SHA2-* for sha2 checksum (eg. sha256, sha512)
+v2ray_asset_checksum_algo_prefix:
+  md5: MD5
+  sha1: SHA1
+  sha256: SHA2-256
+  sha512: SHA2-512
 
 # file hierarchy inherited from github.com/v2fly/fhs-install-v2ray
 v2ray_prefix: /usr/local
