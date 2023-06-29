@@ -1,4 +1,16 @@
 ---
+- name: backup original /etc/nginx
+  community.general.archive:
+    path: /etc/nginx
+    dest: "/etc/nginx.{{ ansible_date_time.iso8601_basic_short }}.tgz"
+    mode: "0644"
+
+- name: delete original /etc/nginx when template base config
+  community.general.file:
+    path: /etc/nginx
+    state: absent
+  when: nginx_config_template_base_config
+
 - name: ensure directories exists
   ansible.builtin.file:
     path: "{{ item }}"
@@ -11,6 +23,15 @@
     - /etc/nginx/conf.d
     - /var/log/nginx
     - /var/www
+
+- name: check /etc/nginx/dhparam.pem
+  ansible.builtin.stat:
+    path: /etc/nginx/dhparam.pem
+  register: stat_dhpram
+
+- name: create /etc/nginx/dhparam.pem for later use
+  ansible.builtin.command: openssl dhparam -out /etc/nginx/dhparam.pem 2048
+  when: not stat_dhpram.stat.exists
 
 - name: include_tasks if nginx_config_template_base_config set to true
   ansible.builtin.include_tasks: base.yml
