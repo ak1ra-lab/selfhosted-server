@@ -8,6 +8,7 @@ docker_repo_urls:
   tuna: https://mirrors.tuna.tsinghua.edu.cn/docker-ce
   hit: https://mirrors.hit.edu.cn/docker-ce
   sjtu: https://mirror.sjtu.edu.cn/docker-ce
+  opentuna: https://opentuna.cn/docker-ce
 
 docker_repo_url: "{{ docker_repo_urls[docker_repo_url_ref] }}"
 
@@ -22,4 +23,6 @@ docker_apt_repo: "deb {{ docker_repo_url }}/linux/debian {{ ansible_distribution
 
 # docker daemon settings
 docker_daemon_registry_mirrors: []
-  # - https://mirror.ccs.tencentyun.com
+  # - https://hub-mirror.c.163.com
+  # - https://mirror.baidubce.com
+  # - https://dockerproxy.com
