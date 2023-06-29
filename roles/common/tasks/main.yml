@@ -9,11 +9,11 @@
   ansible.builtin.include_tasks: debian.yml
   when: ansible_facts['os_family']|lower == 'debian'
 
-# (dynamic) include vars for task "adjust /etc/sysctl.conf"
-- name: include_vars for task 'adjust /etc/sysctl.conf'
+# (dynamic) include vars for task "update /etc/sysctl.conf"
+- name: include_vars for task 'update /etc/sysctl.conf'
   ansible.builtin.include_vars: sysctl.yml
 
-- name: adjust /etc/sysctl.conf
+- name: update /etc/sysctl.conf
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"

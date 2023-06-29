@@ -1,12 +1,12 @@
 # Debian 13 (trixie), not release yet
-deb {{ common_apt_repo_url }}/debian/ trixie main contrib non-free
-deb-src {{ common_apt_repo_url }}/debian/ trixie main contrib non-free
+deb {{ common_apt_repo_url }}/debian/ trixie main contrib non-free non-free-firmware
+# deb-src {{ common_apt_repo_url }}/debian/ trixie main contrib non-free non-free-firmware
 
-deb {{ common_apt_repo_url }}/debian/ trixie-updates main contrib non-free
-deb-src {{ common_apt_repo_url }}/debian/ trixie-updates main contrib non-free
+deb {{ common_apt_repo_url }}/debian/ trixie-updates main contrib non-free non-free-firmware
+# deb-src {{ common_apt_repo_url }}/debian/ trixie-updates main contrib non-free non-free-firmware
 
-deb {{ common_apt_repo_url }}/debian-security/ trixie-security main contrib non-free
-deb-src {{ common_apt_repo_url }}/debian-security/ trixie-security main contrib non-free
+deb {{ common_apt_repo_url }}/debian-security/ trixie-security main contrib non-free non-free-firmware
+# deb-src {{ common_apt_repo_url }}/debian-security/ trixie-security main contrib non-free non-free-firmware
 
-deb {{ common_apt_repo_url }}/debian/ trixie-backports main contrib non-free
-deb-src {{ common_apt_repo_url }}/debian/ trixie-backports main contrib non-free
+# deb {{ common_apt_repo_url }}/debian/ trixie-backports main contrib non-free non-free-firmware
+# deb-src {{ common_apt_repo_url }}/debian/ trixie-backports main contrib non-free non-free-firmware

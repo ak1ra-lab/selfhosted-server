@@ -1,12 +1,12 @@
-# Debian 12 (bookworm), not release yet
-deb {{ common_apt_repo_url }}/debian/ bookworm main contrib non-free
-deb-src {{ common_apt_repo_url }}/debian/ bookworm main contrib non-free
+# Debian 12 (bookworm)
+deb {{ common_apt_repo_url }}/debian/ bookworm main contrib non-free non-free-firmware
+# deb-src {{ common_apt_repo_url }}/debian/ bookworm main contrib non-free non-free-firmware
 
-deb {{ common_apt_repo_url }}/debian/ bookworm-updates main contrib non-free
-deb-src {{ common_apt_repo_url }}/debian/ bookworm-updates main contrib non-free
+deb {{ common_apt_repo_url }}/debian/ bookworm-updates main contrib non-free non-free-firmware
+# deb-src {{ common_apt_repo_url }}/debian/ bookworm-updates main contrib non-free non-free-firmware
 
-deb {{ common_apt_repo_url }}/debian-security/ bookworm-security main contrib non-free
-deb-src {{ common_apt_repo_url }}/debian-security/ bookworm-security main contrib non-free
+deb {{ common_apt_repo_url }}/debian-security/ bookworm-security main contrib non-free non-free-firmware
+# deb-src {{ common_apt_repo_url }}/debian-security/ bookworm-security main contrib non-free non-free-firmware
 
-deb {{ common_apt_repo_url }}/debian/ bookworm-backports main contrib non-free
-deb-src {{ common_apt_repo_url }}/debian/ bookworm-backports main contrib non-free
+# deb {{ common_apt_repo_url }}/debian/ bookworm-backports main contrib non-free non-free-firmware
+# deb-src {{ common_apt_repo_url }}/debian/ bookworm-backports main contrib non-free non-free-firmware
