@@ -1,5 +1,5 @@
 ---
-- name: install-v2ray playbook
+- name: install-docker playbook
   hosts: "{{ host | default('all') }}"
 
   roles:

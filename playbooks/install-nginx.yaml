@@ -1,5 +1,5 @@
 ---
-- name: init-server playbook
+- name: install-nginx playbook
   hosts: "{{ host | default('all') }}"
   vars:
     domain:
