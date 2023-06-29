@@ -1,0 +1,8 @@
+---
+- name: init-server playbook
+  hosts: "{{ host | default('all') }}"
+
+  roles:
+    - role: common
+      common_apt_repo_domain_ref: opentuna
+      common_apt_force_ipv4: true

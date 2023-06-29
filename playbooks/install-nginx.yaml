@@ -15,14 +15,6 @@
       common_apt_repo_domain_ref: opentuna
       common_apt_force_ipv4: true
 
-    - role: docker
-      docker_repo_url_ref: opentuna
-      docker_apt_repo_channel: stable
-      docker_daemon_registry_mirrors:
-        - https://hub-mirror.c.163.com
-        - https://mirror.baidubce.com
-        - https://dockerproxy.com
-
     # certificate for nginx static server
     - role: certbot
       certbot_domain: "{{ domain.root }}"
