@@ -1,0 +1,44 @@
+---
+- name: install-docker-certbot-nginx playbook
+  hosts: "{{ host | default('all') }}"
+  vars:
+    domain:
+      root: example.com
+      www: www.example.com
+    certbot:
+      plugin: cloudflare
+      # place your cf_token with Zone.DNS permissions
+      token: "{{ cf_token }}"
+
+  roles:
+    - role: common
+      common_apt_repo_domain_ref: opentuna
+      common_apt_force_ipv4: true
+
+    - role: docker
+      docker_repo_url_ref: opentuna
+      docker_apt_repo_channel: stable
+      docker_daemon_registry_mirrors:
+        - https://hub-mirror.c.163.com
+        - https://mirror.baidubce.com
+        - https://dockerproxy.com
+
+    # certificate for nginx static server
+    - role: certbot
+      certbot_domain: "{{ domain.root }}"
+      certbot_dns_plugin: "{{ certbot.plugin }}"
+      certbot_dns_cloudflare_api_token: "{{ certbot.token }}"
+      certbot_install: true
+      certbot_install_source: pypi
+      certbot_cert_chmod: false
+
+    - role: nginx
+      nginx_state: present
+      nginx_apt_packaging_team: nginx_org
+
+    # template base_config + server_config
+    - role: nginx_config
+      nginx_config_template_base_config: true
+      nginx_config_domain: "{{ domain.root }}"
+      nginx_config_server_name: "{{ domain.www }}"
+      nginx_config_server_type: static
