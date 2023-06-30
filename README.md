@@ -3,7 +3,13 @@
 
 ## Quick start
 
-参考 [playbook.example.yml](./playbook.example.yml) 使用 roles 目录下的 Ansible Roles.
+`git clone` 本仓库后将 roles 目录加入 `~/.ansible.cfg` 配置文件的 `roles_path` 项中, 假设代码被下载到 `~/code/github.com/ak1ra-lab/selfhosted-server` 目录, 则按这样添加,
+
+```
+roles_path=~/code/github.com/ak1ra-lab/selfhosted-server/roles:~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
+```
+
+之后请参考 [playbooks/](./playbooks/) 目录下的示例 Playbook 开始使用.
 
 ## Ansible roles
 
