@@ -6,7 +6,7 @@
     mode: "0644"
 
 - name: delete original /etc/nginx when template base config
-  community.general.file:
+  ansible.builtin.file:
     path: /etc/nginx
     state: absent
   when: nginx_config_template_base_config
