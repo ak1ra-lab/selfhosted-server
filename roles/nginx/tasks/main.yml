@@ -1,13 +1,8 @@
 ---
-# (dynamic) include vars for debian
-- name: include_vars if os_family is debian
-  ansible.builtin.include_vars: debian.yml
-  when: ansible_facts['os_family']|lower == 'debian'
-
 # tasks to apply changes
-- name: include_tasks if nginx_state is not absent and os_family is debian
+- name: include_tasks if nginx_state is present and os_family is debian
   ansible.builtin.include_tasks: debian-apply.yml
-  when: nginx_state != 'absent' and ansible_facts['os_family']|lower == 'debian'
+  when: nginx_state == 'present' and ansible_facts['os_family']|lower == 'debian'
 
 # tasks to revert most changes (not all, for security consideration)
 - name: include_tasks if nginx_state is absent and os_family is debian
