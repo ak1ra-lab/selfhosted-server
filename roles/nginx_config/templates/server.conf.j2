@@ -1,8 +1,9 @@
 server {
-    listen                  {{ nginx_config_listen_https }} ssl http2;
+    listen                  {{ nginx_config_listen_https }} ssl;
     {% if nginx_config_listen_ipv6 -%}
-    listen                  [::]:{{ nginx_config_listen_https }} ssl http2;
+    listen                  [::]:{{ nginx_config_listen_https }} ssl;
     {% endif -%}
+    http2                   on;
     server_name             {{ nginx_config_server_name }};
     root                    {{ nginx_config_root }};
 
@@ -25,7 +26,7 @@ server {
     # reverse proxy
     location{% if nginx_config_location_modifier %} {{ nginx_config_location_modifier }}{% endif %} {{ nginx_config_location_uri }} {
         proxy_pass {{ nginx_config_proxy_upstream }};
-        include    nginxconfig.io/proxy.conf;
+        # include    nginxconfig.io/proxy.conf;
     }
     {% endif -%}
 
@@ -50,6 +51,7 @@ server {
 server {
     listen      {{ nginx_config_listen_http }};
     listen      [::]:{{ nginx_config_listen_http }};
+    http2       on;
     server_name {{ nginx_config_server_name }};
 
     location / {
