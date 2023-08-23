@@ -1,7 +1,7 @@
 ---
-docker_repo_url_ref: default
-docker_repo_urls:
-  default: https://download.docker.com
+docker_apt_repo_ref: docker
+docker_apt_repo_urls:
+  docker: https://download.docker.com
   aliyun: https://mirrors.aliyun.com/docker-ce
   tencentcloud: https://mirrors.cloud.tencent.com/docker-ce
   ustc: https://mirrors.ustc.edu.cn/docker-ce
@@ -10,16 +10,16 @@ docker_repo_urls:
   sjtu: https://mirror.sjtu.edu.cn/docker-ce
   opentuna: https://opentuna.cn/docker-ce
 
-docker_repo_url: "{{ docker_repo_urls[docker_repo_url_ref] }}"
+docker_apt_repo_url: "{{ docker_apt_repo_urls[docker_apt_repo_ref] }}"
 
 # The channel to install from: nightly, test, stable
 docker_apt_repo_channel: stable
 
-docker_apt_key:
-  url: "{{ docker_repo_url }}/linux/debian/gpg"
-  id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+# update import apt key task due to depreciation of apt-key
+docker_apt_key: "{{ docker_repo_url }}/linux/debian/gpg"
+docker_apt_key_signed_by: /etc/apt/keyrings
 
-docker_apt_repo: "deb {{ docker_repo_url }}/linux/debian {{ ansible_distribution_release }} {{ docker_apt_repo_channel }}"
+docker_apt_repo: "deb [signed-by={{ docker_apt_key_signed_by }}/docker-ce.asc] {{ docker_repo_url }}/linux/debian {{ ansible_distribution_release }} {{ docker_apt_repo_channel }}"
 
 # docker daemon settings
 docker_daemon_registry_mirrors: []

@@ -1,22 +1,26 @@
 ---
+- name: ensure docker_apt_key_signed_by directory exists
+  ansible.builtin.file:
+    path: "{{ docker_apt_key_signed_by }}"
+    state: directory
+
 - name: import apt key
-  ansible.builtin.apt_key:
-    url: "{{ docker_apt_key.url }}"
-    id: "{{ docker_apt_key.id }}"
-    state: present
+  ansible.builtin.get_url:
+    url: "{{ docker_apt_key }}"
+    dest: "{{ docker_apt_key_signed_by }}/docker-ce.asc"
 
 - name: add apt repo
   ansible.builtin.apt_repository:
     repo: "{{ docker_apt_repo }}"
-    filename: docker
+    filename: docker-ce
     state: present
 
-- name: add apt_preferences (APT pinning)
+- name: add apt pinning
   ansible.builtin.copy:
     dest: /etc/apt/preferences.d/99docker
     content: |
       Package: docker-*
-      Pin: origin {{ docker_repo_url | urlsplit('hostname') }}
+      Pin: origin {{ docker_apt_repo_url | urlsplit('hostname') }}
       Pin-Priority: 900
     mode: "0644"
 
