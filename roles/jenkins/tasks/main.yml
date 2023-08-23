@@ -1,0 +1,40 @@
+---
+- name: ensure jenkins_apt_key_signed_by directory exists
+  ansible.builtin.file:
+    path: "{{ jenkins_apt_key_signed_by }}"
+    state: directory
+
+- name: import apt key
+  ansible.builtin.get_url:
+    url: "{{ jenkins_apt_key }}"
+    dest: "{{ jenkins_apt_key_signed_by }}/jenkins-io.asc"
+
+- name: add apt repo
+  ansible.builtin.apt_repository:
+    repo: "{{ jenkins_apt_repo }}"
+    filename: jenkins-io
+    state: present
+
+- name: add apt pinning
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/99jenkins
+    content: |
+      Package: jenkins
+      Pin: origin pkg.jenkins.io
+      Pin-Priority: 900
+    mode: "0644"
+
+- name: install jenkins packages
+  ansible.builtin.apt:
+    name:
+      - fontconfig
+      - openjdk-17-jre
+      - jenkins
+    update_cache: true
+    state: present
+
+- name: start and enable jenkins.service
+  ansible.builtin.service:
+    name: jenkins
+    state: stopped
+    enabled: false
