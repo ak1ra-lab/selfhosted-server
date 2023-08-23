@@ -8,3 +8,43 @@ nginx_config_template_base_config: false
 
 # configure whether to template a server.conf
 nginx_config_template_server_config: true
+
+# domain
+nginx_config_domain: example.com
+
+# server_name
+nginx_config_server_name: www.example.com
+
+# listen port
+nginx_config_listen_http: 80
+nginx_config_listen_https: 443
+nginx_config_listen_ipv6: true
+
+# root
+nginx_config_root: "/var/www/{{ nginx_config_server_name }}/public"
+
+# ssl_certificate file hierarchy inherited from certbot
+nginx_config_ssl_dir: /etc/letsencrypt/live
+nginx_config_ssl_certificate: "{{ nginx_config_ssl_dir }}/{{ nginx_config_domain }}/fullchain.pem"
+nginx_config_ssl_certificate_key: "{{ nginx_config_ssl_dir }}/{{ nginx_config_domain }}/privkey.pem"
+nginx_config_ssl_trusted_certificate: "{{ nginx_config_ssl_dir }}/{{ nginx_config_domain }}/chain.pem"
+
+# static, proxy, php, ...
+nginx_config_server_type: static
+
+# modifier: [ = | ~ | ~* | ^~ ]
+nginx_config_location_modifier:
+
+# uri can be uri or @name
+nginx_config_location_uri: /
+
+# static site
+# try_files file ... =code;
+nginx_config_static_fallback: =404
+
+# reverse proxy
+nginx_config_proxy_upstream: http://127.0.0.1:8080/
+
+# php-fpm site
+nginx_config_php_index: /index.php
+nginx_config_php_fastcgi: unix:/run/php/php7.4-fpm.sock

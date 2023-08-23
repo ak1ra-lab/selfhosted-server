@@ -2,14 +2,28 @@
 - name: backup original /etc/nginx
   community.general.archive:
     path: /etc/nginx
-    dest: "/etc/nginx.{{ ansible_date_time.iso8601_basic_short }}.tgz"
+    dest: "/etc/nginx.{{ ansible_date_time.date }}.{{ ansible_date_time.epoch }}.tgz"
     mode: "0644"
+  when: nginx_config_template_base_config
 
 - name: delete original /etc/nginx when template base config
   ansible.builtin.file:
     path: /etc/nginx
     state: absent
   when: nginx_config_template_base_config
+
+- name: ensure nginx_config_group exists
+  ansible.builtin.group:
+    name: "{{ nginx_config_group }}"
+    system: true
+    state: present
+
+- name: ensure nginx_config_user exists
+  ansible.builtin.user:
+    name: "{{ nginx_config_user }}"
+    group: "{{ nginx_config_group }}"
+    system: true
+    state: present
 
 - name: ensure directories exists
   ansible.builtin.file:
@@ -33,14 +47,10 @@
   ansible.builtin.command: openssl dhparam -out /etc/nginx/dhparam.pem 2048
   when: not stat_dhpram.stat.exists
 
-- name: include_tasks if nginx_config_template_base_config set to true
+- name: include_tasks if nginx_config_template_base_config
   ansible.builtin.include_tasks: base.yml
   when: nginx_config_template_base_config
 
-- name: include_vars if nginx_config_template_server_config set to true
-  ansible.builtin.include_vars: server.yml
-  when: nginx_config_template_server_config
-
-- name: include_tasks if nginx_config_template_server_config set to true
+- name: include_tasks if nginx_config_template_server_config
   ansible.builtin.include_tasks: server.yml
   when: nginx_config_template_server_config
