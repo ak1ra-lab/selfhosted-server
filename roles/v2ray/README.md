@@ -6,7 +6,7 @@
 ## tasks
 
 > 这个 role 最开始是复制 [v2fly/fhs-install-v2ray](https://github.com/v2fly/fhs-install-v2ray) 的中的 install-release.sh 到系统中然后执行,
-> 后来觉得这样不够 Ansible style, 于是参照脚本内容分解成了多个 tasks, 考虑有用到这个脚本的可能, 因此仍保留复制这个脚本到系统中的 task.
+> 后来觉得这样不够 Ansible style, 于是参照脚本内容分解成了多个 tasks, ~~考虑有用到这个脚本的可能, 因此仍保留复制这个脚本到系统中的 task.~~
 
 > 注意: 虽然可以下载安装 v2fly/v2ray-core 中所有的 Releases, 但是我不确定是否所有的目标系统都遵循 FHS, 因此这个 role 仅在 Debian 中测试过.
 
