@@ -1,6 +1,6 @@
 ---
 certbot_install: true
-certbot_install_source: pypi
+certbot_install_source: apt
 
 # https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins
 certbot_dns_plugin: cloudflare
