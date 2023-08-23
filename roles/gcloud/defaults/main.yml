@@ -1,0 +1,5 @@
+---
+gcloud_apt_key: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+gcloud_apt_key_signed_by: /etc/apt/keyrings
+
+gcloud_apt_repo: "deb [signed-by={{ gcloud_apt_key_signed_by }}/gcloud.asc] https://packages.cloud.google.com/apt cloud-sdk main"
