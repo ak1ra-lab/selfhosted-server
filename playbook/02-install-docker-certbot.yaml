@@ -15,7 +15,7 @@
       common_apt_force_ipv4: true
 
     - role: docker
-      docker_repo_url_ref: opentuna
+      docker_apt_repo_ref: opentuna
       docker_apt_repo_channel: stable
       docker_daemon_registry_mirrors:
         - https://hub-mirror.c.163.com
@@ -28,5 +28,5 @@
       certbot_dns_plugin: "{{ certbot.plugin }}"
       certbot_dns_cloudflare_api_token: "{{ certbot.token }}"
       certbot_install: true
-      certbot_install_source: pypi
+      certbot_install_source: apt
       certbot_cert_chmod: false

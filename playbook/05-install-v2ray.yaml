@@ -21,12 +21,6 @@
       common_apt_force_ipv4: true
 
     - role: docker
-      docker_repo_url_ref: default
-      docker_apt_repo_channel: stable
-      docker_daemon_registry_mirrors: []
-        # - https://hub-mirror.c.163.com
-        # - https://mirror.baidubce.com
-        # - https://dockerproxy.com
 
     # certificate for nginx static server
     - role: certbot
@@ -34,7 +28,7 @@
       certbot_dns_plugin: "{{ certbot.plugin }}"
       certbot_dns_cloudflare_api_token: "{{ certbot.token }}"
       certbot_install: true
-      certbot_install_source: pypi
+      certbot_install_source: apt
       certbot_cert_chmod: false
 
     # certificate for v2ray vmess-wss profile
@@ -47,8 +41,7 @@
       certbot_cert_chmod: true
 
     - role: nginx
-      nginx_state: present
-      nginx_apt_packaging_team: nginx_org
+      nginx_apt_repo: nginx_org
 
     # template base_config + server_config
     - role: nginx_config
