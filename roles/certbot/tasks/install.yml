@@ -4,6 +4,7 @@
     name:
       - "certbot"
       - "python3-certbot-dns-{{ certbot_dns_plugin }}"
+    update_cache: true
     state: present
   when: ansible_facts['os_family']|lower == 'debian' and certbot_install_source == "apt"
 

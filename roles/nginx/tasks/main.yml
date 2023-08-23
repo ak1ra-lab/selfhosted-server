@@ -33,4 +33,5 @@
 - name: install nginx package
   ansible.builtin.apt:
     name: "{{ nginx_apt_repo_spec[nginx_apt_repo].apt_packages }}"
+    update_cache: true
     state: present
