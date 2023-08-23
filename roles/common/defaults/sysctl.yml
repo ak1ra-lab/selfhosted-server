@@ -1,5 +1,5 @@
 ---
-common_sysctl_conf:
+common_custom_sysctl_conf:
   # ref: https://www.kernel.org/doc/html/latest/admin-guide/sysctl/net.html
   # Low latency busy poll timeout for socket reads. (needs CONFIG_NET_RX_BUSY_POLL)
   - name: net.core.busy_read
@@ -41,10 +41,6 @@ common_sysctl_conf:
   # default: [4K, 16K, 64K ~ 4MB], max does not override net.core.wmem_max
   - name: net.ipv4.tcp_wmem
     value: 4096 16384 4194304
-
-  # Forward Packets between interfaces, default is 0 (disabled)
-  - name: net.ipv4.ip_forward
-    value: "1"
 
   # Enable TCP Fast Open (RFC7413) to send and accept data in the opening SYN packet.
   # default: 0x1 (client), to enable both client and server support, set to 0x3.

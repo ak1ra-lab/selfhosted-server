@@ -1,9 +1,4 @@
 ---
-# (dynamic) include vars for debian
-- name: include_vars if os_family is debian
-  ansible.builtin.include_vars: debian.yml
-  when: ansible_facts['os_family']|lower == 'debian'
-
 # tasks to apply changes
 - name: include_tasks if os_family is debian
   ansible.builtin.include_tasks: debian.yml
@@ -12,6 +7,7 @@
 # (dynamic) include vars for task "update /etc/sysctl.conf"
 - name: include_vars for task 'update /etc/sysctl.conf'
   ansible.builtin.include_vars: sysctl.yml
+  when: common_set_custom_sysctl_conf
 
 - name: update /etc/sysctl.conf
   ansible.posix.sysctl:
@@ -19,7 +15,16 @@
     value: "{{ item.value }}"
     state: present
     ignoreerrors: true
-  loop: "{{ common_sysctl_conf }}"
+  loop: "{{ common_custom_sysctl_conf }}"
+  when: common_set_custom_sysctl_conf
+
+- name: enable net.ipv4.ip_forward
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+    ignoreerrors: true
+  when: common_set_ip_forward
 
 - name: load tcp_bbr module
   ansible.builtin.lineinfile:
@@ -27,7 +32,7 @@
     regexp: "^#? ?tcp_bbr$"
     line: "tcp_bbr"
     state: present
-  when: ansible_kernel >= '4.9.0'
+  when: ansible_kernel >= '4.9.0' and common_set_tcp_bbr
 
 - name: enable tcp_bbr
   ansible.posix.sysctl:
@@ -36,10 +41,10 @@
     state: present
   loop:
     - name: net.core.default_qdisc
-      value: fq      # default 'pfifo_fast'
+      value: fq # default 'pfifo_fast'
     - name: net.ipv4.tcp_congestion_control
       value: bbr
-  when: ansible_kernel >= '4.9.0'
+  when: ansible_kernel >= '4.9.0' and common_set_tcp_bbr
 
 - name: disable certain /etc/ssh/sshd_config entries for security reason
   ansible.builtin.lineinfile:
@@ -56,6 +61,10 @@
     ## Specifies whether TCP forwarding is permitted. The default is yes.
     - { regexp: "^#?AllowTcpForwarding", line: "AllowTcpForwarding no" }
     ## Specifies whether forwarding Unix domain sockets is permitted. The default is yes.
-    - { regexp: "^#?AllowStreamLocalForwarding", line: "AllowStreamLocalForwarding no" }
+    - {
+        regexp: "^#?AllowStreamLocalForwarding",
+        line: "AllowStreamLocalForwarding no",
+      }
     ## Specifies whether remote hosts are allowed to connect to ports forwarded for the client. The default is no.
     - { regexp: "^#?GatewayPorts", line: "GatewayPorts no" }
+  when: common_set_custom_sshd_config
