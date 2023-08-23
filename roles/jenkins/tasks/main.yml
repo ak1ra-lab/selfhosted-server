@@ -32,9 +32,3 @@
       - jenkins
     update_cache: true
     state: present
-
-- name: start and enable jenkins.service
-  ansible.builtin.service:
-    name: jenkins
-    state: stopped
-    enabled: false
