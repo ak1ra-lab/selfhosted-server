@@ -16,10 +16,10 @@ docker_apt_repo_url: "{{ docker_apt_repo_urls[docker_apt_repo_ref] }}"
 docker_apt_repo_channel: stable
 
 # update import apt key task due to depreciation of apt-key
-docker_apt_key: "{{ docker_repo_url }}/linux/debian/gpg"
+docker_apt_key: "{{ docker_apt_repo_url }}/linux/debian/gpg"
 docker_apt_key_signed_by: /etc/apt/keyrings
 
-docker_apt_repo: "deb [signed-by={{ docker_apt_key_signed_by }}/docker-ce.asc] {{ docker_repo_url }}/linux/debian {{ ansible_distribution_release }} {{ docker_apt_repo_channel }}"
+docker_apt_repo: "deb [signed-by={{ docker_apt_key_signed_by }}/docker-ce.asc] {{ docker_apt_repo_url }}/linux/debian {{ ansible_distribution_release }} {{ docker_apt_repo_channel }}"
 
 # docker daemon settings
 docker_daemon_registry_mirrors: []
