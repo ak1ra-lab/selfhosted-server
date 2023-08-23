@@ -8,54 +8,46 @@ nginx_apt_prerequisites:
   - gnupg2
   - lsb-release
 
-# 此项设置为 absent 可 revert 部分修改
-# 如清理 apt key, apt repo, apt pinning 和所安装的 package
-# 清理 nginx_apt_prerequisites 可能会破坏系统状态, 暂且不配置
-# 如果已经执行过 roles/nginx 想切换另一个 packaging_team, 请先执行 revert ?
-nginx_state: present
-
-# nginx_apt_packaging_team 可以是: debian, nginx_org, xtom_com
+# nginx_apt_repo 可以是: debian, nginx_org, xtom_com
 # 此项设置为 debian 时, 表示不添加额外 apt repo 直接从官方源安装
-nginx_apt_packaging_team: debian
+# nginx 开发模式分为 stable 和 mainline 两个 release channel, 其中,
+# debian 官方源只有 stable channel, xtom_com 只有 mainline channel
+# nginx_org 同时提供了 stable 和 mainline channel, 不过这里只使用其 stable channel
+nginx_apt_repo: debian
 
-# debian 官方源只有 stable, xtom_com 只有 mainline
-# nginx_org 同时提供 stable, mainline channel
-nginx_apt_release_channel: stable
+# see: https://stackoverflow.com/a/72548342
+nginx_apt_repo_signed_by: /etc/apt/keyrings
 
 # 如下为一些不常修改的静态配置
-nginx_apt_release_channels:
+nginx_apt_repo_spec:
   debian:
-    packages:
+    apt_packages:
       - nginx
       - nginx-common
 
   # https://nginx.org/en/linux_packages.html#Debian
   nginx_org:
-    apt_key:
-      url: https://nginx.org/keys/nginx_signing.key
-      id: 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
-    stable: "deb https://nginx.org/packages/debian {{ ansible_distribution_release }} nginx"
-    mainline: "deb https://nginx.org/packages/mainline/debian {{ ansible_distribution_release }} nginx"
-    pinning: |
+    apt_key: https://nginx.org/keys/nginx_signing.key
+    # stable: https://nginx.org/packages/debian/
+    # mainline: https://nginx.org/packages/mainline/debian/
+    apt_repo: "deb [signed-by={{ nginx_apt_repo_signed_by }}/{{ nginx_apt_repo }}.asc] https://nginx.org/packages/debian {{ ansible_distribution_release }} nginx"
+    apt_pinning: |
       Package: nginx
       Pin: origin nginx.org
       Pin-Priority: 900
-    packages:
+    apt_packages:
       # 这个 repo 中的 nginx 没有拆开, 只有一个名为 nginx 的 package
       - nginx
 
   # https://n.wtf/install.html
   xtom_com:
-    apt_key:
-      url: https://n.wtf/public.key
-      id: 1604614B4A6C2B73654BB8B6C5215CAF0055522F
-    stable:
-    mainline: "deb https://mirror-cdn.xtom.com/sb/nginx/ {{ ansible_distribution_release }} main"
-    pinning: |
+    apt_key: https://n.wtf/public.key
+    apt_repo: "deb [signed-by={{ nginx_apt_repo_signed_by }}/{{ nginx_apt_repo }}.asc] https://mirror-cdn.xtom.com/sb/nginx/ {{ ansible_distribution_release }} main"
+    apt_pinning: |
       Package: nginx-*
       Pin: origin mirror-cdn.xtom.com
       Pin-Priority: 900
-    packages:
+    apt_packages:
       # 这个 repo 中的 nginx 有被拆开为多个 package, 其中 nginx-common 为一些配置文件
       - nginx
       - nginx-common

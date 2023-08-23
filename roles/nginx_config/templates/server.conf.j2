@@ -3,7 +3,7 @@ server {
     {% if nginx_config_listen_ipv6 -%}
     listen                  [::]:{{ nginx_config_listen_https }} ssl;
     {% endif -%}
-    http2                   on;
+    # http2                   on;
     server_name             {{ nginx_config_server_name }};
     root                    {{ nginx_config_root }};
 
@@ -51,7 +51,7 @@ server {
 server {
     listen      {{ nginx_config_listen_http }};
     listen      [::]:{{ nginx_config_listen_http }};
-    http2       on;
+    # http2       on;
     server_name {{ nginx_config_server_name }};
 
     location / {
