@@ -1,13 +1,13 @@
 ---
 - name: ensure gcloud_apt_key_signed_by directory exists
   ansible.builtin.file:
-    path: "{{ gcloud_apt_key_signed_by }}"
+    path: "{{ gcloud_apt_key_signed_by | dirname }}"
     state: directory
 
 - name: import apt key
   ansible.builtin.get_url:
     url: "{{ gcloud_apt_key }}"
-    dest: "{{ gcloud_apt_key_signed_by }}/gcloud.asc"
+    dest: "{{ gcloud_apt_key_signed_by }}"
 
 - name: add apt repo
   ansible.builtin.apt_repository:

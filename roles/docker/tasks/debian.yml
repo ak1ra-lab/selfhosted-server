@@ -1,13 +1,13 @@
 ---
 - name: ensure docker_apt_key_signed_by directory exists
   ansible.builtin.file:
-    path: "{{ docker_apt_key_signed_by }}"
+    path: "{{ docker_apt_key_signed_by | dirname }}"
     state: directory
 
 - name: import apt key
   ansible.builtin.get_url:
     url: "{{ docker_apt_key }}"
-    dest: "{{ docker_apt_key_signed_by }}/docker-ce.asc"
+    dest: "{{ docker_apt_key_signed_by }}"
 
 - name: add apt repo
   ansible.builtin.apt_repository:

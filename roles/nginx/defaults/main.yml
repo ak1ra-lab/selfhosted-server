@@ -16,7 +16,7 @@ nginx_apt_prerequisites:
 nginx_apt_repo: debian
 
 # see: https://stackoverflow.com/a/72548342
-nginx_apt_repo_signed_by: /etc/apt/keyrings
+nginx_apt_repo_signed_by_dir: /etc/apt/keyrings
 
 # 如下为一些不常修改的静态配置
 nginx_apt_repo_spec:
@@ -30,7 +30,7 @@ nginx_apt_repo_spec:
     apt_key: https://nginx.org/keys/nginx_signing.key
     # stable: https://nginx.org/packages/debian/
     # mainline: https://nginx.org/packages/mainline/debian/
-    apt_repo: "deb [signed-by={{ nginx_apt_repo_signed_by }}/{{ nginx_apt_repo }}.asc] https://nginx.org/packages/debian {{ ansible_distribution_release }} nginx"
+    apt_repo: "deb [signed-by={{ nginx_apt_repo_signed_by_dir }}/{{ nginx_apt_repo }}.asc] https://nginx.org/packages/debian {{ ansible_distribution_release }} nginx"
     apt_pinning: |
       Package: nginx
       Pin: origin nginx.org
@@ -42,7 +42,7 @@ nginx_apt_repo_spec:
   # https://n.wtf/install.html
   xtom_com:
     apt_key: https://n.wtf/public.key
-    apt_repo: "deb [signed-by={{ nginx_apt_repo_signed_by }}/{{ nginx_apt_repo }}.asc] https://mirror-cdn.xtom.com/sb/nginx/ {{ ansible_distribution_release }} main"
+    apt_repo: "deb [signed-by={{ nginx_apt_repo_signed_by_dir }}/{{ nginx_apt_repo }}.asc] https://mirror-cdn.xtom.com/sb/nginx/ {{ ansible_distribution_release }} main"
     apt_pinning: |
       Package: nginx-*
       Pin: origin mirror-cdn.xtom.com

@@ -5,15 +5,15 @@
     update_cache: true
     state: present
 
-- name: ensure nginx_apt_repo_signed_by directory exists
+- name: ensure nginx_apt_repo_signed_by_dir exists
   ansible.builtin.file:
-    path: "{{ nginx_apt_repo_signed_by }}"
+    path: "{{ nginx_apt_repo_signed_by_dir }}"
     state: directory
 
 - name: import apt key
   ansible.builtin.get_url:
     url: "{{ nginx_apt_repo_spec[nginx_apt_repo].apt_key }}"
-    dest: "{{ nginx_apt_repo_signed_by }}/{{ nginx_apt_repo }}.asc"
+    dest: "{{ nginx_apt_repo_signed_by_dir }}/{{ nginx_apt_repo }}.asc"
   when: nginx_apt_repo in ['nginx_org', 'xtom_com']
 
 - name: add apt repo

@@ -1,13 +1,13 @@
 ---
 - name: ensure jenkins_apt_key_signed_by directory exists
   ansible.builtin.file:
-    path: "{{ jenkins_apt_key_signed_by }}"
+    path: "{{ jenkins_apt_key_signed_by | dirname }}"
     state: directory
 
 - name: import apt key
   ansible.builtin.get_url:
     url: "{{ jenkins_apt_key }}"
-    dest: "{{ jenkins_apt_key_signed_by }}/jenkins-io.asc"
+    dest: "{{ jenkins_apt_key_signed_by }}"
 
 - name: add apt repo
   ansible.builtin.apt_repository:
