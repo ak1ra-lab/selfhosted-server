@@ -23,6 +23,8 @@ roles_path=~/code/github.com/ak1ra-lab/selfhosted-server/roles:~/.ansible/roles:
 | [rsstt](roles/rsstt/) | 通过 Python pip 安装 [RSS-to-Telegram-Bot](https://github.com/Rongronggg9/RSS-to-Telegram-Bot) 并为其配置 telegraph_token |
 | [v2ray](roles/v2ray/) | 通过 GitHub release 安装 [v2ray](https://github.com/v2fly/v2ray-core/releases) |
 | [v2ray_config](roles/v2ray_config/) | 提供几种常用的 v2ray 配置文件模板, 如 Trojan-TCP, VMess-WSS 等, 具体参考 roles [README.md](roles/v2ray_config/README.md) |
+| [jenkins](roles/jenkins/) | 配置 `https://pkg.jenkins.io/debian-stable` 为 apt repo 安装 Jenkins |
+| [gcloud](roles/gcloud/) | 配置 `https://packages.cloud.google.com/apt` 为 apt repo 安装 `google-cloud-cli` |
 
 ## Scripts
 
