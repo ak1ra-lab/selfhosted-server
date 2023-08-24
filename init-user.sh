@@ -10,7 +10,7 @@ if [ $(id -u) -ne 0 ]; then
     exit 2
 fi
 
-function apt_upgrade() {
+function apt_install() {
     apt-get update
     apt-get upgrade -y
     apt-get install -y \
@@ -21,6 +21,18 @@ function apt_upgrade() {
         gnupg2 \
         lsb-release \
         sudo
+}
+
+function apt_install_extra() {
+    local packages="https://raw.githubusercontent.com/ak1ra-lab/selfhosted-server/master/packages.txt"
+
+    apt-get update
+    apt-get upgrade -y
+    if [ -f packages.txt ]; then
+        apt-get install -y $(cat packages.txt)
+    else
+        apt-get install -y $(curl -s $packages)
+    fi
 }
 
 function init_user() {
@@ -105,9 +117,11 @@ function main() {
         fi
     done
 
-    apt_upgrade
+    apt_install
+    apt_install_extra
+
     init_user "$username"
     add_ssh_key "$username" "$ssh_public_key_content"
 }
 
-main
+main $@
