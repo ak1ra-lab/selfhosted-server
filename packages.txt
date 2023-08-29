@@ -1,9 +1,5 @@
+apt-listchanges
 apt-transport-https
-ca-certificates
-curl
-debian-archive-keyring
-gnupg2
-lsb-release
 bash-completion
 bc
 binutils
@@ -11,9 +7,11 @@ bsdextrautils
 bsd-mailx
 build-essential
 bzip2
+ca-certificates
 cpio
 cron
 curl
+debian-archive-keyring
 dnsutils
 dos2unix
 file
@@ -35,8 +33,8 @@ jq
 less
 locales
 logrotate
+lsb-release
 ncdu
-ntp
 p7zip
 p7zip-full
 parallel
@@ -51,9 +49,11 @@ rsync
 screen
 stow
 sudo
+systemd-timesyncd
 telnet
 tmux
 tree
+unattended-upgrades
 unzip
 vim
 wget
