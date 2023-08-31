@@ -1,5 +1,5 @@
 ---
-- name: install-docker-certbot-nginx playbook
+- name: install-jenkins playbook
   hosts: "{{ host | default('all') }}"
   vars:
     domain:
@@ -12,19 +12,12 @@
 
   roles:
     - role: common
-      common_apt_repo_domain_ref: opentuna
-      common_apt_force_ipv4: true
 
     - role: docker
-      docker_repo_url_ref: opentuna
-      docker_apt_repo_channel: stable
-      docker_daemon_registry_mirrors:
-        - https://hub-mirror.c.163.com
-        - https://mirror.baidubce.com
-        - https://dockerproxy.com
 
     # certificate for nginx static server
     - role: certbot
+      certbot_wildcard: true
       certbot_domain: "{{ domain.root }}"
       certbot_dns_plugin: "{{ certbot.plugin }}"
       certbot_dns_cloudflare_api_token: "{{ certbot.token }}"
@@ -33,7 +26,7 @@
       certbot_cert_chmod: false
 
     - role: nginx
-      nginx_apt_repo: nginx_org
+      nginx_apt_repo: debian
 
     # template base_config + server_config
     - role: nginx_config
@@ -42,3 +35,8 @@
       nginx_config_domain: "{{ domain.root }}"
       nginx_config_server_name: "{{ domain.www }}"
       nginx_config_server_type: static
+
+    - role: gcloud
+
+    - role: jenkins
+  

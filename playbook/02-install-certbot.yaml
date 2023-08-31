@@ -1,5 +1,5 @@
 ---
-- name: install-docker-certbot playbook
+- name: install-certbot playbook
   hosts: "{{ host | default('all') }}"
   vars:
     domain:
@@ -11,19 +11,10 @@
 
   roles:
     - role: common
-      common_apt_repo_domain_ref: opentuna
-      common_apt_force_ipv4: true
-
-    - role: docker
-      docker_apt_repo_ref: opentuna
-      docker_apt_repo_channel: stable
-      docker_daemon_registry_mirrors:
-        - https://hub-mirror.c.163.com
-        - https://mirror.baidubce.com
-        - https://dockerproxy.com
 
     # certificate for nginx static server
     - role: certbot
+      certbot_wildcard: true
       certbot_domain: "{{ domain.root }}"
       certbot_dns_plugin: "{{ certbot.plugin }}"
       certbot_dns_cloudflare_api_token: "{{ certbot.token }}"

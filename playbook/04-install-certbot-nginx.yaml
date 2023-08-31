@@ -12,11 +12,10 @@
 
   roles:
     - role: common
-      common_apt_repo_domain_ref: opentuna
-      common_apt_force_ipv4: true
 
     # certificate for nginx static server
     - role: certbot
+      certbot_wildcard: true
       certbot_domain: "{{ domain.root }}"
       certbot_dns_plugin: "{{ certbot.plugin }}"
       certbot_dns_cloudflare_api_token: "{{ certbot.token }}"
@@ -25,7 +24,7 @@
       certbot_cert_chmod: false
 
     - role: nginx
-      nginx_apt_repo: nginx_org
+      nginx_apt_repo: debian
 
     # template base_config + server_config
     - role: nginx_config
