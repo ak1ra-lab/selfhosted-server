@@ -72,7 +72,6 @@ common_apt_packages:
   - locales
   - logrotate
   - ncdu
-  - ntp
   - p7zip
   - p7zip-full
   - parallel
