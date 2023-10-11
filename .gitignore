@@ -1,2 +1,3 @@
 .vagrant/
 examples/
+playbook/credentials.yaml
