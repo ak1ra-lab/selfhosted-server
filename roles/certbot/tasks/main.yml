@@ -18,12 +18,7 @@
 
 - name: set certbot_domain_command_arg
   ansible.builtin.set_fact:
-    certbot_domain_command_arg: >-
-      {{
-        [certbot_domain] +
-        (certbot_wildcard | ansible.builtin.ternary(["*." ~ certbot_domain], [])) +
-        certbot_domain_extra | join(",")
-      }}
+    certbot_domain_command_arg: "{{ [certbot_domain] + (certbot_wildcard | ansible.builtin.ternary(['*.' ~ certbot_domain], [])) + (certbot_domain_extra | default([])) | join(',') }}"
 
 - name: execute certbot with dns plugin options
   ansible.builtin.command:
