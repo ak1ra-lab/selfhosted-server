@@ -1,12 +1,13 @@
 ---
+# ansible-playbook 05-install-v2ray.yaml -e @credentials.yaml --ask-vault-pass --become
 - name: install-v2ray playbook
   hosts: "{{ host | default('all') }}"
   vars:
     domain:
-      root: example.com
-      www: www.example.com
+      root: ak1ra.xyz
+      www: www.ak1ra.xyz
       # This will determine the location of v2ray_config_ssl_dir
-      v2ray: srv.example.com
+      v2ray: srv.ak1ra.xyz
     certbot:
       plugin: cloudflare
       # place your cf_token with Zone.DNS permissions

@@ -1,9 +1,10 @@
 ---
+# ansible-playbook 02-install-certbot.yaml -e @credentials.yaml --ask-vault-pass --become
 - name: install-certbot playbook
   hosts: "{{ host | default('all') }}"
   vars:
     domain:
-      root: example.com
+      root: ak1ra.xyz
     certbot:
       plugin: cloudflare
       # place your cf_token with Zone.DNS permissions
