@@ -16,9 +16,9 @@
     dest: "{{ certbot_credentials }}"
     mode: "0600"
 
-- name: set certbot_domain_command_arg
-  ansible.builtin.set_fact:
-    certbot_domain_command_arg: "{{ [certbot_domain] + (certbot_wildcard | ansible.builtin.ternary(['*.' ~ certbot_domain], [])) + (certbot_domain_extra | default([])) | join(',') }}"
+# - name: set certbot_domain_command_arg
+#   ansible.builtin.set_fact:
+#     certbot_domain_command_arg: "{{ [certbot_domain] + (certbot_wildcard | ansible.builtin.ternary(['*.' ~ certbot_domain], [])) + (certbot_domain_extra | default([])) | join(',') }}"
 
 - name: execute certbot with dns plugin options
   ansible.builtin.command:
@@ -28,7 +28,7 @@
       - --non-interactive
       - --agree-tos
       - "--email={{ certbot_email }}"
-      - "--domain={{ certbot_domain_command_arg }}"
+      - "--domain={{ certbot_domain }},*.{{ certbot_domain }}"
       - "--dns-cloudflare"
       - "--dns-{{ certbot_dns_plugin }}-credentials={{ certbot_credentials }}"
       - "--dns-{{ certbot_dns_plugin }}-propagation-seconds={{ certbot_dns_propagation_seconds }}"
