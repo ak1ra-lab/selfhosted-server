@@ -29,7 +29,7 @@ $ certbot certonly \
 | `certbot_install_source` | 从何处安装 certbot | `pypi` | `pypi, apt`, 部分发行版中 certbot 版本过低 |
 | `certbot_dns_plugin` | 使用什么 DNS plugin | `cloudflare` | `cloudflare, cloudxns, digitalocean, linode` |
 | `certbot_dns_propagation_seconds` | The number of seconds to wait for DNS to propagate before asking the ACME server to verify the DNS record. | `30` | `int`, 使用 `linode` 时请设置更大的值如 `120` |
-| `certbot_domain` | 需要申请证书的域名 | `example.com` | FQDN domain |
+| `certbot_domain` | 需要申请证书的域名 | `example.com,www.example.com` | FQDN domain |
 | `certbot_dns_cloudflare_api_token` | Cloudflare API Token | <empty> | `str` |
 | `certbot_dns_cloudxns_api_key` | CloudXNS API Key | <empty> | `str` |
 | `certbot_dns_cloudxns_secret_key` | CloudXNS Secret Key | <empty> | `str` |

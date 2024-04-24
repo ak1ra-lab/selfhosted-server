@@ -1,4 +1,3 @@
----
 certbot_install: true
 certbot_install_source: apt
 
@@ -6,9 +5,7 @@ certbot_install_source: apt
 certbot_dns_plugin: cloudflare
 certbot_dns_propagation_seconds: 30
 
-certbot_wildcard: true
-certbot_domain: example.com
-certbot_domain_extra: []
+certbot_domain: example.com,www.example.com
 certbot_email: "certbot@{{ certbot_domain }}"
 
 certbot_dir: /etc/letsencrypt
