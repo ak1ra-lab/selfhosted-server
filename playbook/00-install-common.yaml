@@ -1,6 +1,5 @@
----
 - name: install-docker playbook
   hosts: "{{ host | default('all') }}"
 
   roles:
-    - role: common
+  - role: common

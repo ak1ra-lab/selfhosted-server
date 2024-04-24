@@ -1,4 +1,3 @@
----
 # ansible-playbook 02-install-certbot.yaml -e @credentials.yaml --ask-vault-pass --become
 - name: install-certbot playbook
   hosts: "{{ host | default('all') }}"
@@ -11,14 +10,14 @@
       token: "{{ cf_token }}"
 
   roles:
-    - role: common
+  - role: common
 
-    # certificate for nginx static server
-    - role: certbot
-      certbot_wildcard: true
-      certbot_domain: "{{ domain.root }}"
-      certbot_dns_plugin: "{{ certbot.plugin }}"
-      certbot_dns_cloudflare_api_token: "{{ certbot.token }}"
-      certbot_install: true
-      certbot_install_source: apt
-      certbot_cert_chmod: false
+  # certificate for nginx static server
+  - role: certbot
+    certbot_wildcard: true
+    certbot_domain: "{{ domain.root }}"
+    certbot_dns_plugin: "{{ certbot.plugin }}"
+    certbot_dns_cloudflare_api_token: "{{ certbot.token }}"
+    certbot_install: true
+    certbot_install_source: apt
+    certbot_cert_chmod: false
