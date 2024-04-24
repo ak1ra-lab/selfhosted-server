@@ -1,4 +1,3 @@
----
 - name: ensure rsstt_working_dir exists
   ansible.builtin.file:
     path: "{{ rsstt_working_dir }}"
@@ -15,31 +14,23 @@
 - name: set rsstt_telegraph_token if not given
   when: not rsstt_telegraph_token and rsstt_telegraph_token_count > 0
   block:
-    - name: get Telegraph token if not given
-      ansible.builtin.uri:
-        url: "{{ rsstt_telegraph_token_url }}"
-      loop: "{{ range(0, rsstt_telegraph_token_count) | list }}"
-      register: rsstt_telegraph_token_response
-      changed_when: false
+  - name: get Telegraph token if not given
+    ansible.builtin.uri:
+      url: "{{ rsstt_telegraph_token_url }}"
+    loop: "{{ range(0, rsstt_telegraph_token_count) | list }}"
+    register: rsstt_telegraph_token_response
+    changed_when: false
 
-    - name: set rsstt_telegraph_token
-      ansible.builtin.set_fact:
-        rsstt_telegraph_token: "{{ rsstt_telegraph_token_response | community.general.json_query(query) }}"
-      vars:
-        query: "results[*].json.result.access_token"
-      changed_when: false
+  - name: set rsstt_telegraph_token
+    ansible.builtin.set_fact:
+      rsstt_telegraph_token: "{{ rsstt_telegraph_token_response | community.general.json_query(query) }}"
+    vars:
+      query: "results[*].json.result.access_token"
+    changed_when: false
 
 - name: debug var rsstt_telegraph_token
   ansible.builtin.debug:
     var: rsstt_telegraph_token
-
-- name: template .venv
-  ansible.builtin.template:
-    src: .env.j2
-    dest: "{{ rsstt_working_dir }}/.env"
-    mode: "0644"
-  notify:
-    - systemctl restart rsstt.service
 
 - name: template rsstt.service
   ansible.builtin.template:
@@ -47,7 +38,15 @@
     dest: "{{ rsstt_systemd_dir }}/rsstt.service"
     mode: "0644"
   notify:
-    - systemctl daemon-reload
+  - systemctl daemon-reload
+
+- name: template .venv
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ rsstt_working_dir }}/.env"
+    mode: "0644"
+  notify:
+  - systemctl restart rsstt.service
 
 - name: ensure rsstt.service started and enabled
   ansible.builtin.service:
