@@ -1,4 +1,3 @@
----
 - name: backup original /etc/nginx
   community.general.archive:
     path: /etc/nginx
@@ -33,10 +32,10 @@
     group: "{{ nginx_config_group }}"
     mode: "0755"
   loop:
-    - /etc/nginx
-    - /etc/nginx/conf.d
-    - /var/log/nginx
-    - /var/www
+  - /etc/nginx
+  - /etc/nginx/conf.d
+  - /var/log/nginx
+  - /var/www
 
 - name: check /etc/nginx/dhparam.pem
   ansible.builtin.stat:

@@ -1,12 +1,11 @@
----
 # 此项为一些预先依赖
 nginx_apt_prerequisites:
-  - apt-transport-https
-  - ca-certificates
-  - curl
-  - debian-archive-keyring
-  - gnupg2
-  - lsb-release
+- apt-transport-https
+- ca-certificates
+- curl
+- debian-archive-keyring
+- gnupg2
+- lsb-release
 
 # nginx_apt_repo 可以是: debian, nginx_org, xtom_com
 # 此项设置为 debian 时, 表示不添加额外 apt repo 直接从官方源安装
@@ -22,8 +21,8 @@ nginx_apt_repo_signed_by_dir: /etc/apt/keyrings
 nginx_apt_repo_spec:
   debian:
     apt_packages:
-      - nginx
-      - nginx-common
+    - nginx
+    - nginx-common
 
   # https://nginx.org/en/linux_packages.html#Debian
   nginx_org:
@@ -36,8 +35,8 @@ nginx_apt_repo_spec:
       Pin: origin nginx.org
       Pin-Priority: 900
     apt_packages:
-      # 这个 repo 中的 nginx 没有拆开, 只有一个名为 nginx 的 package
-      - nginx
+    # 这个 repo 中的 nginx 没有拆开, 只有一个名为 nginx 的 package
+    - nginx
 
   # https://n.wtf/install.html
   xtom_com:
@@ -48,6 +47,6 @@ nginx_apt_repo_spec:
       Pin: origin mirror-cdn.xtom.com
       Pin-Priority: 900
     apt_packages:
-      # 这个 repo 中的 nginx 有被拆开为多个 package, 其中 nginx-common 为一些配置文件
-      - nginx
-      - nginx-common
+    # 这个 repo 中的 nginx 有被拆开为多个 package, 其中 nginx-common 为一些配置文件
+    - nginx
+    - nginx-common

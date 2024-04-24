@@ -1,4 +1,3 @@
----
 - name: install the prerequisites
   ansible.builtin.apt:
     name: "{{ nginx_apt_prerequisites }}"

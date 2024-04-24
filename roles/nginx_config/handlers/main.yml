@@ -1,4 +1,3 @@
----
 - name: test new nginx config
   ansible.builtin.command: /usr/sbin/nginx -t
   changed_when: false

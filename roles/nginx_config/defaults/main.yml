@@ -1,4 +1,3 @@
----
 # nginx user
 nginx_config_user: nginx
 nginx_config_group: nginx
@@ -13,7 +12,7 @@ nginx_config_template_server_config: true
 nginx_config_domain: example.com
 
 # server_name
-nginx_config_server_name: www.example.com
+nginx_config_server_name: "{{ nginx_config_domain }}"
 
 # listen port
 nginx_config_listen_http: 80
@@ -46,5 +45,6 @@ nginx_config_static_fallback: =404
 nginx_config_proxy_upstream: http://127.0.0.1:8080/
 
 # php-fpm site
+nginx_config_php_version: "7.4"
 nginx_config_php_index: /index.php
-nginx_config_php_fastcgi: unix:/run/php/php7.4-fpm.sock
+nginx_config_php_fastcgi: "unix:/run/php/php{{ nginx_config_php_version }}-fpm.sock"
