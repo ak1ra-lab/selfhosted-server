@@ -50,16 +50,13 @@
   loop:
     ## Specifies whether root can log in using ssh(1).
     # The argument must be yes, prohibit-password, forced-commands-only, or no.  The default is prohibit-password.
-    - { regexp: "^#?PermitRootLogin", line: "PermitRootLogin no" }
+    - {regexp: "^#?PermitRootLogin", line: "PermitRootLogin no"}
     ## Specifies whether password authentication is allowed.  The default is yes.
-    - { regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no" }
+    - {regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no"}
     ## Specifies whether TCP forwarding is permitted. The default is yes.
-    - { regexp: "^#?AllowTcpForwarding", line: "AllowTcpForwarding no" }
+    - {regexp: "^#?AllowTcpForwarding", line: "AllowTcpForwarding no"}
     ## Specifies whether forwarding Unix domain sockets is permitted. The default is yes.
-    - {
-        regexp: "^#?AllowStreamLocalForwarding",
-        line: "AllowStreamLocalForwarding no",
-      }
+    - {regexp: "^#?AllowStreamLocalForwarding", line: "AllowStreamLocalForwarding no"}
     ## Specifies whether remote hosts are allowed to connect to ports forwarded for the client. The default is no.
-    - { regexp: "^#?GatewayPorts", line: "GatewayPorts no" }
+    - {regexp: "^#?GatewayPorts", line: "GatewayPorts no"}
   when: common_set_custom_sshd_config

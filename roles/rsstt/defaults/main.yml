@@ -1,4 +1,4 @@
-
+---
 rsstt_working_dir: /var/lib/rsstt
 rsstt_systemd_dir: /etc/systemd/system
 

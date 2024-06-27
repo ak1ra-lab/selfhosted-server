@@ -63,12 +63,12 @@
     mode: "{{ item.mode }}"
     remote_src: true
   loop:
-    - { src: v2ray, dest: "{{ v2ray_bin_dir }}", mode: "0755" }
-    - { src: config.json, dest: "{{ v2ray_etc_dir }}", mode: "0644" }
-    - { src: geoip.dat, dest: "{{ v2ray_dat_dir }}", mode: "0644" }
-    - { src: geosite.dat, dest: "{{ v2ray_dat_dir }}", mode: "0644" }
-    - { src: systemd/system/v2ray.service, dest: "{{ v2ray_systemd_dir }}", mode: "0644" }
-    - { src: systemd/system/v2ray@.service, dest: "{{ v2ray_systemd_dir }}", mode: "0644" }
+    - {src: v2ray, dest: "{{ v2ray_bin_dir }}", mode: "0755"}
+    - {src: config.json, dest: "{{ v2ray_etc_dir }}", mode: "0644"}
+    - {src: geoip.dat, dest: "{{ v2ray_dat_dir }}", mode: "0644"}
+    - {src: geosite.dat, dest: "{{ v2ray_dat_dir }}", mode: "0644"}
+    - {src: systemd/system/v2ray.service, dest: "{{ v2ray_systemd_dir }}", mode: "0644"}
+    - {src: systemd/system/v2ray@.service, dest: "{{ v2ray_systemd_dir }}", mode: "0644"}
   notify:
     - test v2ray config
     - systemctl daemon-reload

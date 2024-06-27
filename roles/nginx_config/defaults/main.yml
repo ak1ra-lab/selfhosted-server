@@ -1,3 +1,4 @@
+---
 # nginx user
 nginx_config_user: nginx
 nginx_config_group: nginx
