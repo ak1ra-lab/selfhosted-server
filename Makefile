@@ -1,5 +1,5 @@
 
-ANSIBLE_HOME := $(HOME)/.ansible
+ANSIBLE_HOME ?= $(HOME)/.ansible
 
 .DEFAULT_GOAL=help
 .PHONY=help

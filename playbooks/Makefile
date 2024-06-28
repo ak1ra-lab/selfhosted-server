@@ -1,9 +1,9 @@
 
 # ansible-playbook vars
-PLAYBOOK_HOST := local
-PLAYBOOK_DOMAIN := ak1ra.xyz
-PLAYBOOK_EMAIL := certbot@ak1ra.xyz
-PLAYBOOK_VAULT_FILE := @credentials/cloudflare.yaml
+PLAYBOOK_HOST ?= local
+PLAYBOOK_DOMAIN ?= ak1ra.xyz
+PLAYBOOK_EMAIL ?= certbot@ak1ra.xyz
+PLAYBOOK_VAULT_FILE ?= @credentials/cloudflare.yaml
 
 # ansible-playbook wrapper
 .PHONY: common
