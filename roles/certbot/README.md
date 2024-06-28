@@ -11,8 +11,8 @@
 * 根据提供的 token 创建 credentials 文件
 * 执行等效于如下选项的 `certbot` 命令
 
-```
-$ certbot certonly \
+```shell
+certbot certonly \
     --non-interactive \
     --agree-tos \
     --email=certbot@example.com \

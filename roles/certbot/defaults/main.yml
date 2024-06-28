@@ -6,20 +6,13 @@ certbot_install_source: apt
 certbot_dns_plugin: cloudflare
 certbot_dns_propagation_seconds: 30
 
-certbot_domain: example.com,www.example.com
-certbot_email: "certbot@{{ certbot_domain }}"
+certbot_domain: example.com
+certbot_email: certbot@example.com
 
 certbot_dir: /etc/letsencrypt
 certbot_live_dir: "{{ certbot_dir }}/live/{{ certbot_domain }}"
 certbot_archive_dir: "{{ certbot_dir }}/archive/{{ certbot_domain }}"
 certbot_credentials: "{{ certbot_dir }}/credentials/{{ certbot_dns_plugin }}.ini"
-
-# BE ATTENTION
-# Change this value to true is not secure,
-# By default only root user can read /etc/letsencrypt/archive/*/privkey.pem
-# The reason this option was added here is that
-# I want the systemd DynamicUser to be able to read privkey.pem
-certbot_cert_chmod: false
 
 # credentials
 ## https://certbot-dns-cloudflare.readthedocs.io/en/stable/
