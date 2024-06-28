@@ -1,0 +1,5 @@
+---
+- name: common initial tasks
+  hosts: "{{ host | default('local') }}"
+  roles:
+    - role: common

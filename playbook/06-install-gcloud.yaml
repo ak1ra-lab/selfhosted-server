@@ -1,7 +1,0 @@
-- name: install-gcloud playbook
-  hosts: "{{ host | default('all') }}"
-
-  roles:
-  - role: common
-
-  - role: gcloud

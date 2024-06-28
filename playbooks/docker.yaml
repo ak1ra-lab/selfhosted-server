@@ -1,0 +1,7 @@
+---
+- ansible.builtin.import_playbook: common.yaml
+
+- name: install docker
+  hosts: "{{ host | default('local') }}"
+  roles:
+    - role: docker
