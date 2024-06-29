@@ -43,11 +43,27 @@
     dest: "{{ v2ray_asset_dir.path }}"
     remote_src: true
 
+- name: ensure v2ray_group exists
+  ansible.builtin.group:
+    name: "{{ v2ray_group }}"
+    system: true
+    state: present
+
+- name: ensure v2ray_user exists
+  ansible.builtin.user:
+    name: "{{ v2ray_user }}"
+    group: "{{ v2ray_group }}"
+    shell: "{{ v2ray_user_shell }}"
+    system: true
+    state: present
+
 - name: ensure v2ray directories exists
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0755"
+    owner: "{{ v2ray_user }}"
+    group: "{{ v2ray_group }}"
   loop:
     - "{{ v2ray_bin_dir }}"
     - "{{ v2ray_dat_dir }}"
@@ -61,16 +77,28 @@
     src: "{{ v2ray_asset_dir.path }}/{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
+    owner: "{{ v2ray_user }}"
+    group: "{{ v2ray_group }}"
     remote_src: true
   loop:
     - {src: v2ray, dest: "{{ v2ray_bin_dir }}", mode: "0755"}
-    - {src: config.json, dest: "{{ v2ray_etc_dir }}", mode: "0644"}
     - {src: geoip.dat, dest: "{{ v2ray_dat_dir }}", mode: "0644"}
     - {src: geosite.dat, dest: "{{ v2ray_dat_dir }}", mode: "0644"}
-    - {src: systemd/system/v2ray.service, dest: "{{ v2ray_systemd_dir }}", mode: "0644"}
-    - {src: systemd/system/v2ray@.service, dest: "{{ v2ray_systemd_dir }}", mode: "0644"}
+    - {src: config.json, dest: "{{ v2ray_etc_dir }}", mode: "0644"}
   notify:
     - test v2ray config
+
+- name: template systemd service unit
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ v2ray_systemd_dir }}/{{ item | splitext | first }}"
+    mode: "0644"
+    owner: "{{ v2ray_user }}"
+    group: "{{ v2ray_group }}"
+  loop:
+    - v2ray.service.j2
+    - v2ray@.service.j2
+  notify:
     - systemctl daemon-reload
 
 - name: clean up temp files
