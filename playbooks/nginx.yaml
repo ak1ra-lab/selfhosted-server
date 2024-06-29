@@ -6,7 +6,8 @@
 - name: install nginx
   hosts: "{{ host | default('local') }}"
   vars:
-    domain: ak1ra.xyz
+    certbot_domain: ak1ra.xyz
+    certbot_email: certbot@ak1ra.xyz
   roles:
     - role: nginx
       nginx_apt_repo: debian
@@ -14,6 +15,6 @@
     - role: nginx_config
       nginx_config_template_base_config: true
       nginx_config_template_server_config: true
-      nginx_config_domain: "{{ domain }}"
-      nginx_config_server_name: "{{ domain }}"
+      nginx_config_domain: "{{ certbot_domain }}"
+      nginx_config_server_name: "{{ certbot_domain }}"
       nginx_config_server_type: static

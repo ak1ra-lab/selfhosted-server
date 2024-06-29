@@ -1,0 +1,5 @@
+---
+- name: install rsstt
+  hosts: "{{ host | default('local') }}"
+  roles:
+    - role: rsstt
