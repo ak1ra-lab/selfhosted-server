@@ -5,7 +5,7 @@ ANSIBLE_HOME ?= $(HOME)/.ansible
 .PHONY=help
 help:
 	@awk -F ':|##' '/^[^\t].+?:.*?##/ {\
-		printf "\033[36m%-10s\033[0m %s\n", $$1, $$NF \
+		printf "\033[36m%-10s\033[0m %s\n", $$1, substr($$0, index($$0,$$3)) \
 	}' $(MAKEFILE_LIST)
 
 .PHONY: yamlfmt
