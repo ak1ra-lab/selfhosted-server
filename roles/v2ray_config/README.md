@@ -113,7 +113,7 @@ templates/
 
 ## 关于 templates/ 中预置的 混淆协议+传输层协议 组合模板
 
-`v2ray_config_profile` 用于指定使用哪种 混淆协议+传输层协议 的组合, 默认值是 `vmess-wss`.
+`v2ray_profile` 用于指定使用哪种 混淆协议+传输层协议 的组合, 默认值是 `vmess-wss`.
 
 目前, [templates/](./templates/) 中内置了以下几种配置组合,
 
@@ -135,14 +135,14 @@ templates/ 中 client 的 outbounds 和 server 的 inbounds 模板便采用这�
 
 ## vars
 
-* `v2ray_config_domain` 对于已启用 TLS 项的配置都需要传入, 即除 `vmess-kcp` 外都需传入:
+* `v2ray_domain` 对于已启用 TLS 项的配置都需要传入, 即除 `vmess-kcp` 外都需传入:
     * 默认的 `example.com` 并不可用, 需要填入自己实际的域名;
     * 需确保在之前的步骤中已使用 [roles/certbot](../certbot/) 或其它方式生成 SSL 证书;
-    * `v2ray_config_ssl_dir` 值有引用这个值, 即需确认对应域名的 SSL 证书已存在;
+    * `v2ray_ssl_dir` 值有引用这个值, 即需确认对应域名的 SSL 证书已存在;
 
-* `v2ray_config_type` 用于配置渲染 `server` 还是 `client` 配置, 默认值为 `server`.
+* `v2ray_type` 用于配置渲染 `server` 还是 `client` 配置, 默认值为 `server`.
 
-* `v2ray_config_inbound_client_id` 用于配置 VMess 混淆协议下 `server.inbounds[0].settings.clients[0].id`, 后续考虑做多 clients id 支持
+* `v2ray_inbound_client_id` 用于配置 VMess 混淆协议下 `server.inbounds[0].settings.clients[0].id`, 后续考虑做多 clients id 支持
 
 ### `vmess-wss` (VMess-WebSocket-TLS)
 
@@ -150,12 +150,12 @@ VMess-WebSocket-TLS 组合下的配置项:
 
 ```
 # VMess-WebSocket-TLS, use Nginx to reverse proxy
-v2ray_config_vmess_wss_listen: 127.0.0.1
-v2ray_config_vmess_wss_port: 1080
-v2ray_config_vmess_wss_tls_port: 443
+v2ray_vmess_wss_listen: 127.0.0.1
+v2ray_vmess_wss_port: 1080
+v2ray_vmess_wss_tls_port: 443
 # wsSettings
-v2ray_config_vmess_wss_host: "{{ v2ray_config_domain }}"
-v2ray_config_vmess_wss_path: /websocket
+v2ray_vmess_wss_host: "{{ v2ray_domain }}"
+v2ray_vmess_wss_path: /websocket
 ```
 
 正常情况下保持默认即可.
@@ -164,17 +164,17 @@ v2ray_config_vmess_wss_path: /websocket
 
 ```
 # VMess-mKCPSeed
-v2ray_config_vmess_kcp_port: 10010
+v2ray_vmess_kcp_port: 10010
 # kcpSettings server
-v2ray_config_vmess_kcp_header_type: utp
+v2ray_vmess_kcp_header_type: utp
 # random if not given
-v2ray_config_vmess_kcp_seed:
+v2ray_vmess_kcp_seed:
 ```
 
-可选传入自定义 `v2ray_config_vmess_kcp_seed`, 如不传入则随机生成,
+可选传入自定义 `v2ray_vmess_kcp_seed`, 如不传入则随机生成,
 否则配置客户端时需要自行登录服务器查看配置文件中生成的随机 seed.
 
-可以考虑传入 `v2ray_config_vmess_kcp_header_type`, 配置项位于 `mKCP.KcpObject.HeaderObject.type`, 此处默认值为 `utp`.
+可以考虑传入 `v2ray_vmess_kcp_header_type`, 配置项位于 `mKCP.KcpObject.HeaderObject.type`, 此处默认值为 `utp`.
 
 基于 UDP 的方案可以对流量进行伪装, 目前可用的伪装方式有:
 
@@ -193,18 +193,18 @@ v2ray_config_vmess_kcp_seed:
 
 ```
 # VMess-QUIC-TLS
-v2ray_config_vmess_quic_port: 10020
+v2ray_vmess_quic_port: 10020
 # quicSettings
-v2ray_config_vmess_quic_security: chacha20-poly1305
+v2ray_vmess_quic_security: chacha20-poly1305
 # random if not given
-v2ray_config_vmess_quic_key:
-v2ray_config_vmess_quic_header_type: utp
+v2ray_vmess_quic_key:
+v2ray_vmess_quic_header_type: utp
 ```
 
-可选传入自定义 `v2ray_config_vmess_quic_key`, 如不传入则随机生成,
+可选传入自定义 `v2ray_vmess_quic_key`, 如不传入则随机生成,
 否则配置客户端时需要自行登录服务器查看配置文件中生成的随机 key.
 
-可以考虑传入 `v2ray_config_vmess_quic_header_type`, 配置项位于 `QUIC.QuicObject.HeaderObject.type`, 默认值为 `utp`.
+可以考虑传入 `v2ray_vmess_quic_header_type`, 配置项位于 `QUIC.QuicObject.HeaderObject.type`, 默认值为 `utp`.
 
 基于 UDP 的方案可以对流量进行伪装, 目前可用的伪装方式有:
 
@@ -223,7 +223,7 @@ v2ray_config_vmess_quic_header_type: utp
 
 ```
 # VMess-TCP-TLS
-v2ray_config_vmess_tcp_port: 6443
+v2ray_vmess_tcp_port: 6443
 ```
 
 保持默认值即可.
@@ -232,12 +232,12 @@ v2ray_config_vmess_tcp_port: 6443
 
 ```
 # Trojan-TCP-TLS
-v2ray_config_trojan_tcp_port: 7443
+v2ray_trojan_tcp_port: 7443
 # password, no UUID here, random if not given
-v2ray_config_trojan_tcp_password:
+v2ray_trojan_tcp_password:
 ```
 
-可选传入 `v2ray_config_trojan_tcp_password`, 如不传入则随机生成,
+可选传入 `v2ray_trojan_tcp_password`, 如不传入则随机生成,
 否则配置客户端时需要自行登录服务器查看配置文件中生成的随机 password.
 
 其余项保持默认值即可.

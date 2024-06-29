@@ -2,10 +2,10 @@
 - name: test v2ray config
   ansible.builtin.command:
     argv:
-      - "{{ v2ray_config_bin_dir }}/v2ray"
+      - "{{ v2ray_bin_dir }}/v2ray"
       - test
       - -confdir
-      - "{{ v2ray_config_etc_dir }}/{{ v2ray_config_type }}"
+      - "{{ v2ray_etc_dir }}/{{ v2ray_type }}"
   changed_when: false
 
 - name: restart v2ray service

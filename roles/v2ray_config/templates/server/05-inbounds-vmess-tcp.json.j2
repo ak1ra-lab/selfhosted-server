@@ -1,13 +1,13 @@
 {
     "inbounds": [
         {
-            "tag": "{{ v2ray_config_profile }}",
-            "port": {{ v2ray_config_vmess_tcp_port }},
+            "tag": "{{ v2ray_profile }}",
+            "port": {{ v2ray_vmess_tcp_port }},
             "protocol": "vmess",
             "settings": {
                 "clients": [
                     {
-                        "id": "{{ v2ray_config_inbound_client_id }}"
+                        "id": "{{ v2ray_inbound_client_id }}"
                     }
                 ]
             },
@@ -17,8 +17,8 @@
                 "tlsSettings": {
                     "certificates": [
                         {
-                            "certificateFile": "{{ v2ray_config_ssl_certificate }}",
-                            "keyFile": "{{ v2ray_config_ssl_certificate_key }}"
+                            "certificateFile": "{{ v2ray_ssl_certificate }}",
+                            "keyFile": "{{ v2ray_ssl_certificate_key }}"
                         }
                     ]
                 }

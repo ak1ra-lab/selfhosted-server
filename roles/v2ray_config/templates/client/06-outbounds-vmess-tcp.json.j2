@@ -1,16 +1,16 @@
 {
     "outbounds": [
         {
-            "tag": "{{ v2ray_config_profile }}",
+            "tag": "{{ v2ray_profile }}",
             "protocol": "vmess",
             "settings": {
                 "vnext": [
                     {
                         "address": "{{ ansible_host }}",
-                        "port": {{ v2ray_config_vmess_tcp_port }},
+                        "port": {{ v2ray_vmess_tcp_port }},
                         "users": [
                             {
-                                "id": "{{ v2ray_config_inbound_client_id }}",
+                                "id": "{{ v2ray_inbound_client_id }}",
                                 "security": "auto"
                             }
                         ]

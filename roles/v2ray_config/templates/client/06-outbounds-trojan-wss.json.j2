@@ -1,14 +1,14 @@
 {
     "outbounds": [
         {
-            "tag": "{{ v2ray_config_profile }}",
+            "tag": "{{ v2ray_profile }}",
             "protocol": "trojan",
             "settings": {
                 "servers": [
                     {
                         "address": "{{ ansible_host }}",
-                        "port": {{ v2ray_config_trojan_wss_port }},
-                        "password": "{{ v2ray_config_trojan_wss_password }}"
+                        "port": {{ v2ray_trojan_wss_port }},
+                        "password": "{{ v2ray_trojan_wss_password }}"
                     }
                 ]
             },
@@ -20,9 +20,9 @@
                 },
                 "wsSettings": {
                     "headers": {
-                        "Host": "{{ v2ray_config_trojan_wss_host }}"
+                        "Host": "{{ v2ray_trojan_wss_host }}"
                     },
-                    "path": "{{ v2ray_config_trojan_wss_path }}"
+                    "path": "{{ v2ray_trojan_wss_path }}"
                 }
             }
         },

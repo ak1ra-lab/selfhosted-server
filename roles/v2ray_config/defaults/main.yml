@@ -1,70 +1,75 @@
 ---
 # common settings
 # domain for WebSocket
-v2ray_config_domain: example.com
+v2ray_domain: example.com
 
-# file hierarchy inherited from gh:v2fly/fhs-install-v2ray
-v2ray_config_prefix: /usr/local
-v2ray_config_bin_dir: "{{ v2ray_config_prefix }}/bin"
-v2ray_config_dat_dir: "{{ v2ray_config_prefix }}/share/v2ray"
-v2ray_config_etc_dir: "{{ v2ray_config_prefix }}/etc/v2ray"
-v2ray_config_systemd_dir: /etc/systemd/system
+# v2ray user
+v2ray_user: v2ray
+v2ray_group: v2ray
+v2ray_user_shell: /usr/sbin/nologin
+
+# file hierarchy inherited from https://github.com/v2fly/fhs-install-v2ray
+v2ray_prefix: /usr/local
+v2ray_bin_dir: "{{ v2ray_prefix }}/bin"
+v2ray_dat_dir: "{{ v2ray_prefix }}/share/v2ray"
+v2ray_etc_dir: "{{ v2ray_prefix }}/etc/v2ray"
+v2ray_systemd_dir: /etc/systemd/system
 
 # ssl_certificate file hierarchy inherited from certbot
-v2ray_config_ssl_dir: "/etc/letsencrypt/live/{{ v2ray_config_domain }}"
-v2ray_config_ssl_certificate: "{{ v2ray_config_ssl_dir }}/fullchain.pem"
-v2ray_config_ssl_certificate_key: "{{ v2ray_config_ssl_dir }}/privkey.pem"
-v2ray_config_ssl_trusted_certificate: "{{ v2ray_config_ssl_dir }}/fullchain.pem"
+v2ray_ssl_dir: "/etc/letsencrypt/live/{{ v2ray_domain }}"
+v2ray_ssl_certificate: "{{ v2ray_ssl_dir }}/fullchain.pem"
+v2ray_ssl_certificate_key: "{{ v2ray_ssl_dir }}/privkey.pem"
+v2ray_ssl_trusted_certificate: "{{ v2ray_ssl_dir }}/fullchain.pem"
 
 # logs
-v2ray_config_log_loglevel: warning
-v2ray_config_log_dir: /var/log/v2ray
-v2ray_config_log_access: "{{ v2ray_config_log_dir }}/access.log"
-v2ray_config_log_error: "{{ v2ray_config_log_dir }}/error.log"
+v2ray_log_loglevel: warning
+v2ray_log_dir: /var/log/v2ray
+v2ray_log_access: "{{ v2ray_log_dir }}/access.log"
+v2ray_log_error: "{{ v2ray_log_dir }}/error.log"
 
 # profile settings
 # profile to choose, refer templates/
-v2ray_config_profile: vmess-wss
-v2ray_config_type: server
+v2ray_profile: vmess-wss
+v2ray_type: server
 
 # inbounds[0].settings.clients[0].id
-v2ray_config_inbound_client_id:
+v2ray_inbound_client_id:
 
 # VMess-WebSocket-TLS, use Nginx to reverse proxy
-v2ray_config_vmess_wss_listen: 127.0.0.1
-v2ray_config_vmess_wss_port: 1080
-v2ray_config_vmess_wss_tls_port: 443
+v2ray_vmess_wss_listen: 127.0.0.1
+v2ray_vmess_wss_port: 7891
+v2ray_vmess_wss_tls_port: 443
 # wsSettings
-v2ray_config_vmess_wss_host: "{{ v2ray_config_domain }}"
-v2ray_config_vmess_wss_path: /websocket
+v2ray_vmess_wss_host: "{{ v2ray_domain }}"
+v2ray_vmess_wss_path: /websocket
 
 # VMess-mKCPSeed
-v2ray_config_vmess_kcp_port: 10010
+v2ray_vmess_kcp_port: 7892
 # kcpSettings server
-v2ray_config_vmess_kcp_header_type: utp
+v2ray_vmess_kcp_header_type: utp
 # random if not given
-v2ray_config_vmess_kcp_seed:
+v2ray_vmess_kcp_seed:
 
 # VMess-QUIC-TLS
-v2ray_config_vmess_quic_port: 10020
+v2ray_vmess_quic_port: 7893
 # quicSettings
-v2ray_config_vmess_quic_security: chacha20-poly1305
+v2ray_vmess_quic_security: chacha20-poly1305
 # random if not given
-v2ray_config_vmess_quic_key:
-v2ray_config_vmess_quic_header_type: utp
+v2ray_vmess_quic_key:
+v2ray_vmess_quic_header_type: utp
 
 # VMess-TCP-TLS
-v2ray_config_vmess_tcp_port: 6443
+v2ray_vmess_tcp_port: 7894
 
 # Trojan-TCP-TLS
-v2ray_config_trojan_tcp_port: 7443
+v2ray_trojan_tcp_port: 7895
 # password, no UUID here, random if not given
-v2ray_config_trojan_tcp_password:
+v2ray_trojan_tcp_password:
 
 # Trojan-WSS-TLS
-v2ray_config_trojan_wss_port: 8443
+v2ray_trojan_wss_port: 7896
 # password, no UUID here, random if not given
-v2ray_config_trojan_wss_password:
+v2ray_trojan_wss_password:
 # wsSettings
-v2ray_config_trojan_wss_host: "{{ v2ray_config_domain }}"
-v2ray_config_trojan_wss_path: /websocket
+v2ray_trojan_wss_host: "{{ v2ray_domain }}"
+v2ray_trojan_wss_path: /websocket

@@ -1,13 +1,13 @@
 {
     "inbounds": [
         {
-            "tag": "{{ v2ray_config_profile }}",
-            "port": {{ v2ray_config_trojan_wss_port }},
+            "tag": "{{ v2ray_profile }}",
+            "port": {{ v2ray_trojan_wss_port }},
             "protocol": "trojan",
             "settings": {
                 "clients": [
                     {
-                        "password": "{{ v2ray_config_trojan_wss_password }}"
+                        "password": "{{ v2ray_trojan_wss_password }}"
                     }
                 ]
             },
@@ -17,16 +17,16 @@
                 "tlsSettings": {
                     "certificates": [
                         {
-                            "certificateFile": "{{ v2ray_config_ssl_certificate }}",
-                            "keyFile": "{{ v2ray_config_ssl_certificate_key }}"
+                            "certificateFile": "{{ v2ray_ssl_certificate }}",
+                            "keyFile": "{{ v2ray_ssl_certificate_key }}"
                         }
                     ]
                 },
                 "wsSettings": {
                     "headers": {
-                        "Host": "{{ v2ray_config_trojan_wss_host }}"
+                        "Host": "{{ v2ray_trojan_wss_host }}"
                     },
-                    "path": "{{ v2ray_config_trojan_wss_path }}"
+                    "path": "{{ v2ray_trojan_wss_path }}"
                 }
             },
             "sniffing": {

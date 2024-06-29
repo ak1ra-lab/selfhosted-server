@@ -3,69 +3,91 @@
 - name: include_tasks fact.yml
   ansible.builtin.include_tasks: fact.yml
 
+- name: ensure v2ray_group exists
+  ansible.builtin.group:
+    name: "{{ v2ray_group }}"
+    system: true
+    state: present
+
+- name: ensure v2ray_user exists
+  ansible.builtin.user:
+    name: "{{ v2ray_user }}"
+    group: "{{ v2ray_group }}"
+    shell: "{{ v2ray_user_shell }}"
+    system: true
+    state: present
+
 - name: ensure directory exists
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0755"
+    owner: "{{ v2ray_user }}"
+    group: "{{ v2ray_group }}"
   loop:
-    # We need to create v2ray_config_log_dir, Even though we are use
+    # We need to create v2ray_log_dir, Even though we are use
     # DynamicUser=yes with logsDirectory, otherwise the 'test v2ray config' will fail
-    - "{{ v2ray_config_log_dir }}"
-    - "{{ v2ray_config_etc_dir }}/{{ v2ray_config_type }}"
-    - "{{ v2ray_config_dat_dir }}"
+    - "{{ v2ray_log_dir }}"
+    - "{{ v2ray_etc_dir }}/{{ v2ray_type }}"
+    - "{{ v2ray_dat_dir }}"
 
 - name: template systemd service unit override
   ansible.builtin.template:
     src: "{{ item }}"
-    dest: "{{ v2ray_config_systemd_dir }}/v2ray.service.d/{{ item | splitext | first }}"
+    dest: "{{ v2ray_systemd_dir }}/v2ray.service.d/{{ item | splitext | first }}"
     mode: "0644"
+    owner: "{{ v2ray_user }}"
+    group: "{{ v2ray_group }}"
   loop:
-    - 20-dynamic-user.conf.j2
+    - 99-override.conf.j2
   notify:
     - systemctl daemon-reload
 
 - name: template client config
   ansible.builtin.template:
     src: "{{ item }}"
-    dest: "{{ v2ray_config_etc_dir }}/{{ item | splitext | first }}"
+    dest: "{{ v2ray_etc_dir }}/{{ item | splitext | first }}"
     mode: "0644"
+    owner: "{{ v2ray_user }}"
+    group: "{{ v2ray_group }}"
   loop:
     - client/00-log.json.j2
     - client/03-routing.json.j2
     - client/05-inbounds.json.j2
-    - "client/06-outbounds-{{ v2ray_config_profile }}.json.j2"
+    - "client/06-outbounds-{{ v2ray_profile }}.json.j2"
   notify:
     - test v2ray config
     - restart v2ray service
-  when: v2ray_config_type == "client"
+  when: v2ray_type == "client"
 
 - name: template server config
   ansible.builtin.template:
     src: "{{ item }}"
-    dest: "{{ v2ray_config_etc_dir }}/{{ item | splitext | first }}"
+    dest: "{{ v2ray_etc_dir }}/{{ item | splitext | first }}"
     mode: "0644"
+    owner: "{{ v2ray_user }}"
+    group: "{{ v2ray_group }}"
   loop:
     - server/00-log.json.j2
     - server/03-routing.json.j2
-    - "server/05-inbounds-{{ v2ray_config_profile }}.json.j2"
+    - "server/05-inbounds-{{ v2ray_profile }}.json.j2"
     - server/06-outbounds.json.j2
   notify:
     - test v2ray config
     - restart v2ray service
-  when: v2ray_config_type == "server"
+  when: v2ray_type == "server"
 
-- name: template nginx server config when v2ray_config_profile is vmess-wss
+- name: template nginx server config when v2ray_profile is vmess-wss
   ansible.builtin.include_role:
     name: nginx_config
   vars:
     nginx_config_template_base_config: false
-    nginx_config_domain: "{{ v2ray_config_domain }}"
-    nginx_config_server_name: "{{ v2ray_config_domain }}"
+    nginx_config_domain: "{{ v2ray_domain }}"
+    nginx_config_server_name: "{{ v2ray_domain }}"
     nginx_config_server_type: proxy
-    nginx_config_location_uri: "{{ v2ray_config_vmess_wss_path }}"
-    nginx_config_proxy_upstream: "http://{{ v2ray_config_vmess_wss_listen }}:{{ v2ray_config_vmess_wss_port }}"
-  when: v2ray_config_profile == "vmess-wss"
+    nginx_config_location_uri: "{{ v2ray_vmess_wss_path }}"
+    nginx_config_proxy_upstream: "http://{{ v2ray_vmess_wss_listen }}:{{ v2ray_vmess_wss_port }}"
+  when: v2ray_profile == "vmess-wss"
 
 - name: ensure v2ray service is started and enabled
   ansible.builtin.service:

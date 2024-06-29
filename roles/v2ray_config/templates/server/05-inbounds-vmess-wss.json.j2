@@ -1,14 +1,14 @@
 {
     "inbounds": [
         {
-            "tag": "{{ v2ray_config_profile }}",
-            "listen": "{{ v2ray_config_vmess_wss_listen }}",
-            "port": {{ v2ray_config_vmess_wss_port }},
+            "tag": "{{ v2ray_profile }}",
+            "listen": "{{ v2ray_vmess_wss_listen }}",
+            "port": {{ v2ray_vmess_wss_port }},
             "protocol": "vmess",
             "settings": {
                 "clients": [
                     {
-                        "id": "{{ v2ray_config_inbound_client_id }}"
+                        "id": "{{ v2ray_inbound_client_id }}"
                     }
                 ]
             },
@@ -17,9 +17,9 @@
                 "security": "none",
                 "wsSettings": {
                     "headers": {
-                        "Host": "{{ v2ray_config_vmess_wss_host }}"
+                        "Host": "{{ v2ray_vmess_wss_host }}"
                     },
-                    "path": "{{ v2ray_config_vmess_wss_path }}"
+                    "path": "{{ v2ray_vmess_wss_path }}"
                 }
             },
             "sniffing": {

@@ -1,35 +1,35 @@
 ---
 - name: generate random UUID if not given
   ansible.builtin.set_fact:
-    v2ray_config_inbound_client_id: "{{ lookup('ansible.builtin.password', '/dev/null length=32') | to_uuid }}"
+    v2ray_inbound_client_id: "{{ lookup('ansible.builtin.password', '/dev/null length=32') | to_uuid }}"
   when:
-    - not v2ray_config_inbound_client_id
-    - not v2ray_config_profile in ["trojan-tcp", "trojan-wss"]
+    - not v2ray_inbound_client_id
+    - not v2ray_profile in ["trojan-tcp", "trojan-wss"]
 
 - name: generate random mKCP seed if not given
   ansible.builtin.set_fact:
-    v2ray_config_vmess_kcp_seed: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+    v2ray_vmess_kcp_seed: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
   when:
-    - not v2ray_config_vmess_kcp_seed
-    - v2ray_config_profile == "vmess-kcp"
+    - not v2ray_vmess_kcp_seed
+    - v2ray_profile == "vmess-kcp"
 
 - name: generate random QUIC key if not given
   ansible.builtin.set_fact:
-    v2ray_config_vmess_quic_key: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+    v2ray_vmess_quic_key: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
   when:
-    - not v2ray_config_vmess_quic_key
-    - v2ray_config_profile == "vmess-quic"
+    - not v2ray_vmess_quic_key
+    - v2ray_profile == "vmess-quic"
 
 - name: generate random Trojan-TCP password if not given
   ansible.builtin.set_fact:
-    v2ray_config_trojan_tcp_password: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+    v2ray_trojan_tcp_password: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
   when:
-    - not v2ray_config_trojan_tcp_password
-    - v2ray_config_profile == "trojan-tcp"
+    - not v2ray_trojan_tcp_password
+    - v2ray_profile == "trojan-tcp"
 
 - name: generate random Trojan-WebSocket password if not given
   ansible.builtin.set_fact:
-    v2ray_config_trojan_wss_password: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
+    v2ray_trojan_wss_password: "{{ lookup('ansible.builtin.password', '/dev/null length=32') }}"
   when:
-    - not v2ray_config_trojan_wss_password
-    - v2ray_config_profile == "trojan-wss"
+    - not v2ray_trojan_wss_password
+    - v2ray_profile == "trojan-wss"
