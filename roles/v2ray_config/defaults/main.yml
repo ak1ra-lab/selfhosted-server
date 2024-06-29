@@ -16,10 +16,12 @@ v2ray_etc_dir: "{{ v2ray_prefix }}/etc/v2ray"
 v2ray_systemd_dir: /etc/systemd/system
 
 # ssl_certificate file hierarchy inherited from certbot
-v2ray_ssl_dir: "/etc/letsencrypt/live/{{ v2ray_domain }}"
-v2ray_ssl_certificate: "{{ v2ray_ssl_dir }}/fullchain.pem"
-v2ray_ssl_certificate_key: "{{ v2ray_ssl_dir }}/privkey.pem"
-v2ray_ssl_trusted_certificate: "{{ v2ray_ssl_dir }}/fullchain.pem"
+certbot_dir: /etc/letsencrypt
+certbot_live_dir: "{{ certbot_dir }}/live/{{ v2ray_domain }}"
+certbot_archive_dir: "{{ certbot_dir }}/archive/{{ v2ray_domain }}"
+v2ray_ssl_certificate: "{{ certbot_live_dir }}/fullchain.pem"
+v2ray_ssl_certificate_key: "{{ certbot_live_dir }}/privkey.pem"
+v2ray_ssl_trusted_certificate: "{{ certbot_live_dir }}/fullchain.pem"
 
 # logs
 v2ray_log_loglevel: warning

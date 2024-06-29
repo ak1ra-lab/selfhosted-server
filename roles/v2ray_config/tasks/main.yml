@@ -25,8 +25,6 @@
     owner: "{{ v2ray_user }}"
     group: "{{ v2ray_group }}"
   loop:
-    # We need to create v2ray_log_dir, Even though we are use
-    # DynamicUser=yes with logsDirectory, otherwise the 'test v2ray config' will fail
     - "{{ v2ray_log_dir }}"
     - "{{ v2ray_etc_dir }}/{{ v2ray_type }}"
     - "{{ v2ray_dat_dir }}"
@@ -42,6 +40,19 @@
     - 99-override.conf.j2
   notify:
     - systemctl daemon-reload
+
+- name: grant v2ray user read access on /etc/letsencrypt/{live,archive} directories
+  ansible.posix.acl:
+    path: "{{ path }}"
+    entity: "{{ v2ray_user }}"
+    etype: user
+    permissions: r
+    recursive: true
+    state: present
+  loop:
+    - "{{ certbot_live_dir }}"
+    - "{{ certbot_archive_dir }}"
+  when: v2ray_type == "server"
 
 - name: template client config
   ansible.builtin.template:
