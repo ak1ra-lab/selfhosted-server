@@ -1,4 +1,3 @@
-
 # roles/v2ray_config
 
 感谢 [v2fly/v2ray-examples](https://github.com/v2fly/v2ray-examples) 维护了一组不同方案的配置模板.
@@ -33,16 +32,12 @@ v4 配置文件形式如下:
 [v2fly/fhs-install-v2ray](https://github.com/v2fly/fhs-install-v2ray)
 提供了两种 systemd service 服务启动方式, [roles/v2ray](../v2ray/) 同样保留了这两种:
 
-* 单实例启动: `/etc/systemd/system/v2ray.service`
-* 多实例启动: `/etc/systemd/system/v2ray@.service`
+- 单实例启动: `/etc/systemd/system/v2ray.service`
+- 多实例启动: `/etc/systemd/system/v2ray@.service`
 
 二者均可以 systemd 的特性在 `v2ray.service.d/` 或 `v2ray@.service.d` 子目录中创建新的配置
 来覆盖上级 service unit 中的配置, 从而避免直接修改原本的 service unit 文件.
-又因为较新版本的 systemd 因为文件权限带来的安全性问题不再建议使用 `User=nobody`,
-而建议启用 [DynamicUser=](https://www.freedesktop.org/software/systemd/man/systemd.exec.html#DynamicUser=)
-
-综合上述因素, 创建了 [templates/20-dynamic-user.conf.j2](templates/20-dynamic-user.conf.j2),
-用于启用 `DynamicUser=`, 添加 `LogsDirectory=`, 以及配置使用 `-confdir` 选项启动 v2ray-core 实例.
+添加 `LogsDirectory=`, 以及配置使用 `-confdir` 选项启动 v2ray-core 实例.
 
 ## [templates/](templates/) 目录结构
 
@@ -51,42 +46,41 @@ v2ray 在不同的配置下即可以作为 client, 又可以作为 server,
 如果使用传统的单文件配置方式, 想要支持多种使用场景的 profile 会使得 Jinja 模板过于复杂,
 否则只能使用 systemd 的"多实例"启动, 但这样又有些浪费资源了;
 v2ray 本身也支持[多文件配置](https://www.v2fly.org/config/multiple_config.html),
-以及 client/server 分别支持多个 outbounds/inbounds, 
+以及 client/server 分别支持多个 outbounds/inbounds,
 把不同功能的配置拆分成单独的配置, 这种方式很适合使用模板生成配置, 于是决定采用单实例的多文件配置.
 
 关于载入配置文件时 inbounds/outbounds 的特殊处理:
 
-```
 在 json 配置中的 inbounds 和 outbounds 是数组结构, 他们有特殊的规则:
 
-* 当配置中的数组元素有 2 或以上, 覆盖前者的 inbounds/outbounds;
-* 当配置中的数组元素只有 1 个时, 查找原有 tag 相同的元素进行覆盖; 若无法找到:
-    * 对于 inbounds, 添加至最后(inbounds 内元素顺序无关)
-    * 对于 outbounds, 添加至最前(outbounds 默认首选出口);
-    * 但如果文件名含有 tail (大小写均可), 添加至最后.
+- 当配置中的数组元素有 2 或以上, 覆盖前者的 inbounds/outbounds;
+- 当配置中的数组元素只有 1 个时, 查找原有 tag 相同的元素进行覆盖; 若无法找到:
+  - 对于 inbounds, 添加至最后(inbounds 内元素顺序无关)
+  - 对于 outbounds, 添加至最前(outbounds 默认首选出口);
+  - 但如果文件名含有 tail (大小写均可), 添加至最后.
+
 借助多配置, 可以很方便为原有的配置添加不同协议的 inbound, 而不必修改原有配置.
-```
 
 推荐的多文件列表:
 
 ```
-    00-log.json
-    01-api.json
-    02-dns.json
-    03-routing.json
-    04-policy.json
-    05-inbounds.json
-    06-outbounds.json
-    07-transport.json
-    08-stats.json
-    09-reverse.json
+00-log.json
+01-api.json
+02-dns.json
+03-routing.json
+04-policy.json
+05-inbounds.json
+06-outbounds.json
+07-transport.json
+08-stats.json
+09-reverse.json
 ```
 
 按照这种方式的组织下, 便有了如今的 templates 目录结构:
 
 ```
 templates/
-├── 20-dynamic-user.conf.j2
+├── 99-override.conf.j2
 ├── client
 │   ├── 00-log.json.j2
 │   ├── 03-routing.json.j2
@@ -117,32 +111,33 @@ templates/
 
 目前, [templates/](./templates/) 中内置了以下几种配置组合,
 
-| profile | 混淆协议 | 传输层协议 | 是否启用 TLS | 备注 |
-| ------------ | ------- | --------- | ----------- | ---- |
-| `trojan-tcp` | Trojan  | TCP       | true  |    |
-| `trojan-wss` | Trojan  | WebSocket | true  |    |
-| `vmess-kcp`  | VMess   | mKCP      | false |    |
-| `vmess-quic` | VMess   | QUIC      | true  |    |
-| `vmess-tcp`  | VMess   | TCP       | true  |    |
-| `vmess-wss`  | VMess   | WebSocket | true  | Server 端使用 Nginx 反向代理 WebSocket 流量 |
+| profile      | 混淆协议 | 传输层协议 | 是否启用 TLS | 备注                                        |
+| ------------ | -------- | ---------- | ------------ | ------------------------------------------- |
+| `trojan-tcp` | Trojan   | TCP        | true         |                                             |
+| `trojan-wss` | Trojan   | WebSocket  | true         |                                             |
+| `vmess-kcp`  | VMess    | mKCP       | false        |                                             |
+| `vmess-quic` | VMess    | QUIC       | true         |                                             |
+| `vmess-tcp`  | VMess    | TCP        | true         |                                             |
+| `vmess-wss`  | VMess    | WebSocket  | true         | Server 端使用 Nginx 反向代理 WebSocket 流量 |
 
 templates/ 中 client 的 outbounds 和 server 的 inbounds 模板便采用这种方式命名的:
 
-* `templates/client/06-outbounds-${profile}.json.j2`
-* `templates/server/05-inbounds-${profile}.json.j2`
+- `templates/client/06-outbounds-${profile}.json.j2`
+- `templates/server/05-inbounds-${profile}.json.j2`
 
-在使用对应的 profile 之前, 需要查看 [vars/main.yml](vars/main.yml) 中对应方案需要传入的配置项, 并理解为什么要传入这些值, 参考下一小节的概括.
+在使用对应的 profile 之前, 需要查看 [defaults/main.yml](defaults/main.yml) 中对应方案需要传入的配置项, 并理解为什么要传入这些值, 参考下一小节的概括.
 
-## vars
+## defaults/main.yaml
 
-* `v2ray_domain` 对于已启用 TLS 项的配置都需要传入, 即除 `vmess-kcp` 外都需传入:
-    * 默认的 `example.com` 并不可用, 需要填入自己实际的域名;
-    * 需确保在之前的步骤中已使用 [roles/certbot](../certbot/) 或其它方式生成 SSL 证书;
-    * `v2ray_ssl_dir` 值有引用这个值, 即需确认对应域名的 SSL 证书已存在;
+- `v2ray_domain` 对于已启用 TLS 项的配置都需要传入, 即除 `vmess-kcp` 外都需传入:
 
-* `v2ray_type` 用于配置渲染 `server` 还是 `client` 配置, 默认值为 `server`.
+  - 默认的 `example.com` 并不可用, 需要填入自己实际的域名;
+  - 需确保在之前的步骤中已使用 [roles/certbot](../certbot/) 或其它方式生成 SSL 证书;
+  - `certbot_dir` 值有引用这个值, 即需确认对应域名的 SSL 证书已存在;
 
-* `v2ray_inbound_client_id` 用于配置 VMess 混淆协议下 `server.inbounds[0].settings.clients[0].id`, 后续考虑做多 clients id 支持
+- `v2ray_type` 用于配置渲染 `server` 还是 `client` 配置, 默认值为 `server`.
+
+- `v2ray_inbound_client_id` 用于配置 VMess 混淆协议下 `server.inbounds[0].settings.clients[0].id`, 后续考虑做多 clients id 支持
 
 ### `vmess-wss` (VMess-WebSocket-TLS)
 
@@ -151,7 +146,7 @@ VMess-WebSocket-TLS 组合下的配置项:
 ```
 # VMess-WebSocket-TLS, use Nginx to reverse proxy
 v2ray_vmess_wss_listen: 127.0.0.1
-v2ray_vmess_wss_port: 1080
+v2ray_vmess_wss_port: 7891
 v2ray_vmess_wss_tls_port: 443
 # wsSettings
 v2ray_vmess_wss_host: "{{ v2ray_domain }}"
@@ -164,7 +159,7 @@ v2ray_vmess_wss_path: /websocket
 
 ```
 # VMess-mKCPSeed
-v2ray_vmess_kcp_port: 10010
+v2ray_vmess_kcp_port: 7892
 # kcpSettings server
 v2ray_vmess_kcp_header_type: utp
 # random if not given
@@ -193,7 +188,7 @@ v2ray_vmess_kcp_seed:
 
 ```
 # VMess-QUIC-TLS
-v2ray_vmess_quic_port: 10020
+v2ray_vmess_quic_port: 7893
 # quicSettings
 v2ray_vmess_quic_security: chacha20-poly1305
 # random if not given
@@ -223,7 +218,7 @@ v2ray_vmess_quic_header_type: utp
 
 ```
 # VMess-TCP-TLS
-v2ray_vmess_tcp_port: 6443
+v2ray_vmess_tcp_port: 7894
 ```
 
 保持默认值即可.
@@ -232,7 +227,7 @@ v2ray_vmess_tcp_port: 6443
 
 ```
 # Trojan-TCP-TLS
-v2ray_trojan_tcp_port: 7443
+v2ray_trojan_tcp_port: 7895
 # password, no UUID here, random if not given
 v2ray_trojan_tcp_password:
 ```
