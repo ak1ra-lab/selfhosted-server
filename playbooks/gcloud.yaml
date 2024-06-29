@@ -1,0 +1,5 @@
+---
+- name: install gcloud
+  hosts: "{{ host | default('local') }}"
+  roles:
+    - role: gcloud

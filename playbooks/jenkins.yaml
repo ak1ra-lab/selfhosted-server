@@ -1,0 +1,5 @@
+---
+- name: install jenkins
+  hosts: "{{ host | default('local') }}"
+  roles:
+    - role: jenkins
