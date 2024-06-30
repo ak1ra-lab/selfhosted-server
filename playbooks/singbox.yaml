@@ -1,0 +1,5 @@
+---
+- name: install singbox
+  hosts: "{{ host | default('local') }}"
+  roles:
+    - role: singbox

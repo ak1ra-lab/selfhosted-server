@@ -1,4 +1,3 @@
-
 ## roles
 
 | roles                                                           | description                                                                                                               |
@@ -11,5 +10,6 @@
 | [ak1ra_lab.selfhosted_server.nginx](roles/nginx/)               | 可以选择使用多个来源安装 Nginx, nginx_org 或 xtom_com                                                                     |
 | [ak1ra_lab.selfhosted_server.nginx_config](roles/nginx_config/) | 用于 Nginx 配置文件初始化和 server 配置文件生成                                                                           |
 | [ak1ra_lab.selfhosted_server.rsstt](roles/rsstt/)               | 通过 Python pip 安装 [RSS-to-Telegram-Bot](https://github.com/Rongronggg9/RSS-to-Telegram-Bot) 并为其配置 telegraph_token |
+| [ak1ra_lab.selfhosted_server.singbox](roles/singbox/)           | 配置 `https://deb.sagernet.org` 为 apt repo 安装 `sing-box`                                                               |
 | [ak1ra_lab.selfhosted_server.v2ray](roles/v2ray/)               | 通过 GitHub release 安装 [v2ray](https://github.com/v2fly/v2ray-core/releases)                                            |
 | [ak1ra_lab.selfhosted_server.v2ray_config](roles/v2ray_config/) | 提供几种常用的 v2ray 配置文件模板, 如 Trojan-TCP, VMess-WSS 等, 具体参考 roles [README.md](roles/v2ray_config/README.md)  |

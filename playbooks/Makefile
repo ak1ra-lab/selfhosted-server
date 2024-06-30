@@ -48,3 +48,7 @@ jenkins:  ## install jenkins with roles/jenkins
 rsstt:  ## install RSStT with roles/rsstt (https://github.com/Rongronggg9/RSS-to-Telegram-Bot)
 	ansible-playbook playbooks/rsstt.yaml $(PLAYBOOK_ARGS) -e 'host=$(PLAYBOOK_HOST)' \
 		-e @credentials/rsstt.yaml --ask-vault-pass
+
+.PHONY: singbox
+singbox:  ## install singbox with roles/singbox
+	ansible-playbook playbooks/singbox.yaml $(PLAYBOOK_ARGS) -e 'host=$(PLAYBOOK_HOST)'
