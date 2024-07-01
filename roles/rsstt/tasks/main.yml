@@ -11,6 +11,7 @@
     chdir: "{{ rsstt_working_dir }}"
     virtualenv: "{{ rsstt_working_dir }}/venv"
     virtualenv_command: python3 -m venv
+    extra_args: "{{ rsstt_pip_extra_args | trim }}"
 
 - name: set rsstt_telegraph_token if not given
   when: not rsstt_telegraph_token and rsstt_telegraph_token_count > 0
