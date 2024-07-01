@@ -37,3 +37,10 @@ rsstt_telegraph_token:
 这样下次重新部署或更新软件版本时就可以重用过去申请的 telegraph token.
 
 > [!notice] 如果"遗失"了这些 telegraph token, 相当于完全放弃了由 bot 推送的长文相关内容的"编辑权", 个人认为将其记录下来比较好.
+
+## 新增 `rsstt_install_source`
+
+该选项其值可以是 `pypi` 或者 `testpypi`,
+指定为 `testpypi` 时会从 [TestPyPI](https://test.pypi.org/project/rsstt/) 安装 RSStT.
+
+> You may also install RSStT from PyPI (tracking master branch) or TestPyPI (tracking dev branch, which is always up-to-date) using pip.
