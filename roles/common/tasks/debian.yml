@@ -21,12 +21,6 @@
     force: true
     backup: true
 
-- name: install the prerequisites
-  ansible.builtin.apt:
-    name: "{{ common_apt_prerequisites }}"
-    update_cache: true
-    state: present
-
 - name: install common packages
   ansible.builtin.apt:
     name: "{{ common_apt_packages }}"

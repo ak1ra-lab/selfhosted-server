@@ -3,16 +3,15 @@
 common_apt_repo_schema: https
 
 # 此项设置为下方 common_apt_repo_domains 的任意一个 key
-common_apt_repo_domain_ref: fastly
+common_apt_repo_domain_ref: default
 common_apt_repo_domains:
-  fastly: deb.debian.org
+  default: deb.debian.org
   aliyun: mirrors.aliyun.com
   tencentcloud: mirrors.cloud.tencent.com
   ustc: mirrors.ustc.edu.cn
   tuna: mirrors.tuna.tsinghua.edu.cn
   hit: mirrors.hit.edu.cn
   sjtu: mirror.sjtu.edu.cn
-  opentuna: opentuna.cn
 
 common_apt_repo_url: "{{ common_apt_repo_schema }}://{{ common_apt_repo_domains[common_apt_repo_domain_ref] }}"
 
@@ -20,85 +19,35 @@ common_apt_repo_url: "{{ common_apt_repo_schema }}://{{ common_apt_repo_domains[
 common_apt_force_ipv4: true
 
 # 是否开启 TCP BBR 拥塞控制算法
-common_set_tcp_bbr: false
+common_tcp_bbr_enabled: false
 
 # 是否设置 IPv4 ip_forward
-common_set_ip_forward: false
-
-# 是否设置自定义 sysctl.conf
-common_set_custom_sysctl_conf: false
+common_ip_forward_enabled: false
 
 # 是否设置自定义 /etc/ssh/sshd_config
-common_set_custom_sshd_config: true
+common_custom_sshd_config: true
+common_custom_sshd_config_entries:
+  ## Specifies whether root can log in using ssh(1).
+  ## The argument must be yes, prohibit-password, forced-commands-only, or no.  The default is prohibit-password.
+  - { regexp: "^#?PermitRootLogin", line: "PermitRootLogin prohibit-password" }
+  ## Specifies whether password authentication is allowed.  The default is yes.
+  - { regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no" }
+  ## Specifies whether remote hosts are allowed to connect to ports forwarded for the client. The default is no.
+  - { regexp: "^#?GatewayPorts", line: "GatewayPorts no" }
+  ## Specifies whether TCP forwarding is permitted. The default is yes.
+  ## Visual Studio Code: remote.SSH extension makes use of an SSH tunnel to facilitate communication with the host.
+  - { regexp: "^#?AllowTcpForwarding", line: "AllowTcpForwarding yes" }
+  ## Specifies whether forwarding Unix domain sockets is permitted. The default is yes.
+  ## Visual Studio Code: `remote.SSH.remoteServerListenOnSocket` requires this to be yes.
+  - {
+      regexp: "^#?AllowStreamLocalForwarding",
+      line: "AllowStreamLocalForwarding yes",
+    }
 
-common_apt_prerequisites:
-  - apt-transport-https
-  - ca-certificates
-  - curl
-  - debian-archive-keyring
-  - gnupg2
-  - lsb-release
-
-common_apt_packages:
-  - bash-completion
-  - bc
-  - binutils
-  - bsdextrautils
-  - bsd-mailx
-  - build-essential
-  - bzip2
-  - cpio
-  - cron
-  - curl
-  - dnsutils
-  - dos2unix
-  - file
-  - fontconfig
-  - gawk
-  - git
-  - gnupg2
-  - htop
-  - iftop
-  - imagemagick
-  - iotop
-  - iperf3
-  - iproute2
-  - iputils-arping
-  - iputils-clockdiff
-  - iputils-ping
-  - iputils-tracepath
-  - jq
-  - less
-  - locales
-  - logrotate
-  - ncdu
-  - p7zip
-  - p7zip-full
-  - parallel
-  - parted
-  - python3
-  - python3-dev
-  - python3-pip
-  - python3-setuptools
-  - python3-venv
-  - rename
-  - rsync
-  - screen
-  - stow
-  - sudo
-  - telnet
-  - tmux
-  - tree
-  - unzip
-  - vim
-  - wget
-  - xxd
-  - xz-utils
-  - zip
-  - zlib1g
-  - zlib1g-dev
-
-common_custom_sysctl_conf:
+# 是否设置自定义 sysctl.conf
+# 我并不能很好理解下面这些值的作用, 因此此项默认值为 false
+common_custom_sysctl_conf: false
+common_custom_sysctl_conf_entries:
   # ref: https://www.kernel.org/doc/html/latest/admin-guide/sysctl/net.html
   # Low latency busy poll timeout for socket reads. (needs CONFIG_NET_RX_BUSY_POLL)
   - name: net.core.busy_read
@@ -167,3 +116,45 @@ common_custom_sysctl_conf:
   # default: 60
   - name: vm.swappiness
     value: "30"
+
+common_apt_packages:
+  - arping
+  - bash-completion
+  - bc
+  - bzip2
+  - curl
+  - dnsutils
+  - dos2unix
+  - file
+  - gawk
+  - git
+  - gnupg2
+  - htop
+  - iftop
+  - imagemagick
+  - iotop
+  - iperf3
+  - jq
+  - less
+  - logrotate
+  - mtr
+  - ncdu
+  - p7zip
+  - p7zip-full
+  - parallel
+  - parted
+  - pipx
+  - python3
+  - python3-pip
+  - rename
+  - rsync
+  - screen
+  - stow
+  - systemd-cron
+  - systemd-oomd
+  - telnet
+  - tmux
+  - tree
+  - unattended-upgrades
+  - vim
+  - xxd

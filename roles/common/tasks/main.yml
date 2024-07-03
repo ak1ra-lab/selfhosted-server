@@ -1,62 +1,53 @@
 ---
 # tasks to apply changes
 - name: include_tasks if os_family is debian
-  ansible.builtin.include_tasks: debian.yml
   when: ansible_facts['os_family']|lower == 'debian'
-
-- name: update /etc/sysctl.conf
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    state: present
-    ignoreerrors: true
-  loop: "{{ common_custom_sysctl_conf }}"
-  when: common_set_custom_sysctl_conf
+  ansible.builtin.include_tasks: debian.yml
 
 - name: enable net.ipv4.ip_forward
+  when: common_ip_forward_enabled
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
     value: 1
     state: present
     ignoreerrors: true
-  when: common_set_ip_forward
-
-- name: load tcp_bbr module
-  ansible.builtin.lineinfile:
-    path: /etc/modules
-    regexp: "^#? ?tcp_bbr$"
-    line: "tcp_bbr"
-    state: present
-  when: ansible_kernel >= '4.9.0' and common_set_tcp_bbr
 
 - name: enable tcp_bbr
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    state: present
-  loop:
-    - name: net.core.default_qdisc
-      value: fq # default 'pfifo_fast'
-    - name: net.ipv4.tcp_congestion_control
-      value: bbr
-  when: ansible_kernel >= '4.9.0' and common_set_tcp_bbr
+  when: ansible_kernel >= '4.9.0' and common_tcp_bbr_enabled
+  block:
+    - name: load tcp_bbr module
+      ansible.builtin.lineinfile:
+        path: /etc/modules
+        regexp: "^#? ?tcp_bbr$"
+        line: "tcp_bbr"
+        state: present
 
-- name: disable certain /etc/ssh/sshd_config entries for security reason
+    - name: enable tcp_bbr
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+      loop:
+        # default 'pfifo_fast'
+        - name: net.core.default_qdisc
+          value: fq
+        - name: net.ipv4.tcp_congestion_control
+          value: bbr
+
+- name: update certain /etc/ssh/sshd_config entries for security reason
+  when: common_custom_sshd_config
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
-  loop:
-    ## Specifies whether root can log in using ssh(1).
-    # The argument must be yes, prohibit-password, forced-commands-only, or no.  The default is prohibit-password.
-    - {regexp: "^#?PermitRootLogin", line: "PermitRootLogin no"}
-    ## Specifies whether password authentication is allowed.  The default is yes.
-    - {regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no"}
-    ## Specifies whether TCP forwarding is permitted. The default is yes.
-    - {regexp: "^#?AllowTcpForwarding", line: "AllowTcpForwarding no"}
-    ## Specifies whether forwarding Unix domain sockets is permitted. The default is yes.
-    - {regexp: "^#?AllowStreamLocalForwarding", line: "AllowStreamLocalForwarding no"}
-    ## Specifies whether remote hosts are allowed to connect to ports forwarded for the client. The default is no.
-    - {regexp: "^#?GatewayPorts", line: "GatewayPorts no"}
-  when: common_set_custom_sshd_config
+  loop: "{{ common_custom_sshd_config_entries }}"
+
+- name: update /etc/sysctl.conf
+  when: common_custom_sysctl_conf
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    ignoreerrors: true
+  loop: "{{ common_custom_sysctl_conf_entries }}"
