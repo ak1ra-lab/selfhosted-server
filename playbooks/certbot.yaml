@@ -1,9 +1,6 @@
 ---
 - name: install certbot
   hosts: "{{ host | default('local') }}"
-  vars:
-    certbot_domain: ak1ra.xyz
-    certbot_email: certbot@ak1ra.xyz
   roles:
     - role: certbot
       certbot_domain: "{{ certbot_domain }}"

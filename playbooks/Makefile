@@ -3,10 +3,6 @@
 PLAYBOOK_HOST ?= local
 PLAYBOOK_ARGS ?= --become
 
-# roles/certbot
-CERTBOT_DOMAIN ?= ak1ra.xyz
-CERTBOT_EMAIL ?= certbot@ak1ra.xyz
-
 .PHONY: encrypt
 encrypt:  ## ansible-vault encrypt credentials/*.yaml
 	ansible-vault encrypt credentials/*.yaml
@@ -27,13 +23,11 @@ docker:  ## install docker with roles/docker
 .PHONY: certbot
 certbot:  ## install certbot with roles/certbot
 	ansible-playbook playbooks/certbot.yaml $(PLAYBOOK_ARGS) -e 'host=$(PLAYBOOK_HOST)' \
-		-e 'domain=$(CERTBOT_DOMAIN)' -e 'email=$(CERTBOT_EMAIL)' \
 		-e @credentials/certbot.yaml --ask-vault-pass
 
 .PHONY: nginx
 nginx:  ## install nginx with roles/nginx and roles/nginx_config
 	ansible-playbook playbooks/nginx.yaml $(PLAYBOOK_ARGS) -e 'host=$(PLAYBOOK_HOST)' \
-		-e 'domain=$(CERTBOT_DOMAIN)' -e 'email=$(CERTBOT_EMAIL)' \
 		-e @credentials/certbot.yaml --ask-vault-pass
 
 .PHONY: gcloud
