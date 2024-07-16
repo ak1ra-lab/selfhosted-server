@@ -1,6 +1,9 @@
 
 ANSIBLE_HOME ?= $(HOME)/.ansible
 
+GIT := git
+ANSIBLE_GALAXY := ansible-galaxy
+
 .DEFAULT_GOAL=help
 .PHONY=help
 help:
@@ -17,12 +20,17 @@ yamlfmt:
 fmt: yamlfmt  ## reformat yaml files
 	yamlfmt .
 
+.PHONY: build
+build: fmt  ## ansible-galaxy collection build
+	$(ANSIBLE_GALAXY) collection build --force .
+
 .PHONY: install
-install: fmt  ## install this ansible collection
-	ansible-galaxy collection install . -p $(ANSIBLE_HOME)/collections
+install: fmt  ## ansible-galaxy collection install
+	$(ANSIBLE_GALAXY) collection install -p $(ANSIBLE_HOME)/collections .
 
 .PHONY: clean
 clean:  ## clean up working directory
-	git gc --aggressive
+	$(RM) *.tar.gz
+	$(GIT) gc --aggressive
 
 include playbooks/Makefile

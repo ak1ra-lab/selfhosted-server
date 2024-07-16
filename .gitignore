@@ -57,13 +57,14 @@ Temporary Items
 .vagrant/
 
 # Log files (if you are creating logs in debug mode, uncomment this)
-# *.log
+*.log
 
 ### Vagrant Patch ###
 *.box
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,ansible,vagrant
 
+*.tar.gz
 examples/
 credentials/
 credentials.yaml

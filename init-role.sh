@@ -2,7 +2,7 @@
 # shellcheck shell=dash
 
 main() {
-    NAME=$1
+    NAME="$1"
     BASE_DIR="$(readlink -f "$(dirname "$0")")/roles"
 
     if [ "$#" -ne 1 ]; then
@@ -10,14 +10,7 @@ main() {
         exit 1
     fi
 
-    if [ -d "${BASE_DIR}/${NAME}" ]; then
-        code "${BASE_DIR}/${NAME}/tasks/main.yml"
-    else
-        for DIR in defaults files handlers templates tasks vars; do
-            mkdir -p "${BASE_DIR}/${NAME}/${DIR}"
-        done
-        tree "${BASE_DIR}/${NAME}"
-    fi
+    ansible-galaxy role init "roles/${NAME}"
 }
 
 main "$@"
