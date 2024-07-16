@@ -1,0 +1,17 @@
+---
+# defaults file for roles/deploy_tarball
+## required
+deploy_tarball_url:
+
+## general settings
+deploy_tarball_user: app
+deploy_tarball_group: app
+deploy_tarball_user_home: "/home/{{ deploy_tarball_user }}"
+deploy_tarball_dest: "{{ deploy_tarball_user_home }}/deployments"
+deploy_tarball_shell: /usr/bin/bash
+
+## AWS S3 type
+aws_access_key:
+aws_secret_key:
+aws_region: ap-southeast-1
+aws_profile: "{{ aws_region }}-s3-default"
