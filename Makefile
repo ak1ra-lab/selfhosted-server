@@ -1,8 +1,13 @@
-
+# ansible
+BINDIR ?= $(HOME)/.local/bin
 ANSIBLE_HOME ?= $(HOME)/.ansible
+ANSIBLE_GALAXY := $(BINDIR)/ansible-galaxy
+ANSIBLE_PLAYBOOK := $(BINDIR)/ansible-playbook
+ANSIBLE_VAULT := $(BINDIR)/ansible-vault
 
-GIT := git
-ANSIBLE_GALAXY := ansible-galaxy
+# ansible-playbook
+PLAYBOOK_HOST ?= local
+PLAYBOOK_ARGS ?= --become
 
 .DEFAULT_GOAL=help
 .PHONY=help
@@ -21,16 +26,16 @@ fmt: yamlfmt  ## reformat yaml files
 	yamlfmt .
 
 .PHONY: build
-build: fmt  ## ansible-galaxy collection build
-	$(ANSIBLE_GALAXY) collection build --force .
+build:  ## ansible-galaxy collection build
+	$(ANSIBLE_GALAXY) collection build --force --output-path=./build .
 
 .PHONY: install
-install: fmt  ## ansible-galaxy collection install
-	$(ANSIBLE_GALAXY) collection install -p $(ANSIBLE_HOME)/collections .
+install:  ## ansible-galaxy collection install
+	$(ANSIBLE_PLAYBOOK) install.yaml -e 'host=$(PLAYBOOK_HOST)'
 
 .PHONY: clean
 clean:  ## clean up working directory
-	$(RM) *.tar.gz
-	$(GIT) gc --aggressive
+	rm -f ./build/*.tar.gz
+	git gc --aggressive
 
 include playbooks/Makefile

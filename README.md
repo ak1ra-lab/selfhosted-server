@@ -3,11 +3,32 @@
 ## Quick start
 
 ```
-git clone git@github.com:ak1ra-lab/selfhosted-server.git
-cd selfhosted-server && make install
+# install ansible using pipx
+sudo apt-get update -y
+sudo apt-get install -y pipx
+pipx install ansible
+
+# pipx install ansible 时只会为 ansible 创建软链接
+ln -sf ~/.local/pipx/venvs/ansible/bin/ansible* ~/.local/bin/
+
+# install collection
+git clone https://github.com/ak1ra-lab/selfhosted-server.git
+cd selfhosted-server
+
+PLAYBOOK_HOST=local make install
 ```
 
-执行 `make install` 会将 collection 安装到 `~/.ansible/collections` 目录, 在其他目录中使用本 collection 中的 roles 时注意使用 FQDN (fully qualified domain name), 即带上 `ak1ra_lab.selfhosted_server.` 前缀, 参考 [roles/](./roles/) 目录.
+`make install` 会使用 `community.general.ansible_galaxy_install` module 安装 collection, 通过传入 `PLAYBOOK_HOST` 环境变量, 可以比较方便在多台主机上安装此 collection, collection 安装后在别的 playbook 中使用时需要使用 FQDN (fully qualified domain name). 本项目的 namespace 是 `ak1ra_lab.selfhosted_server`.
+
+> NOTE: `community.general.ansible_galaxy_install` 会在一个"全新"的 shell 中执行 ansible-galaxy 命令? 本地运行的时候没有问题, 放到 CI 上时, `requirements_file` 一直提示无法找到文件, 大概是无法使用相对路径.
+
+## pipx inject
+
+使用 pipx 安装的 ansible 有时候会缺失一些 Python 依赖,
+
+* 可以使用 `pipx runpip ansible list -v` 查看 ansible 安装的 Python 依赖
+* 以 `boto3` 为例, 可以使用 `pipx inject ansible boto3` 安装缺失的依赖
+* 参考 install.yaml 中 `community.general.pipx` task
 
 ## `Makefile`
 

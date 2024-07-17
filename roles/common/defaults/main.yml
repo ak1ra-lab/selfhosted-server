@@ -29,20 +29,17 @@ common_custom_sshd_config: true
 common_custom_sshd_config_entries:
   ## Specifies whether root can log in using ssh(1).
   ## The argument must be yes, prohibit-password, forced-commands-only, or no.  The default is prohibit-password.
-  - { regexp: "^#?PermitRootLogin", line: "PermitRootLogin prohibit-password" }
+  - {regexp: "^#?PermitRootLogin", line: "PermitRootLogin prohibit-password"}
   ## Specifies whether password authentication is allowed.  The default is yes.
-  - { regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no" }
+  - {regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no"}
   ## Specifies whether remote hosts are allowed to connect to ports forwarded for the client. The default is no.
-  - { regexp: "^#?GatewayPorts", line: "GatewayPorts no" }
+  - {regexp: "^#?GatewayPorts", line: "GatewayPorts no"}
   ## Specifies whether TCP forwarding is permitted. The default is yes.
   ## Visual Studio Code: remote.SSH extension makes use of an SSH tunnel to facilitate communication with the host.
-  - { regexp: "^#?AllowTcpForwarding", line: "AllowTcpForwarding yes" }
+  - {regexp: "^#?AllowTcpForwarding", line: "AllowTcpForwarding yes"}
   ## Specifies whether forwarding Unix domain sockets is permitted. The default is yes.
   ## Visual Studio Code: `remote.SSH.remoteServerListenOnSocket` requires this to be yes.
-  - {
-      regexp: "^#?AllowStreamLocalForwarding",
-      line: "AllowStreamLocalForwarding yes",
-    }
+  - {regexp: "^#?AllowStreamLocalForwarding", line: "AllowStreamLocalForwarding yes",}
 
 # 是否设置自定义 sysctl.conf
 # 我并不能很好理解下面这些值的作用, 因此此项默认值为 false

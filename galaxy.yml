@@ -65,9 +65,10 @@ build_ignore:
   - '*.tar.gz'
   - '*.log'
   - '*.box'
+  - .vagrant
+  - build
   - credentials
   - examples
-  - .vagrant
   - docs/example
   - packages.txt
   - Vagrantfile

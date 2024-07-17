@@ -64,7 +64,8 @@ Temporary Items
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,ansible,vagrant
 
-*.tar.gz
+build/
 examples/
 credentials/
 credentials.yaml
+*.tar.gz

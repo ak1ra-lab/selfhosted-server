@@ -5,16 +5,8 @@
     - name: set_fact aws_profile_loop_vars
       ansible.builtin.set_fact:
         aws_profile_loop_vars:
-          - {
-              "owner": "{{ ansible_effective_user_id }}",
-              "group": "{{ ansible_effective_group_id }}",
-              "path": "{{ ansible_user_dir }}/.aws",
-            }
-          - {
-              "owner": "{{ deploy_tarball_user }}",
-              "group": "{{ deploy_tarball_group }}",
-              "path": "{{ deploy_tarball_user_home }}/.aws",
-            }
+          - {"owner": "{{ ansible_effective_user_id }}", "group": "{{ ansible_effective_group_id }}", "path": "{{ ansible_user_dir }}/.aws"}
+          - {"owner": "{{ deploy_tarball_user }}", "group": "{{ deploy_tarball_group }}", "path": "{{ deploy_tarball_user_home }}/.aws",}
 
     - name: ensure ~/.aws directory exists
       ansible.builtin.file:
