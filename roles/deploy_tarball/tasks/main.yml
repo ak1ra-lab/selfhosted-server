@@ -26,18 +26,20 @@
     mode: "0755"
     state: directory
 
+- name: mktemp deploy_tarball_tempdir
+  ansible.builtin.tempfile:
+    state: directory
+  register: deploy_tarball_tempdir
+
 - name: include_tasks aws.yml if deploy_tarball_url in s3:// format
   when: deploy_tarball_url is ansible.builtin.regex('^s3://[a-z0-9\\.-]{3,63}/')
-  vars:
-    deploy_tarball_url_bucket: "{{ deploy_tarball_url | ansible.builtin.urlsplit('hostname') }}"
-    deploy_tarball_url_object: "{{ deploy_tarball_url | ansible.builtin.urlsplit('path') | trim('/') }}"
   ansible.builtin.include_tasks: aws.yml
 
-- name: download tarball from HTTP
+- name: include_tasks http.yml if deploy_tarball_url in https?:// format
   when: deploy_tarball_url is ansible.builtin.regex('https?://')
-  ansible.builtin.get_url:
-    url: "{{ deploy_tarball_url }}"
-    dest: "{{ deploy_tarball_dest }}"
-    owner: "{{ deploy_tarball_user }}"
-    group: "{{ deploy_tarball_group }}"
-    decompress: true
+  ansible.builtin.include_tasks: http.yml
+
+- name: remove deploy_tarball_tempdir
+  ansible.builtin.file:
+    path: "{{ deploy_tarball_tempdir.path }}"
+    state: absent

@@ -51,28 +51,19 @@
           aws_secret_access_key = {{ aws_secret_key }}
       loop: "{{ aws_profile_loop_vars }}"
 
-- name: mktemp -d /tmp/ansible.XXXXXX for deploy_tarball_url_object
-  ansible.builtin.tempfile:
-    state: directory
-  register: deploy_tarball_url_tempdir
-
 - name: download tarball from AWS S3
   amazon.aws.s3_object:
-    bucket: "{{ deploy_tarball_url_bucket }}"
-    object: "{{ deploy_tarball_url_object }}"
-    dest: "{{ deploy_tarball_url_tempdir.path }}/{{ deploy_tarball_url_object }}"
+    bucket: "{{ deploy_tarball_url_hostname }}"
+    object: "{{ deploy_tarball_url_path | trim('/') }}"
+    dest: "{{ deploy_tarball_tempdir.path }}{{ deploy_tarball_url_path }}"
     mode: get
     profile: "{{ aws_profile }}"
+    retries: "{{ aws_retry }}"
 
 - name: decompress tarball downloaded from AWS S3
   ansible.builtin.unarchive:
-    src: "{{ deploy_tarball_url_tempdir.path }}/{{ deploy_tarball_url_object }}"
+    src: "{{ deploy_tarball_tempdir.path }}{{ deploy_tarball_url_path }}"
     dest: "{{ deploy_tarball_dest }}"
     owner: "{{ deploy_tarball_user }}"
     group: "{{ deploy_tarball_group }}"
     remote_src: true
-
-- name: delete /tmp/ansible.XXXXXX
-  ansible.builtin.file:
-    path: "{{ deploy_tarball_url_tempdir.path }}"
-    state: absent
