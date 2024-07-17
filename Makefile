@@ -8,6 +8,7 @@ ANSIBLE_VAULT := $(BINDIR)/ansible-vault
 # ansible-playbook
 PLAYBOOK_HOST ?= local
 PLAYBOOK_ARGS ?= --become
+repository ?= https://github.com/ak1ra-lab/selfhosted-server.git
 
 .DEFAULT_GOAL=help
 .PHONY=help
@@ -16,22 +17,37 @@ help:
 		printf "\033[36m%-10s\033[0m %s\n", $$1, substr($$0, index($$0,$$3)) \
 	}' $(MAKEFILE_LIST)
 
+.PHONY: pipx
+pipx:
+	command -v pipx >/dev/null || { \
+		sudo apt-get update -y && \
+		sudo apt-get install -y pipx; \
+	}
+
+.PHONY: ansible
+ansible: pipx  ## pipx install ansible
+	command -v ansible >/dev/null || { \
+		pipx install ansible && \
+		pipx inject ansible boto3 botocore && \
+		ln -sf $(HOME)/.local/pipx/venvs/ansible/bin/ansible-* $(HOME)/.local/bin/; \
+	}
+
 .PHONY: yamlfmt
 yamlfmt:
-	command yamlfmt 2>/dev/null || \
+	command -v yamlfmt >/dev/null || \
 		go install github.com/google/yamlfmt/cmd/yamlfmt@latest
 
-.PHONY: fmt
-fmt: yamlfmt  ## reformat yaml files
+.PHONY: format
+format: yamlfmt  ## reformat yml/yaml files recursively
 	yamlfmt .
 
 .PHONY: build
-build:  ## ansible-galaxy collection build
+build: ansible  ## ansible-galaxy collection build
 	$(ANSIBLE_GALAXY) collection build --force --output-path=./build .
 
 .PHONY: install
-install:  ## ansible-galaxy collection install
-	$(ANSIBLE_PLAYBOOK) install.yaml -e 'host=$(PLAYBOOK_HOST)'
+install: ansible  ## ansible-galaxy collection install
+	$(ANSIBLE_PLAYBOOK) install.yaml -e 'host=$(PLAYBOOK_HOST)' -e 'repository=$(repository)'
 
 .PHONY: clean
 clean:  ## clean up working directory

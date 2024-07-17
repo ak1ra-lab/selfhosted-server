@@ -1,12 +1,14 @@
 ---
 - name: ansible-galaxy collection install
   hosts: "{{ host | default('local') }}"
+  vars:
+    repository: https://github.com/ak1ra-lab/selfhosted-server.git
   tasks:
     - name: ansible-galaxy collection install
       environment:
         PATH: "{{ ansible_env['HOME'] }}/.local/bin:{{ ansible_env['PATH'] }}"
       community.general.ansible_galaxy_install:
-        name: git+https://github.com/ak1ra-lab/selfhosted-server.git
+        name: "git+{{ repository }}"
         type: collection
         force: true
 
@@ -17,4 +19,3 @@
         inject_packages:
           - boto3
           - botocore
-          - jmespath

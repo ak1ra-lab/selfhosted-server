@@ -1,21 +1,15 @@
+
 # `ak1ra_lab/selfhosted_server`
 
 ## Quick start
 
+首先安装 ansible, 推荐使用 pipx 管理 Python 编写的命令行程序, 可以参考 Makefile 中的 `ansible` rule.
+
 ```
-# install ansible using pipx
-sudo apt-get update -y
-sudo apt-get install -y pipx
-pipx install ansible
-
-# pipx install ansible 时只会为 ansible 创建软链接
-ln -sf ~/.local/pipx/venvs/ansible/bin/ansible* ~/.local/bin/
-
-# install collection
 git clone https://github.com/ak1ra-lab/selfhosted-server.git
 cd selfhosted-server
 
-PLAYBOOK_HOST=local make install
+make install
 ```
 
 `make install` 会使用 `community.general.ansible_galaxy_install` module 安装 collection, 通过传入 `PLAYBOOK_HOST` 环境变量, 可以比较方便在多台主机上安装此 collection, collection 安装后在别的 playbook 中使用时需要使用 FQDN (fully qualified domain name). 本项目的 namespace 是 `ak1ra_lab.selfhosted_server`.
@@ -37,8 +31,10 @@ PLAYBOOK_HOST=local make install
 
 ```ShellSession
 $ make help
-fmt         reformat yaml files
-install     install this ansible collection
+ansible     pipx install ansible
+format      reformat yml/yaml files recursively
+build       ansible-galaxy collection build
+install     ansible-galaxy collection install
 clean       clean up working directory
 encrypt     ansible-vault encrypt credentials/*.yaml
 decrypt     ansible-vault decrypt credentials/*.yaml
@@ -49,6 +45,7 @@ nginx       install nginx with roles/nginx and roles/nginx_config
 gcloud      install gcloud with roles/gcloud
 jenkins     install jenkins with roles/jenkins
 rsstt       install RSStT with roles/rsstt (https://github.com/Rongronggg9/RSS-to-Telegram-Bot)
+singbox     install singbox with roles/singbox
 ```
 
 ## Scripts
