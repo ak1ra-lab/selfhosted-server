@@ -29,7 +29,7 @@ ansible: pipx  ## pipx install ansible
 	command -v ansible >/dev/null || { \
 		pipx install ansible && \
 		pipx inject ansible boto3 botocore && \
-		ln -sf $(HOME)/.local/pipx/venvs/ansible/bin/ansible-* $(HOME)/.local/bin/; \
+		ln -sf $(HOME)/.local/pipx/venvs/ansible/bin/ansible* $(HOME)/.local/bin/; \
 	}
 
 .PHONY: yamlfmt
