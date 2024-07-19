@@ -11,7 +11,7 @@ PLAYBOOK_ARGS ?= --become
 repository ?= https://github.com/ak1ra-lab/selfhosted-server.git
 
 .DEFAULT_GOAL=help
-.PHONY=help
+.PHONY: help
 help:
 	@awk -F ':|##' '/^[^\t].+?:.*?##/ {\
 		printf "\033[36m%-10s\033[0m %s\n", $$1, substr($$0, index($$0,$$3)) \
