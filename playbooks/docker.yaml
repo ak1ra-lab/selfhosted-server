@@ -2,6 +2,6 @@
 - ansible.builtin.import_playbook: common.yaml
 
 - name: install docker
-  hosts: "{{ host | default('local') }}"
+  hosts: "{{ playbook_hosts | default('local') }}"
   roles:
     - role: docker

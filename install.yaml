@@ -1,6 +1,6 @@
 ---
 - name: ansible-galaxy collection install
-  hosts: "{{ host | default('local') }}"
+  hosts: "{{ playbook_hosts | default('local') }}"
   vars:
     repository: https://github.com/ak1ra-lab/selfhosted-server.git
   tasks:

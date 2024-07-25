@@ -4,7 +4,7 @@
 - ansible.builtin.import_playbook: certbot.yaml
 
 - name: install nginx
-  hosts: "{{ host | default('local') }}"
+  hosts: "{{ playbook_hosts | default('local') }}"
   roles:
     - role: nginx
       nginx_apt_repo: debian

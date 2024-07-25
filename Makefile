@@ -6,7 +6,7 @@ ANSIBLE_PLAYBOOK := $(BINDIR)/ansible-playbook
 ANSIBLE_VAULT := $(BINDIR)/ansible-vault
 
 # ansible-playbook
-PLAYBOOK_HOST ?= local
+PLAYBOOK_HOSTS ?= local
 PLAYBOOK_ARGS ?= --become
 repository ?= https://github.com/ak1ra-lab/selfhosted-server.git
 
@@ -47,7 +47,7 @@ build: ansible  ## ansible-galaxy collection build
 
 .PHONY: install
 install: ansible  ## ansible-galaxy collection install
-	$(ANSIBLE_PLAYBOOK) install.yaml -e 'host=$(PLAYBOOK_HOST)' -e 'repository=$(repository)'
+	$(ANSIBLE_PLAYBOOK) install.yaml -e 'playbook_hosts=$(PLAYBOOK_HOSTS)' -e 'repository=$(repository)'
 
 .PHONY: clean
 clean:  ## clean up working directory

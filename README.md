@@ -12,7 +12,7 @@ cd selfhosted-server
 make install
 ```
 
-`make install` 会使用 `community.general.ansible_galaxy_install` module 安装 collection, 通过传入 `PLAYBOOK_HOST` 环境变量, 可以比较方便在多台主机上安装此 collection, collection 安装后在别的 playbook 中使用时需要使用 FQDN (fully qualified domain name). 本项目的 namespace 是 `ak1ra_lab.selfhosted_server`.
+`make install` 会使用 `community.general.ansible_galaxy_install` module 安装 collection, 通过传入 `PLAYBOOK_HOSTS` 环境变量, 可以比较方便在多台主机上安装此 collection, collection 安装后在别的 playbook 中使用时需要使用 FQDN (fully qualified domain name). 本项目的 namespace 是 `ak1ra_lab.selfhosted_server`.
 
 > NOTE: `community.general.ansible_galaxy_install` 会在一个"全新"的 shell 中执行 ansible-galaxy 命令? 本地运行的时候没有问题, 放到 CI 上时, `requirements_file` 一直提示无法找到文件, 大概是无法使用相对路径.
 
