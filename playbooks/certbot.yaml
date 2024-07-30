@@ -1,6 +1,6 @@
 ---
 - name: install certbot
-  hosts: "{{ playbook_hosts | default('local') }}"
+  hosts: "{{ playbook_hosts | default('localhost') }}"
   roles:
     - role: certbot
       certbot_domain: "{{ certbot_domain }}"

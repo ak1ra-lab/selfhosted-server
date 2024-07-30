@@ -1,5 +1,5 @@
 ---
 - name: install rsstt
-  hosts: "{{ playbook_hosts | default('local') }}"
+  hosts: "{{ playbook_hosts | default('localhost') }}"
   roles:
     - role: rsstt

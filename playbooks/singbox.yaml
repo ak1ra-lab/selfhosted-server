@@ -1,5 +1,5 @@
 ---
 - name: install singbox
-  hosts: "{{ playbook_hosts | default('local') }}"
+  hosts: "{{ playbook_hosts | default('localhost') }}"
   roles:
     - role: singbox

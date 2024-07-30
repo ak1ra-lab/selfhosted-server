@@ -1,5 +1,5 @@
 ---
 - name: common initial tasks
-  hosts: "{{ playbook_hosts | default('local') }}"
+  hosts: "{{ playbook_hosts | default('localhost') }}"
   roles:
     - role: common

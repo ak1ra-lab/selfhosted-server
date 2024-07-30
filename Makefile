@@ -6,7 +6,7 @@ ANSIBLE_PLAYBOOK := $(BINDIR)/ansible-playbook
 ANSIBLE_VAULT := $(BINDIR)/ansible-vault
 
 # ansible-playbook
-PLAYBOOK_HOSTS ?= local
+PLAYBOOK_HOSTS ?= localhost
 PLAYBOOK_ARGS ?= --become
 repository ?= https://github.com/ak1ra-lab/selfhosted-server.git
 
