@@ -1,8 +1,14 @@
 ---
-- name: ensure jenkins_apt_key_signed_by directory exists
+- name: ensure apt directories exists
   ansible.builtin.file:
-    path: "{{ jenkins_apt_key_signed_by | dirname }}"
+    path: "{{ directory }}"
     state: directory
+  loop:
+    - "/etc/apt/apt.conf.d"
+    - "/etc/apt/keyrings"
+    - "/etc/apt/preferences.d"
+  loop_control:
+    loop_var: directory
 
 - name: import apt key
   ansible.builtin.get_url:
@@ -17,18 +23,25 @@
 
 - name: add apt pinning
   ansible.builtin.copy:
-    dest: /etc/apt/preferences.d/99jenkins
+    dest: /etc/apt/preferences.d/90jenkins-io
     content: |
       Package: jenkins
       Pin: origin pkg.jenkins.io
       Pin-Priority: 900
     mode: "0644"
 
+- name: add unattended-upgrade origin pattern
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/90unattended-upgrades-jenkins-io
+    content: |
+      Unattended-Upgrade::Origins-Pattern:: "origin=pkg.jenkins.io/debian-stable";
+    mode: "0644"
+
 - name: install jenkins packages
   ansible.builtin.apt:
     name:
       - fontconfig
-      - openjdk-17-jre
+      - openjdk-17-jre-headless
       - jenkins
     update_cache: true
     state: present
