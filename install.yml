@@ -1,0 +1,56 @@
+---
+- name: ansible-galaxy collection install
+  hosts: "{{ playbookHosts | default('localhost') }}"
+  vars:
+    collections_path: "{{ [ansible_env['HOME'], '.ansible/collections'] | ansible.builtin.path_join }}"
+  tasks:
+    - name: ensure required packages
+      become: true
+      ansible.builtin.package:
+        name:
+          - pipx
+          - rsync
+
+    - name: pipx inject required packages
+      community.general.pipx:
+        name: ansible
+        state: inject
+        inject_packages:
+          - boto3
+          - botocore
+          - packaging
+
+    - name: mktemp tempdir
+      ansible.builtin.tempfile:
+        state: directory
+      register: tempdir_register
+
+    #! 目录结构: {{ tempdir_register.path }}/ansible_collections/{{ namespace }}/{{ name }}
+    #! 因此下方的 rsync 的 delete 不能设置为 true, 否则会删除其它 collections
+    - name: ansible-galaxy collection install into tempdir
+      environment:
+        #! 没有用 become 的情况下 ansible_env['HOME'] 有时莫名其妙会变成 /root,
+        #! 执行安装时出现 [Errno 13] Permission denied: b'ansible-galaxy',
+        #! 应该是没找到 ansible-galaxy 命令, 重开 terminal 就好了.
+        PATH: "{{ ansible_env['HOME'] }}/.local/bin:{{ ansible_env['PATH'] }}"
+      ansible.builtin.command:
+        argv:
+          - ansible-galaxy
+          - collection
+          - install
+          - --force
+          - --collections-path={{ tempdir_register.path }}
+          - "{{ playbook_dir }}"
+      delegate_to: localhost
+
+    - name: ansible-galaxy collection install
+      ansible.posix.synchronize:
+        src: "{{ tempdir_register.path }}/"
+        dest: "{{ collections_path }}/"
+        delete: false
+
+    - name: remove tempdir
+      ansible.builtin.file:
+        path: "{{ tempdir_register.path }}"
+        state: absent
+      delegate_to: localhost
