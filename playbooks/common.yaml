@@ -3,6 +3,3 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   roles:
     - role: common
-      common_apt_repo_domain_ref: qvqnetwork
-      common_tcp_bbr_enabled: false
-      common_ip_forward_enabled: false
