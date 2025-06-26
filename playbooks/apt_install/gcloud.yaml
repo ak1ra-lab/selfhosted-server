@@ -1,0 +1,27 @@
+# https://cloud.google.com/sdk/docs/install?hl=zh-cn#deb
+- name: apt_install - gcloud
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg
+    # pub   rsa2048 2021-05-04 [SC]
+    #       35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3
+    # uid           Artifact Registry Repository Signer <artifact-registry-repository-signer@google.com>
+    apt_key_url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    apt_keyrings_dest: /etc/apt/keyrings/gcloud.asc
+
+    apt_repo: gcloud
+    apt_repo_uris: https://packages.cloud.google.com/apt
+    apt_repo_suites: cloud-sdk
+    apt_repo_components: main
+
+    apt_pinning: true
+    apt_unattended_upgrades: true
+    apt_mark_hold: false
+
+    apt_repo_packages:
+      - google-cloud-cli
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
