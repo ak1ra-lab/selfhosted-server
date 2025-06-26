@@ -1,0 +1,31 @@
+# https://pkg.jenkins.io/debian/
+- name: apt_install - jenkins
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # curl -s https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | gpg
+    # pub   rsa4096 2023-03-27 [SC] [expires: 2026-03-26]
+    #       63667EE74BBA1F0A08A698725BA31D57EF5975CA
+    # uid           Jenkins Project <jenkinsci-board@googlegroups.com>
+    # sub   rsa4096 2023-03-27 [E] [expires: 2026-03-26]
+    apt_key_url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    apt_keyrings_dest: /etc/apt/keyrings/jenkins-io.asc
+
+    apt_repo: jenkins-io
+    apt_repo_uris: https://pkg.jenkins.io/debian-stable
+    # binary/ 后面这个斜杠居然不能去掉?
+    apt_repo_suites: binary/
+    apt_repo_components: ""
+
+    apt_pinning: true
+    apt_unattended_upgrades: true
+    apt_mark_hold: false
+
+    apt_repo_packages:
+      - fontconfig
+      - openjdk-17-jre-headless
+      - jenkins
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
