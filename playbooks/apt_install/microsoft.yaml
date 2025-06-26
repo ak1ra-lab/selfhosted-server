@@ -1,0 +1,35 @@
+# https://learn.microsoft.com/en-us/linux/packages
+- name: apt_install - microsoft
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # https://packages.microsoft.com/keys/README
+    # microsoft.asc (BC528686B50D79E339D3721CEB3E94ADBE1229CF):
+    # This key was Microsoft’s standard Linux-signing key until Spring 2025, as discussed above. This key will not be used for newly-created repositories.
+    # microsoft-2025.asc (AA86F75E427A19DD33346403EE4D7792F748182B):
+    # This is the current standard Linux-signing key that will be used in newly-created repositories. It will work properly in distributions that disallow SHA1 signatures.
+    # curl -s https://packages.microsoft.com/keys/microsoft.asc | gpg
+    # pub   rsa2048 2015-10-28 [SC]
+    #       BC528686B50D79E339D3721CEB3E94ADBE1229CF
+    # uid           Microsoft (Release signing) <gpgsecurity@microsoft.com>
+    # TODO: 2025-06-30 目前暂未切换至 microsoft-2025.asc
+    apt_key_url: https://packages.microsoft.com/keys/microsoft.asc
+    apt_keyrings_dest: /etc/apt/keyrings/microsoft.asc
+
+    apt_repo: microsoft
+    # https://packages.microsoft.com/debian/12/prod/
+    # 尽量避免使用 ansible_lsb, 它依赖 lsb_release, 在一些精简系统中可能缺失相关字段
+    apt_repo_uris: "https://packages.microsoft.com/{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/prod"
+    apt_repo_suites: "{{ ansible_distribution_release }}"
+    apt_repo_components: main
+
+    apt_pinning: true
+    apt_unattended_upgrades: true
+    apt_mark_hold: false
+
+    # dotnet-sdk, moby-containerd, msopenjdk-21, mssql-tools, powershell
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
