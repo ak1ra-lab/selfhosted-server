@@ -1,0 +1,29 @@
+# https://www.elastic.co/docs/reference/beats/filebeat/setup-repositories
+# We use the PGP key [D88E42B4](https://pgp.mit.edu/pks/lookup?op=vindex&search=0xD27D666CD88E42B4), Elasticsearch Signing Key, with fingerprint: 4609 5ACC 8548 582C 1A26 99A9 D27D 666C D88E 42B4
+- name: apt_install - elastic-oss-7x
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # curl -s https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg
+    # pub   rsa2048 2013-09-16 [SC]
+    #       46095ACC8548582C1A2699A9D27D666CD88E42B4
+    # uid           Elasticsearch (Elasticsearch Signing Key) <dev_ops@elasticsearch.org>
+    # sub   rsa2048 2013-09-16 [E]
+    apt_key_url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    apt_keyrings_dest: /etc/apt/keyrings/elasticsearch-keyring.asc
+
+    apt_repo: elastic-oss-7x
+    apt_repo_uris: https://artifacts.elastic.co/packages/oss-7.x/apt
+    apt_repo_suites: stable
+    apt_repo_components: main
+
+    apt_pinning: true
+    apt_unattended_upgrades: false
+    apt_mark_hold: false
+
+    # elasticsearch-oss, logstash-oss, kibana-oss, filebeat-oss
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
