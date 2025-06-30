@@ -2,7 +2,7 @@
 Map gitRepo = [
     url: 'https://github.com/ak1ra-lab/selfhosted-server.git'
 ]
-String playbookHosts = 'localhost'
+String playbook_hosts = 'localhost'
 
 pipeline {
     agent any
@@ -29,8 +29,8 @@ pipeline {
             description: 'Git branch to build'
         )
         string(
-            name: 'playbookHosts',
-            defaultValue: playbookHosts,
+            name: 'playbook_hosts',
+            defaultValue: playbook_hosts,
             description: 'Ansible Inventory hosts'
         )
     }
@@ -55,7 +55,7 @@ pipeline {
                         playbook: 'install.yml',
                         colorized: true,
                         extraVars: [
-                            playbookHosts: params.playbookHosts
+                            playbook_hosts: params.playbook_hosts
                         ]
                     )
                 }

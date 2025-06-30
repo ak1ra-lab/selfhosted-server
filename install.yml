@@ -1,6 +1,6 @@
 ---
 - name: ansible-galaxy collection install
-  hosts: "{{ playbookHosts | default('localhost') }}"
+  hosts: "{{ playbook_hosts | default('localhost') }}"
   vars:
     collections_path: "{{ [ansible_env['HOME'], '.ansible/collections'] | ansible.builtin.path_join }}"
   tasks:

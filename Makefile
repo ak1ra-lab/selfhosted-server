@@ -3,7 +3,7 @@ BINDIR ?= $(HOME)/.local/bin
 ANSIBLE_PLAYBOOK := $(BINDIR)/ansible-playbook
 
 # ansible-playbook
-playbookHosts ?= localhost
+playbook_hosts ?= localhost
 
 .DEFAULT_GOAL=help
 .PHONY: help
@@ -18,7 +18,7 @@ format:  ## reformat yml/yaml files recursively
 
 .PHONY: install
 install:  ## ansible-galaxy collection install
-	$(ANSIBLE_PLAYBOOK) install.yml -e 'playbookHosts=$(playbookHosts)'
+	$(ANSIBLE_PLAYBOOK) install.yml -e 'playbook_hosts=$(playbook_hosts)'
 
 .PHONY: clean
 clean:  ## clean up working directory
