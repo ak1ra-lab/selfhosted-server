@@ -1,0 +1,31 @@
+# https://zrepl.github.io/installation/apt-repos.html
+- name: apt_install - zrepl
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # curl -s https://zrepl.cschwarz.com/apt/apt-key.asc | gpg
+    # pub   rsa2048 2019-10-17 [SC]
+    #       E101418FD3D6FBCB9D65A62D708699FC5F2EBF16
+    # uid           Christian Schwarz <zrepl-debian-pkgs@cschwarz.com>
+    # sub   rsa2048 2019-10-17 [E] [expired: 2022-10-17]
+    # 这里有一个 expired 的 sub key, 不过它的用途是 [E] (Encrypt)
+    # 用于 [SC] (Sign and Certify) 的 primary key 并没有指定有效期
+    # 在讨论对 apt repo 签名时, 实际上签名的文件是 InRelease 或 Release + Release.gpg 文件
+    apt_key_url: https://zrepl.cschwarz.com/apt/apt-key.asc
+    apt_keyrings_dest: /etc/apt/keyrings/zrepl.asc
+
+    apt_repo: zrepl
+    apt_repo_uris: "https://zrepl.cschwarz.com/apt/{{ ansible_distribution | lower }}"
+    apt_repo_suites: "{{ ansible_distribution_release }}"
+    apt_repo_components: main
+
+    apt_pinning: true
+    apt_unattended_upgrades: false
+    apt_mark_hold: true
+
+    apt_repo_packages:
+      - zrepl
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
