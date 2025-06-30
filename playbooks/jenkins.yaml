@@ -1,5 +1,0 @@
----
-- name: install jenkins
-  hosts: "{{ playbook_hosts | default('localhost') }}"
-  roles:
-    - role: jenkins

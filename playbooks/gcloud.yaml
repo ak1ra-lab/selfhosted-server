@@ -1,5 +1,0 @@
----
-- name: install gcloud
-  hosts: "{{ playbook_hosts | default('localhost') }}"
-  roles:
-    - role: gcloud
