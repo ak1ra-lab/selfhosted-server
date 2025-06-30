@@ -16,19 +16,6 @@
     dest: "{{ apt_keyrings_dest }}"
 
 - name: add apt repo in DEB822 format
-  vars:
-    # ansible_architecture return x86_64,
-    # but $(dpkg --print-architecture) return = amd64
-    deb_architectures:
-      x86_64: amd64 # Common Intel/AMD 64-bit
-      i386: i386 # Intel 32-bit
-      i686: i386 # Older 32-bit
-      aarch64: arm64 # 64-bit ARM
-      armv7l: armhf # 32-bit ARM hard-float
-      armv6l: armel # 32-bit ARM soft-float (rare)
-      ppc64le: ppc64el # PowerPC 64-bit Little Endian
-      s390x: s390x # IBM System z
-      riscv64: riscv64 # RISC-V 64-bit
   ansible.builtin.deb822_repository:
     name: "{{ apt_repo }}"
     state: present
@@ -37,38 +24,44 @@
     uris: "{{ apt_repo_uris }}"
     suites: "{{ apt_repo_suites }}"
     components: "{{ apt_repo_components }}"
-    architectures: "{{ deb_architectures[ansible_architecture] | default(ansible_architecture) }}"
+    architectures: "{{ dpkg_architectures[ansible_architecture] | default(ansible_architecture) }}"
     signed_by: "{{ apt_keyrings_dest }}"
 
+# https://manpages.debian.org/bookworm/apt/apt_preferences.5.en.html
+# The pattern "*" in a Package field is not considered a glob(7) expression in itself.
 - name: add apt pinning
-  when: (apt_pinning | ansible.builtin.bool)
+  when:
+    - (apt_pinning | ansible.builtin.bool)
   ansible.builtin.copy:
-    dest: "/etc/apt/preferences.d/99{{ apt_repo }}"
+    dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
     content: |
       Package: *
-      Pin: origin {{ apt_repo_uris | ansible.builtin.urlsplit('hostname') }}
+      Pin: origin {{ apt_pinning_origin }}
       Pin-Priority: 900
     mode: "0644"
 
 - name: add unattended-upgrades origins pattern
-  when: (apt_unattended_upgrades | ansible.builtin.bool)
+  when:
+    - (apt_unattended_upgrades | ansible.builtin.bool)
   ansible.builtin.copy:
     dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
     content: |
-      Unattended-Upgrade::Origins-Pattern:: "origin={{ apt_repo_uris | ansible.builtin.urlsplit('hostname') }}";
+      Unattended-Upgrade::Origins-Pattern:: "site={{ apt_unattended_upgrades_site }}";
     mode: "0644"
 
 - name: apt_install packages from apt_repo
-  when: (apt_repo_packages | length) > 0
-  ansible.builtin.apt:
-    name: "{{ apt_repo_packages }}"
-    update_cache: true
-    state: present
-
-- name: apt-mark hold on apt_repo_packages
-  when: (apt_mark_hold | ansible.builtin.bool)
+  when:
+    - (apt_repo_packages | length) > 0
   block:
+    - name: apt_install packages from apt_repo
+      ansible.builtin.apt:
+        name: "{{ apt_repo_packages }}"
+        update_cache: true
+        state: present
+
     - name: apt-mark hold on apt_repo_packages
+      when:
+        - (apt_mark_hold | ansible.builtin.bool)
       ansible.builtin.command: "apt-mark hold {{ package }}"
       loop: "{{ apt_repo_packages }}"
       loop_control:
@@ -76,6 +69,7 @@
       register: apt_mark_hold_register
 
     - name: debug_var on apt_mark_hold_register
-      when: (debug_var | ansible.builtin.bool)
+      when:
+        - (apt_mark_hold | ansible.builtin.bool)
       ansible.builtin.debug:
         var: apt_mark_hold_register
