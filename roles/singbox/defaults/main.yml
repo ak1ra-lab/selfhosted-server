@@ -1,5 +1,0 @@
----
-singbox_apt_key: "https://sing-box.app/gpg.key"
-singbox_apt_key_signed_by: /etc/apt/keyrings/sagernet.asc
-
-singbox_apt_repo: "deb [signed-by={{ singbox_apt_key_signed_by }}] https://deb.sagernet.org/ * *"
