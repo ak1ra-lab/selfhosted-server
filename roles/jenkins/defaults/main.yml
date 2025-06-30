@@ -1,5 +1,0 @@
----
-jenkins_apt_key: "https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key"
-jenkins_apt_key_signed_by: /etc/apt/keyrings/jenkins-io.asc
-
-jenkins_apt_repo: "deb [signed-by={{ jenkins_apt_key_signed_by }}] https://pkg.jenkins.io/debian-stable binary/"
