@@ -1,8 +1,30 @@
 ---
 # tasks to apply changes
-- name: include_tasks if os_family is debian
-  ansible.builtin.include_tasks: debian.yml
-  when: ansible_facts['os_family']|lower == 'debian'
+- name: import roles/apt_install
+  when: (ansible_os_family | lower) == 'debian'
+  ansible.builtin.import_role:
+    name: apt_install
+  vars:
+    apt_repo: "{{ docker_apt_repo }}"
+    apt_repo_uris: "{{ docker_apt_repo_uris }}"
+    apt_repo_suites: "{{ docker_apt_repo_suites }}"
+    apt_repo_components: "{{ docker_apt_repo_components }}"
+
+    apt_key_url: "{{ docker_apt_key_url }}"
+    apt_keyrings_dest: "{{ docker_apt_keyrings_dest }}"
+
+    apt_pinning: true
+    apt_unattended_upgrades: true
+    apt_mark_hold: false
+
+    # skopeo is not from docker_apt_repo
+    apt_repo_packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      - skopeo
 
 - name: add /etc/docker/daemon.json
   ansible.builtin.template:
@@ -20,13 +42,15 @@
 
 - name: append 'docker' groups
   ansible.builtin.user:
-    name: "{{ item | trim }}"
+    name: "{{ user | trim }}"
     groups:
       - docker
     append: true
   loop: "{{ ansible_regular_user.stdout_lines }}"
+  loop_control:
+    loop_var: user
 
-- name: start and enable docker.service
+- name: ensure docker.service are started and enabled
   ansible.builtin.service:
     name: docker
     state: started

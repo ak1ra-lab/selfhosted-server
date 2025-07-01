@@ -1,30 +1,29 @@
 ---
-docker_apt_repo_ref: docker
-docker_apt_repo_urls:
+# https://docs.docker.com/engine/install/debian/
+docker_apt_repo_key: docker
+docker_apt_repo_mirrors:
   docker: https://download.docker.com
   aliyun: https://mirrors.aliyun.com/docker-ce
-  tencentcloud: https://mirrors.cloud.tencent.com/docker-ce
+  tencent: https://mirrors.tencent.com/docker-ce
   ustc: https://mirrors.ustc.edu.cn/docker-ce
   tuna: https://mirrors.tuna.tsinghua.edu.cn/docker-ce
   hit: https://mirrors.hit.edu.cn/docker-ce
   sjtu: https://mirror.sjtu.edu.cn/docker-ce
-  opentuna: https://opentuna.cn/docker-ce
-
-docker_apt_repo_url: "{{ docker_apt_repo_urls[docker_apt_repo_ref] }}"
-
-# The channel to install from: nightly, test, stable
-docker_apt_repo_channel: stable
-
-# update import apt key task due to depreciation of apt-key
-docker_apt_key: "{{ docker_apt_repo_url }}/linux/debian/gpg"
-docker_apt_key_signed_by: /etc/apt/keyrings/docker-ce.asc
-
-docker_apt_repo: "deb [signed-by={{ docker_apt_key_signed_by }}] {{ docker_apt_repo_url }}/linux/debian {{ ansible_distribution_release }} {{ docker_apt_repo_channel }}"
 
 # docker daemon settings
 docker_daemon_registry_mirrors: []
-# - https://hub-mirror.c.163.com
-# - https://mirror.baidubce.com
-# - https://dockerproxy.com
+# - https://dockerproxy.net
 
-docker_daemon_enable_buildkit: true
+docker_apt_repo: docker-ce
+docker_apt_repo_uris: "{{ docker_apt_repo_mirrors[docker_apt_repo_key] }}/linux/debian"
+docker_apt_repo_suites: "{{ ansible_distribution_release }}"
+# components: nightly, test, stable
+docker_apt_repo_components: stable
+
+# $ curl -s https://download.docker.com/linux/debian/gpg | gpg
+# pub   rsa4096 2017-02-22 [SCEA]
+#       9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+# uid           Docker Release (CE deb) <docker@docker.com>
+# sub   rsa4096 2017-02-22 [S]
+docker_apt_key_url: "{{ docker_apt_repo_uris }}/gpg"
+docker_apt_keyrings_dest: /etc/apt/keyrings/docker-ce.asc

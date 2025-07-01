@@ -7,8 +7,5 @@
     "log-opts": {
         "max-size": "100m"
     },
-    "storage-driver": "overlay2",
-    "features": {
-        "buildkit": {{ docker_daemon_enable_buildkit | tojson }}
-    }
+    "storage-driver": "overlay2"
 }
