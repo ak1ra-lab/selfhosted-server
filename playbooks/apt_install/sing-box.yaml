@@ -1,0 +1,28 @@
+# https://sing-box.sagernet.org/installation/package-manager/
+- name: apt_install - sagernet
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # curl -s https://sing-box.app/gpg.key | gpg
+    # pub   rsa4096 2024-03-12 [SC]
+    #       2C317FBD5D886B4E89BAE8DA6D9152172A2B2F0C
+    # uid           Project S <contact@sagernet.org>
+    # sub   rsa4096 2024-03-12 [E]
+    apt_key_url: https://sing-box.app/gpg.key
+    apt_keyrings_dest: /etc/apt/keyrings/sagernet.asc
+
+    apt_repo: sagernet
+    apt_repo_uris: https://deb.sagernet.org/
+    apt_repo_suites: "*"
+    apt_repo_components: "*"
+
+    apt_pinning: true
+    apt_unattended_upgrades: false
+    apt_mark_hold: false
+
+    apt_repo_packages:
+      - sing-box-beta
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
