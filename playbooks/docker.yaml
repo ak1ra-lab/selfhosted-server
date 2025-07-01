@@ -1,5 +1,8 @@
 ---
 - name: install docker
   hosts: "{{ playbook_hosts | default('localhost') }}"
-  roles:
-    - role: docker
+  become: true
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: docker

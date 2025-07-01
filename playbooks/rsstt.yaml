@@ -1,5 +1,9 @@
 ---
+# ansible-playbook playbooks/rsstt.yaml -e 'playbook_hosts=localhost' -e @credentials/rsstt.yaml --ask-vault-pass
 - name: install rsstt
   hosts: "{{ playbook_hosts | default('localhost') }}"
-  roles:
-    - role: rsstt
+  become: true
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: rsstt

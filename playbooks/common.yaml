@@ -1,5 +1,10 @@
 ---
-- name: common initial tasks
+- name: common tasks
   hosts: "{{ playbook_hosts | default('localhost') }}"
-  roles:
-    - role: common
+  become: true
+  vars:
+    common_custom_sshd_config: false
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: common

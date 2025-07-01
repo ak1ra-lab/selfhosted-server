@@ -1,17 +1,19 @@
 ---
-- ansible.builtin.import_playbook: common.yaml
-
-- ansible.builtin.import_playbook: certbot.yaml
-
+# ansible-playbook playbooks/nginx.yaml -e 'playbook_hosts=localhost' -e @credentials/certbot.yaml --ask-vault-pass
 - name: install nginx
   hosts: "{{ playbook_hosts | default('localhost') }}"
-  roles:
-    - role: nginx
-      nginx_apt_repo: debian
+  become: true
+  vars:
+    nginx_apt_repo: debian
+    nginx_config_template_base_config: true
+    nginx_config_template_server_config: true
+    nginx_config_domain: "{{ certbot_domain | split(',') | first }}"
+    nginx_config_server_name: "{{ certbot_domain | split(',') | first }}"
+    nginx_config_server_type: proxy
 
-    - role: nginx_config
-      nginx_config_template_base_config: true
-      nginx_config_template_server_config: true
-      nginx_config_domain: "{{ certbot_domain | split(',') | first }}"
-      nginx_config_server_name: "{{ certbot_domain | split(',') | first }}"
-      nginx_config_server_type: proxy
+  tasks:
+    - ansible.builtin.import_role:
+        name: nginx
+
+    - ansible.builtin.import_role:
+        name: nginx_config

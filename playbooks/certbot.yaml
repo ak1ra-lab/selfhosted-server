@@ -1,7 +1,9 @@
 ---
+# ansible-playbook playbooks/certbot.yaml -e 'playbook_hosts=localhost' -e @credentials/certbot.yaml --ask-vault-pass
 - name: install certbot
   hosts: "{{ playbook_hosts | default('localhost') }}"
-  roles:
-    - role: certbot
-      certbot_domain: "{{ certbot_domain }}"
-      certbot_email: "{{ certbot_email }}"
+  become: true
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: certbot
