@@ -1,25 +1,54 @@
 ---
+- name: add debian apt repo in DEB822 format
+  ansible.builtin.deb822_repository:
+    name: debian
+    state: present
+    enabled: true
+    types: deb
+    uris: mirror+file:///etc/apt/mirrors/debian.list
+    suites: bookworm bookworm-updates bookworm-backports
+    components: main contrib non-free non-free-firmware
+    signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
+
+- name: add debian-security apt repo in DEB822 format
+  ansible.builtin.deb822_repository:
+    name: debian-security
+    state: present
+    enabled: true
+    types: deb
+    uris: mirror+file:///etc/apt/mirrors/debian-security.list
+    suites: bookworm-security
+    components: main contrib non-free non-free-firmware
+    signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
+
+- name: ensure /etc/apt/mirrors exists
+  ansible.builtin.file:
+    path: /etc/apt/mirrors
+    state: directory
+    mode: "0755"
+
+- name: template /etc/apt/sources.list
+  ansible.builtin.template:
+    src: "{{ template.src }}"
+    dest: "{{ template.dest }}"
+    mode: "0644"
+  loop:
+    - src: etc/apt/sources.list.j2
+      dest: /etc/apt/sources.list
+    - src: etc/apt/mirrors/debian.list.j2
+      dest: /etc/apt/mirrors/debian.list
+    - src: etc/apt/mirrors/debian-security.list.j2
+      dest: /etc/apt/mirrors/debian-security.list
+  loop_control:
+    loop_var: template
+
 - name: force apt use IPv4
+  when: (common_apt_force_ipv4 | ansible.builtin.bool)
   ansible.builtin.copy:
     dest: /etc/apt/apt.conf.d/99force-ipv4
-    content: Acquire::ForceIPv4 "true";
+    content: |
+      Acquire::ForceIPv4 "true";
     mode: "0644"
-    state: present
-  when: common_apt_force_ipv4 == 'true'
-
-- name: remove sources.list.d/debian.sources for debian 12 cloud images
-  ansible.builtin.file:
-    path: /etc/apt/sources.list.d/debian.sources
-    state: absent
-  when: ansible_distribution_release == 'bookworm'
-
-- name: add apt repo
-  ansible.builtin.template:
-    src: "{{ ansible_distribution_release }}.list.j2"
-    dest: /etc/apt/sources.list
-    mode: "0644"
-    force: true
-    backup: true
 
 - name: install common packages
   ansible.builtin.apt:

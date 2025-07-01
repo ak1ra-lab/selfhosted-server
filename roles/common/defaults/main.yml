@@ -1,19 +1,14 @@
 ---
-# 启用 https 需要安装 apt-transport-https
-common_apt_repo_schema: https
-
-# 此项设置为下方 common_apt_repo_domains 的任意一个 key
-common_apt_repo_domain_ref: default
-common_apt_repo_domains:
-  default: deb.debian.org
-  aliyun: mirrors.aliyun.com
-  tencentcloud: mirrors.cloud.tencent.com
-  ustc: mirrors.ustc.edu.cn
-  tuna: mirrors.tuna.tsinghua.edu.cn
-  hit: mirrors.hit.edu.cn
-  sjtu: mirror.sjtu.edu.cn
-
-common_apt_repo_url: "{{ common_apt_repo_schema }}://{{ common_apt_repo_domains[common_apt_repo_domain_ref] }}"
+# 此项设置为下方 common_apt_repo_mirrors 的任意一个 key
+common_apt_repo_key: debian
+common_apt_repo_mirrors:
+  debian: https://deb.debian.org
+  aliyun: https://mirrors.aliyun.com
+  tencent: https://mirrors.tencent.com
+  ustc: https://mirrors.ustc.edu.cn
+  tuna: https://mirrors.tuna.tsinghua.edu.cn
+  hit: https://mirrors.hit.edu.cn
+  sjtu: https://mirror.sjtu.edu.cn
 
 # 强制 apt 使用 IPv4
 common_apt_force_ipv4: true
@@ -28,21 +23,23 @@ common_ip_forward_enabled: false
 common_custom_sshd_config: true
 common_custom_sshd_config_entries:
   ## Specifies whether root can log in using ssh(1).
-  ## The argument must be yes, prohibit-password, forced-commands-only, or no.  The default is prohibit-password.
-  - {regexp: "^#?PermitRootLogin", line: "PermitRootLogin prohibit-password"}
-  ## Specifies whether password authentication is allowed.  The default is yes.
-  - {regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no"}
-  ## Specifies whether remote hosts are allowed to connect to ports forwarded for the client. The default is no.
-  - {regexp: "^#?GatewayPorts", line: "GatewayPorts no"}
+  ## The argument must be yes, prohibit-password, forced-commands-only, or no. The default is prohibit-password.
+  - regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin prohibit-password"
+  ## Specifies whether password authentication is allowed. The default is yes.
+  - regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication no"
   ## Specifies whether TCP forwarding is permitted. The default is yes.
-  ## Visual Studio Code: remote.SSH extension makes use of an SSH tunnel to facilitate communication with the host.
-  - {regexp: "^#?AllowTcpForwarding", line: "AllowTcpForwarding yes"}
+  ## vscode: remote.SSH extension makes use of an SSH tunnel to facilitate communication with the host.
+  - regexp: "^#?AllowTcpForwarding"
+    line: "AllowTcpForwarding yes"
   ## Specifies whether forwarding Unix domain sockets is permitted. The default is yes.
-  ## Visual Studio Code: `remote.SSH.remoteServerListenOnSocket` requires this to be yes.
-  - {regexp: "^#?AllowStreamLocalForwarding", line: "AllowStreamLocalForwarding yes",}
+  ## vscode: `remote.SSH.remoteServerListenOnSocket` requires this to be yes.
+  - regexp: "^#?AllowStreamLocalForwarding"
+    line: "AllowStreamLocalForwarding yes"
 
 # 是否设置自定义 sysctl.conf
-# 我并不能很好理解下面这些值的作用, 因此此项默认值为 false
+# 我并不完全理解下面这些值的作用, 因此此项默认值为 false
 common_custom_sysctl_conf: false
 common_custom_sysctl_conf_entries:
   # ref: https://www.kernel.org/doc/html/latest/admin-guide/sysctl/net.html
@@ -115,9 +112,9 @@ common_custom_sysctl_conf_entries:
     value: "30"
 
 common_apt_packages:
-  - arping
   - bash-completion
   - bc
+  - btop
   - bzip2
   - curl
   - dnsutils
@@ -128,7 +125,6 @@ common_apt_packages:
   - gnupg2
   - htop
   - iftop
-  - imagemagick
   - iotop
   - iperf3
   - jq

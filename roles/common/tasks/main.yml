@@ -1,11 +1,14 @@
 ---
 # tasks to apply changes
 - name: include_tasks if os_family is debian
-  when: ansible_facts['os_family']|lower == 'debian'
+  when:
+    - (ansible_os_family | lower) == 'debian'
+    - (ansible_distribution_major_version | int) >= 12
   ansible.builtin.include_tasks: debian.yml
 
 - name: enable net.ipv4.ip_forward
-  when: common_ip_forward_enabled
+  when:
+    - (common_ip_forward_enabled | ansible.builtin.bool)
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
     value: 1
@@ -13,14 +16,19 @@
     ignoreerrors: true
 
 - name: enable tcp_bbr
-  when: ansible_kernel >= '4.9.0' and common_tcp_bbr_enabled
+  when:
+    - ansible_kernel >= '4.9.0'
+    - (common_tcp_bbr_enabled | ansible.builtin.bool)
   block:
     - name: load tcp_bbr module
-      ansible.builtin.lineinfile:
-        path: /etc/modules
-        regexp: "^#? ?tcp_bbr$"
-        line: "tcp_bbr"
+      community.general.modprobe:
+        name: "{{ module }}"
         state: present
+        persistent: present
+      loop:
+        - tcp_bbr
+      loop_control:
+        loop_var: module
 
     - name: enable tcp_bbr
       ansible.posix.sysctl:
@@ -34,20 +42,25 @@
         - name: net.ipv4.tcp_congestion_control
           value: bbr
 
-- name: update certain /etc/ssh/sshd_config entries for security reason
-  when: common_custom_sshd_config
+- name: update /etc/ssh/sshd_config entries
+  when:
+    - (common_custom_sshd_config | ansible.builtin.bool)
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
+    regexp: "{{ entry.regexp }}"
+    line: "{{ entry.line }}"
     state: present
   loop: "{{ common_custom_sshd_config_entries }}"
+  loop_control:
+    loop_var: entry
 
 - name: update /etc/sysctl.conf
   when: common_custom_sysctl_conf
   ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
+    name: "{{ entry.name }}"
+    value: "{{ entry.value }}"
     state: present
     ignoreerrors: true
   loop: "{{ common_custom_sysctl_conf_entries }}"
+  loop_control:
+    loop_var: entry
