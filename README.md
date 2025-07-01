@@ -1,8 +1,8 @@
-# [ak1ra_lab/selfhosted_server](https://github.com/ak1ra-lab/selfhosted-server)
+# [selfhosted_server](https://github.com/ak1ra-lab/selfhosted-server)
 
 ## Quick start
 
-首先[安装 ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-and-upgrading-ansible-with-pipx),
+首先[使用 pipx 安装 Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-and-upgrading-ansible-with-pipx),
 
 ```shell
 # Installing Ansible
