@@ -1,132 +1,132 @@
 #!/bin/bash
 # shellcheck shell=bash
 
-apt_install_packages() {
+# Exit immediately if a command exits with a non-zero status.
+# Treat unset variables as an error when substituting.
+# Exit with a non-zero status if any command in a pipeline fails.
+set -euo pipefail
+
+# --- Logging functions ---
+# Usage: log "some message"
+log() {
+    echo >&2 -e "[INFO] $*"
+}
+
+# Usage: die "error message"
+die() {
+    echo >&2 -e "[ERROR] $*"
+    exit 1
+}
+
+# --- Prerequisite checks ---
+check_root() {
+    if [ "$(id -u)" -ne 0 ]; then
+        die "This script must be run as root."
+    fi
+}
+
+require_command() {
+    for cmd in "$@"; do
+        if ! command -v "$cmd" &>/dev/null; then
+            die "Required command '$cmd' is not installed. Please install it and try again."
+        fi
+    done
+}
+
+# --- Core functions ---
+install_dependencies() {
+    log "Updating package list and installing dependencies..."
     apt-get update
     apt-get upgrade -y
     apt-get install -y \
-        apt-transport-https \
         ca-certificates \
         curl \
         debian-archive-keyring \
         gnupg2 \
         lsb-release \
-        sudo
+        sudo \
+        passwd # for chpasswd
+    log "Dependencies installed."
 }
 
-apt_install_extra_packages() {
-    mapfile -t extra_packages < <(
-        if [ -f packages.txt ]; then
-            cat packages.txt
-        else
-            curl -s https://raw.githubusercontent.com/ak1ra-lab/selfhosted-server/master/packages.txt
-        fi
-    )
-
-    apt-get update
-    apt-get upgrade -y
-    apt-get install -y "${extra_packages[@]}"
-}
-
-init_user() {
-    username="$1"
-    # create sudo group
-    if ! grep -q sudo /etc/group; then
+setup_sudo() {
+    log "Configuring sudo group..."
+    if ! getent group sudo >/dev/null; then
+        log "Creating 'sudo' group."
         groupadd --system sudo
     fi
 
-    # modify /etc/sudoers
-    test -d /etc/sudoers.d || mkdir -p /etc/sudoers.d
-    echo "%sudo ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/sudo
-    sed -i 's%^#? *@includedir +/etc/sudoers\.d%@includedir /etc/sudoers.d%' /etc/sudoers
-
-    # create user
-    if ! grep -qE '^'"${username}"':' /etc/passwd; then
-        useradd -m -s /bin/bash -G sudo "${username}"
+    # Ensure sudoers.d is included
+    if ! grep -qE '^\s*#?\s*@includedir\s+/etc/sudoers\.d' /etc/sudoers; then
+        log "Adding @includedir /etc/sudoers.d to /etc/sudoers"
+        echo '#includedir /etc/sudoers.d' >>/etc/sudoers
     else
-        if ! id "${username}" | grep -q sudo; then
-            usermod -aG sudo "${username}"
+        log "Ensuring /etc/sudoers.d is included."
+        sed -i -E 's%^#?\s*@includedir\s+/etc/sudoers\.d%@includedir /etc/sudoers.d%' /etc/sudoers
+    fi
+
+    # Create sudoers file for the group
+    local sudo_file="/etc/sudoers.d/sudo"
+    if [ ! -f "$sudo_file" ]; then
+        log "Creating sudoers file for group 'sudo' with NOPASSWD."
+        echo "%sudo ALL=(ALL) NOPASSWD:ALL" >"$sudo_file"
+        chmod 440 "$sudo_file"
+    else
+        log "Sudoers file for group 'sudo' already exists."
+    fi
+    log "Sudo configuration complete."
+}
+
+create_user() {
+    local user="$1"
+    log "Setting up user '$user'..."
+
+    if ! id "$user" &>/dev/null; then
+        log "Creating user '$user' and adding to 'sudo' group."
+        useradd -m -s /bin/bash -G sudo "$user"
+    else
+        log "User '$user' already exists."
+        if ! id -nG "$user" | grep -qw sudo; then
+            log "Adding existing user '$user' to 'sudo' group."
+            usermod -aG sudo "$user"
+        else
+            log "User '$user' is already in 'sudo' group."
         fi
     fi
 
-    user_home_dir="$(awk -F: '$1 ~ /^'"${username}"'/ {print $(NF-1)}' /etc/passwd)"
-    user_password_file="${user_home_dir}/password.txt"
+    # Generate and set password
+    log "Generating a new password for '$user'."
+    # Using openssl is more common and readable
+    local password
+    password=$(openssl rand -base64 12)
+    echo "${user}:${password}" | chpasswd --crypt-method SHA512
 
-    # set user password
-    # password=$(openssl rand -base64 15)
-    password="$(dd if=/dev/urandom bs=3 count=5 2>/dev/null | base64)"
-    echo "${username}:${password}" | tee "${user_password_file}" | chpasswd --crypt-method SHA512
-    echo "user_password_file saved at ${user_password_file}"
+    log "User setup complete."
+    echo "---"
+    echo "Username: $user"
+    echo "Password: $password"
+    echo "---"
+    echo "Please save this password in a secure location."
 }
 
-add_ssh_key() {
-    username="$1"
-    ssh_public_key_content="$2"
-
-    user_perm="$(awk -F: '$1 ~ /^'"${username}"'/ {print $3":"$4}' /etc/passwd)"
-    user_home_dir="$(awk -F: '$1 ~ /^'"${username}"'/ {print $(NF-1)}' /etc/passwd)"
-    user_ssh_dir="${user_home_dir}/.ssh"
-
-    test -d "${user_ssh_dir}" || mkdir -p "${user_ssh_dir}"
-    if ! grep -q "${ssh_public_key_content}" "${user_ssh_dir}/authorized_keys"; then
-        echo "${ssh_public_key_content}" | tee -a "${user_ssh_dir}/authorized_keys"
-    fi
-
-    chown -R "${user_perm}" "${user_ssh_dir}"
-    find "${user_ssh_dir}" -type d -exec chmod 700 "{}" \;
-    find "${user_ssh_dir}" -type f -exec chmod 600 "{}" \;
-}
-
+# --- Main script logic ---
 main() {
-    if ! awk -F= '/^ID=/ {print $2}' /etc/os-release | grep -qE '(debian|ubuntu)'; then
-        echo "This script only support Debian/Ubuntu distro."
-        exit 1
+    check_root
+    require_command apt-get groupadd useradd usermod chpasswd openssl getent
+
+    local user
+    user="${1:-}" # Set user to first argument, or empty if not provided
+
+    if [ -z "$user" ]; then
+        die "Usage: $0 <username>"
     fi
 
-    if [ "$(id -u)" -ne 0 ]; then
-        echo "Please run this script as root or prefix with sudo"
-        exit 2
-    fi
+    install_dependencies
+    setup_sudo
+    create_user "$user"
 
-    # read required arguments
-    while read -r -p "Please ENTER the username of the user you want to create: " username; do
-        test -n "${username}" && break
-        echo "username can not be empty!"
-    done
-
-    ssh_public_key=""
-    ssh_public_key_content=""
-    openssh_format_regex='^(ssh-(rsa|ed25519)|ecdsa-sha2-nistp(256|384|521)|(sk-ecdsa-sha2-nistp256|sk-ssh-ed25519)@openssh\.com)'
-    while read -r -p "Please ENTER your ssh_public_key, Can be a GitHub username, OpenSSH format public key url or public key content: " ssh_public_key; do
-        # OpenSSH format public key content
-        if echo "${ssh_public_key}" | grep -qE "${openssh_format_regex}"; then
-            ssh_public_key_content="${ssh_public_key}"
-            break
-        fi
-
-        # Public key url or GitHub username
-        ssh_public_key_url=""
-        if echo "${ssh_public_key}" | grep -qE '^https?://'; then
-            ssh_public_key_url="${ssh_public_key}"
-        else
-            # arbitrary input, must be a valid GitHub username
-            ssh_public_key_url="https://github.com/${ssh_public_key}.keys"
-        fi
-
-        ssh_public_key_content="$(curl -sL "${ssh_public_key_url}")"
-        if echo "${ssh_public_key_content}" | grep -qE "${openssh_format_regex}"; then
-            break
-        else
-            echo "ssh_public_key_content format mismatch, please re-ENTER"
-            echo "ssh_public_key_content = ${ssh_public_key_content}"
-        fi
-    done
-
-    apt_install_packages
-    apt_install_extra_packages
-
-    init_user "${username}"
-    add_ssh_key "${username}" "${ssh_public_key_content}"
+    log "Initialization complete for user '$user'."
 }
 
+# Execute main function with all script arguments
 main "$@"
