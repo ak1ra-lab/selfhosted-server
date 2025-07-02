@@ -1,0 +1,33 @@
+# https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/
+- name: apt_install - mongodb-server
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # https://repo.mongodb.org/apt/debian/dists/
+    # bullseye/mongodb-org: [4.2, 4.4, 5.0, 6.0, 7.0]
+    # bookworm/mongodb-org: [4.4, 5.0, 6.0, 7.0, 8.0]
+    mongodb_version: "8.0"
+    # https://pgp.mongodb.com/
+    # curl -sL https://pgp.mongodb.com/server-8.0.asc | gpg
+    # pub   rsa4096 2024-01-11 [SC]
+    #       4B0752C1BCA238C0B4EE14DC41DE058A4E7DCA05
+    # uid           MongoDB 8.0 Release Signing Key <packaging@mongodb.com>
+    apt_key_url: "https://pgp.mongodb.com/server-{{ mongodb_version }}.asc"
+    apt_keyrings_dest: "/etc/apt/keyrings/mongodb-server-{{ mongodb_version }}.asc"
+
+    apt_repo: "mongodb-server-{{ mongodb_version | replace('.', '-') }}"
+    apt_repo_uris: https://repo.mongodb.org/apt/debian
+    apt_repo_suites: "{{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }}"
+    apt_repo_components: main
+
+    apt_pinning: true
+    apt_unattended_upgrades: false
+    apt_mark_hold: false
+
+    # mongodb-org
+    # Depends: mongodb-org-database, mongodb-org-tools, mongodb-mongosh
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
