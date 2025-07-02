@@ -1,0 +1,33 @@
+# https://wiki.postgresql.org/wiki/Apt
+# Debian bullseye (11), bookworm (12), trixie (testing/13) and sid (unstable)
+# Ubuntu jammy (22.04), noble (24.04), oracular (24.10, amd64 only), plucky (25.04, amd64 only)
+# Architectures: amd64 (64-bit x86), arm64 (64-bit ARM), ppc64el (little-endian 64-bit POWER)
+# PostgreSQL 13, 14, 15, 16, 17, 18 beta, 19 devel
+# Server extensions such as PostGIS, various PL languages, and datatypes
+# Applications like omnidb, pgbouncer, and pgpool-II
+- name: apt_install - postgresql
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg
+    # pub   rsa4096 2011-10-13 [SC]
+    #       B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
+    # uid           PostgreSQL Debian Repository
+    apt_key_url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    apt_keyrings_dest: /etc/apt/keyrings/apt.postgresql.org.asc
+
+    apt_repo: postgresql
+    apt_repo_uris: https://apt.postgresql.org/pub/repos/apt
+    apt_repo_suites: "{{ ansible_distribution_release }}-pgdg"
+    apt_repo_components: main
+
+    apt_pinning: true
+    apt_unattended_upgrades: false
+    apt_mark_hold: false
+
+    # postgresql-17
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
