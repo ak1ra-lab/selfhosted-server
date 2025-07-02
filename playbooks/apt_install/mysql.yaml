@@ -1,0 +1,39 @@
+# https://dev.mysql.com/doc/refman/8.4/en/linux-installation-apt-repo.html
+- name: apt_install - mysql
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # # Double-check that the GPG fingerprint here matches the one in the official docs.
+    # https://dev.mysql.com/doc/refman/8.4/en/checking-gpg-signature.html
+    # The key that you want to obtain is named mysql-build@oss.oracle.com.
+    # The keyID for MySQL 8.0.36 packages and higher, and MySQL 8.3.0 and higher, is A8D3785C (BCA43417C3B485DD128EC6D4B7B3B788A8D3785C).
+
+    # https://dev.mysql.com/doc/refman/8.4/en/gpg-key-archived-packages.html
+    # The public GPG build key for earlier MySQL release packages (keyID 5072E1F5 or 3A79BD29),
+    # GPG Public Build Key for MySQL 8.0.28 through 8.0.35, and 8.1.0/8.2.0 Packages is A4A9406876FCBD3C456770C88C718D3B5072E1F5
+    # GPG Public Build Key for MySQL 8.0.27 Packages and Earlier is 859BE8D7C586F538430B19C2467B942D3A79BD29
+
+    # Retrieve apt_keyrings from the keyserver by fingerprint.
+    # Access to https://pgp.mit.edu is unstable, use https://keyserver.ubuntu.com instead
+    # https://pgp.mit.edu/pks/lookup?op=get&search=0xB7B3B788A8D3785C
+    apt_keyrings_url: "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xBCA43417C3B485DD128EC6D4B7B3B788A8D3785C"
+    apt_keyrings_dest: /etc/apt/keyrings/mysql.asc
+
+    apt_repo: mysql
+    # https://repo.mysql.com/apt/{debian|ubuntu}/
+    apt_repo_uris: "https://repo.mysql.com/apt/{{ ansible_distribution | lower }}"
+    # {bookworm|jammy}
+    apt_repo_suites: "{{ ansible_distribution_release }}"
+    # {mysql-tools|mysql-8.4-lts|mysql-8.0}
+    apt_repo_components: mysql-8.4-lts
+
+    apt_pinning: true
+    apt_unattended_upgrades: false
+    apt_mark_hold: false
+
+    # mysql-17
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
