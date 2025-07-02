@@ -7,7 +7,7 @@
     # pub   rsa2048 2021-05-04 [SC]
     #       35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3
     # uid           Artifact Registry Repository Signer <artifact-registry-repository-signer@google.com>
-    apt_key_url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    apt_keyrings_url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
     apt_keyrings_dest: /etc/apt/keyrings/gcloud.asc
 
     apt_repo: gcloud

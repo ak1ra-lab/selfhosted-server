@@ -13,7 +13,7 @@
     #       BC528686B50D79E339D3721CEB3E94ADBE1229CF
     # uid           Microsoft (Release signing) <gpgsecurity@microsoft.com>
     # TODO: 2025-06-30 目前暂未切换至 microsoft-2025.asc
-    apt_key_url: https://packages.microsoft.com/keys/microsoft.asc
+    apt_keyrings_url: https://packages.microsoft.com/keys/microsoft.asc
     apt_keyrings_dest: /etc/apt/keyrings/microsoft.asc
 
     apt_repo: microsoft

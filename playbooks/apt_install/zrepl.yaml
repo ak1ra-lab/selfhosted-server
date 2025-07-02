@@ -11,7 +11,7 @@
     # 这里有一个 expired 的 sub key, 不过它的用途是 [E] (Encrypt)
     # 用于 [SC] (Sign and Certify) 的 primary key 并没有指定有效期
     # 在讨论对 apt repo 签名时, 实际上签名的文件是 InRelease 或 Release + Release.gpg 文件
-    apt_key_url: https://zrepl.cschwarz.com/apt/apt-key.asc
+    apt_keyrings_url: https://zrepl.cschwarz.com/apt/apt-key.asc
     apt_keyrings_dest: /etc/apt/keyrings/zrepl.asc
 
     apt_repo: zrepl

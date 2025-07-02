@@ -8,7 +8,7 @@
     #       B53AE77BADB630A683046005963FA27710458545
     # uid           Grafana Labs <engineering@grafana.com>
     # sub   rsa3072 2023-08-24 [E] [expires: 2025-08-23]
-    apt_key_url: https://apt.grafana.com/gpg.key
+    apt_keyrings_url: https://apt.grafana.com/gpg.key
     apt_keyrings_dest: /etc/apt/keyrings/grafana.asc
 
     apt_repo: grafana

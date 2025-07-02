@@ -8,7 +8,7 @@
     #       2C317FBD5D886B4E89BAE8DA6D9152172A2B2F0C
     # uid           Project S <contact@sagernet.org>
     # sub   rsa4096 2024-03-12 [E]
-    apt_key_url: https://sing-box.app/gpg.key
+    apt_keyrings_url: https://sing-box.app/gpg.key
     apt_keyrings_dest: /etc/apt/keyrings/sagernet.asc
 
     apt_repo: sagernet

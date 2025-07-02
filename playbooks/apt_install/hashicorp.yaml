@@ -9,7 +9,7 @@
     #       798AEC654E5C15428C8E42EEAA16FCBCA621E701
     # uid           HashiCorp Security (HashiCorp Package Signing) <security+packaging@hashicorp.com>
     # sub   rsa4096 2023-01-10 [S] [expires: 2028-01-09]
-    apt_key_url: https://apt.releases.hashicorp.com/gpg
+    apt_keyrings_url: https://apt.releases.hashicorp.com/gpg
     apt_keyrings_dest: /etc/apt/keyrings/hashicorp-archive-keyring.asc
 
     apt_repo: hashicorp

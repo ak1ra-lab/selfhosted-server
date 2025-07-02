@@ -7,7 +7,7 @@
     # pub   rsa2048 2015-01-28 [SC]
     #       FBA8C0EE63617C5EED695C43254B391D8CACCBF8
     # uid           CloudFlare Software Packaging <help@cloudflare.com>
-    apt_key_url: https://pkg.cloudflare.com/cloudflare-main.gpg
+    apt_keyrings_url: https://pkg.cloudflare.com/cloudflare-main.gpg
     apt_keyrings_dest: /etc/apt/keyrings/cloudflare.gpg
 
     apt_repo: cloudflared

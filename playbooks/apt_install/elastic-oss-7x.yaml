@@ -9,7 +9,7 @@
     #       46095ACC8548582C1A2699A9D27D666CD88E42B4
     # uid           Elasticsearch (Elasticsearch Signing Key) <dev_ops@elasticsearch.org>
     # sub   rsa2048 2013-09-16 [E]
-    apt_key_url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    apt_keyrings_url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
     apt_keyrings_dest: /etc/apt/keyrings/elasticsearch-keyring.asc
 
     apt_repo: elastic-oss-7x

@@ -13,7 +13,7 @@
     # pub   rsa4096 2011-10-13 [SC]
     #       B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
     # uid           PostgreSQL Debian Repository
-    apt_key_url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    apt_keyrings_url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
     apt_keyrings_dest: /etc/apt/keyrings/apt.postgresql.org.asc
 
     apt_repo: postgresql
