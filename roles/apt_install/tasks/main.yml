@@ -1,4 +1,22 @@
 ---
+- name: assert required vars are set
+  ansible.builtin.assert:
+    that:
+      - >
+        (apt_repo | default('') | length > 0) and
+        (apt_repo_uris | default('') | length > 0) and
+        (apt_keyrings_dest | default('') | length > 0)
+    fail_msg: "All of [apt_repo, apt_repo_uris, apt_keyrings_dest] must be set"
+
+- name: fail if none of the apt_keyrings vars are set
+  ansible.builtin.assert:
+    that:
+      - >
+        (apt_keyrings_url | default('') | length > 0) or
+        (apt_keyrings_file | default('') | length > 0) or
+        (apt_keyrings_content | default('') | length > 0)
+    fail_msg: "At least one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] must be set"
+
 - name: ensure apt directories exists
   ansible.builtin.file:
     path: "{{ directory }}"
@@ -10,10 +28,31 @@
   loop_control:
     loop_var: directory
 
-- name: import apt key from apt_key_url
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+# The apt-key command used by this module has been deprecated.
+- name: import apt keyrings from apt_keyrings_url
+  when:
+    - (apt_keyrings_url | default('') | length > 0)
   ansible.builtin.get_url:
-    url: "{{ apt_key_url }}"
+    url: "{{ apt_keyrings_url }}"
     dest: "{{ apt_keyrings_dest }}"
+
+- name: import apt keyrings from apt_keyrings_file
+  when:
+    - (apt_keyrings_file | default('') | length > 0)
+  ansible.builtin.copy:
+    src: "{{ apt_keyrings_file }}"
+    dest: "{{ apt_keyrings_dest }}"
+    mode: "0644"
+
+- name: import apt keyrings from apt_keyrings_content
+  when:
+    - (apt_keyrings_content | default('') | length > 0)
+  ansible.builtin.copy:
+    dest: "{{ apt_keyrings_dest }}"
+    mode: "0644"
+    content: |
+      {{ apt_keyrings_content }}
 
 - name: add apt repo in DEB822 format
   ansible.builtin.deb822_repository:
