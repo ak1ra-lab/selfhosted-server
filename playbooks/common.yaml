@@ -4,6 +4,7 @@
   become: true
   vars:
     common_custom_sshd_config: false
+    common_unattended_upgrades_automatic_reboot: true
 
   tasks:
     - ansible.builtin.import_role:
