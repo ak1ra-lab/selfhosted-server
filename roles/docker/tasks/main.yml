@@ -10,7 +10,7 @@
     apt_repo_suites: "{{ docker_apt_repo_suites }}"
     apt_repo_components: "{{ docker_apt_repo_components }}"
 
-    apt_key_url: "{{ docker_apt_key_url }}"
+    apt_keyrings_url: "{{ docker_apt_keyrings_url }}"
     apt_keyrings_dest: "{{ docker_apt_keyrings_dest }}"
 
     apt_pinning: true
