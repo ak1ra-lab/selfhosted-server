@@ -10,6 +10,10 @@ common_apt_repo_mirrors:
   hit: https://mirrors.hit.edu.cn
   sjtu: https://mirror.sjtu.edu.cn
 
+# 是否允许 unattended-upgrades 更新后自动重启
+common_unattended_upgrades_automatic_reboot: false
+common_unattended_upgrades_automatic_reboot_time: "02:00"
+
 # 强制 apt 使用 IPv4
 common_apt_force_ipv4: true
 
