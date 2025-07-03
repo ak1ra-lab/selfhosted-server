@@ -1,13 +1,18 @@
 ---
+- name: include_tasks if debian-backports enabled
+  when:
+    - (apt_repo_debian_suites_backports_enabled | ansible.builtin.bool)
+  ansible.builtin.include_tasks: debian-backports.yml
+
 - name: add debian apt repo in DEB822 format
   ansible.builtin.deb822_repository:
     name: debian
     state: present
     enabled: true
-    types: deb
+    types: "{{ apt_repo_types | default(['deb']) }}"
     uris: mirror+file:///etc/apt/mirrors/debian.list
-    suites: bookworm bookworm-updates bookworm-backports
-    components: main contrib non-free non-free-firmware
+    suites: "{{ apt_repo_debian_suites | default([]) }}"
+    components: "{{ apt_repo_debian_components | default([]) }}"
     signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
 
 - name: add debian-security apt repo in DEB822 format
@@ -15,10 +20,10 @@
     name: debian-security
     state: present
     enabled: true
-    types: deb
+    types: "{{ apt_repo_types | default(['deb']) }}"
     uris: mirror+file:///etc/apt/mirrors/debian-security.list
-    suites: bookworm-security
-    components: main contrib non-free non-free-firmware
+    suites: "{{ apt_repo_debian_security_suites | default([]) }}"
+    components: "{{ apt_repo_debian_security_components | default([]) }}"
     signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
 
 - name: ensure /etc/apt/mirrors exists
@@ -42,13 +47,22 @@
   loop_control:
     loop_var: template
 
+- name: set unattended-upgrades on ${distro_codename}-updates
+  when:
+    - (unattended_upgrades_updates_enabled | ansible.builtin.bool)
+  ansible.builtin.copy:
+    dest: "/etc/apt/apt.conf.d/90unattended-upgrades-updates"
+    mode: "0644"
+    content: |
+      Unattended-Upgrade::Origins-Pattern:: "origin=Debian,codename=${distro_codename}-updates";
+
 - name: force apt use IPv4
-  when: (common_apt_force_ipv4 | ansible.builtin.bool)
+  when: (apt_force_ipv4_enabled | ansible.builtin.bool)
   ansible.builtin.copy:
     dest: /etc/apt/apt.conf.d/99force-ipv4
+    mode: "0644"
     content: |
       Acquire::ForceIPv4 "true";
-    mode: "0644"
 
 - name: install common packages
   ansible.builtin.apt:

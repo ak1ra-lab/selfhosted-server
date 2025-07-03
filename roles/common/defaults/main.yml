@@ -1,7 +1,7 @@
 ---
-# 此项设置为下方 common_apt_repo_mirrors 的任意一个 key
-common_apt_repo_key: debian
-common_apt_repo_mirrors:
+# str: 此项设置为下方 apt_repo_mirrors 的某个 key
+apt_repo_key: debian
+apt_repo_mirrors:
   debian: https://deb.debian.org
   aliyun: https://mirrors.aliyun.com
   tencent: https://mirrors.tencent.com
@@ -10,22 +10,60 @@ common_apt_repo_mirrors:
   hit: https://mirrors.hit.edu.cn
   sjtu: https://mirror.sjtu.edu.cn
 
-# 是否允许 unattended-upgrades 更新后自动重启
-common_unattended_upgrades_automatic_reboot: false
-common_unattended_upgrades_automatic_reboot_time: "02:00"
+# list[str]
+apt_repo_types:
+  - deb
 
-# 强制 apt 使用 IPv4
-common_apt_force_ipv4: true
+# list[str]: debian repo suites
+# https://deb.debian.org/debian/dists/
+# bookworm, bookworm-updates, bookworm-backports
+apt_repo_debian_suites:
+  - "{{ ansible_distribution_release }}"
+  - "{{ ansible_distribution_release }}-updates"
+# list[str]: debian repo components
+apt_repo_debian_components:
+  - main
+  - contrib
+  - non-free
+  - non-free-firmware
 
-# 是否开启 TCP BBR 拥塞控制算法
-common_tcp_bbr_enabled: false
+# list[str]: debian-security suites
+# https://deb.debian.org/debian-security/dists/
+# bullseye-security, bookworm-security
+apt_repo_debian_security_suites:
+  - "{{ ansible_distribution_release }}-security"
+# list[str]: debian-security components
+apt_repo_debian_security_components:
+  - main
+  - contrib
+  - non-free
+  - non-free-firmware
 
-# 是否设置 IPv4 ip_forward
-common_ip_forward_enabled: false
+# bool: 是否启用 debian-backports
+# 启用 debian-backports 会同时设置 linux kernel preferences 与自动更新来自 debian-backports 中的 packages, 可能存在副作用, 默认不启用
+apt_repo_debian_suites_backports_enabled: false
 
-# 是否设置自定义 /etc/ssh/sshd_config
-common_custom_sshd_config: true
-common_custom_sshd_config_entries:
+# bool: 是否启用 ${distro_codename}-updates 自动更新
+# 默认配置文件中 "origin=Debian,codename=${distro_codename}-updates"; 行被注释掉的
+# 启用 ${distro_codename}-updates 同样存在潜在的副作用, 此处默认禁用
+unattended_upgrades_updates_enabled: false
+
+# bool: 是否允许 unattended-upgrades 更新后自动重启
+unattended_upgrades_automatic_reboot_enabled: false
+unattended_upgrades_automatic_reboot_time: "02:00"
+
+# bool: 强制 apt 使用 IPv4
+apt_force_ipv4_enabled: true
+
+# bool: 是否开启 TCP BBR 拥塞控制算法
+tcp_bbr_enabled: false
+
+# bool: 是否设置 IPv4 ip_forward
+ip_forward_enabled: false
+
+# bool: 是否设置自定义 /etc/ssh/sshd_config
+custom_sshd_config_enabled: true
+custom_sshd_config_entries:
   ## Specifies whether root can log in using ssh(1).
   ## The argument must be yes, prohibit-password, forced-commands-only, or no. The default is prohibit-password.
   - regexp: "^#?PermitRootLogin"
@@ -42,10 +80,10 @@ common_custom_sshd_config_entries:
   - regexp: "^#?AllowStreamLocalForwarding"
     line: "AllowStreamLocalForwarding yes"
 
-# 是否设置自定义 sysctl.conf
+# bool: 是否设置自定义 sysctl.conf
 # 我并不完全理解下面这些值的作用, 因此此项默认值为 false
-common_custom_sysctl_conf: false
-common_custom_sysctl_conf_entries:
+custom_sysctl_conf_enabled: false
+custom_sysctl_conf_entries:
   # ref: https://www.kernel.org/doc/html/latest/admin-guide/sysctl/net.html
   # Low latency busy poll timeout for socket reads. (needs CONFIG_NET_RX_BUSY_POLL)
   - name: net.core.busy_read
