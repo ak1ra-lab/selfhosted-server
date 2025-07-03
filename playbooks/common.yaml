@@ -3,8 +3,12 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    common_custom_sshd_config: false
-    common_unattended_upgrades_automatic_reboot: true
+    apt_repo_debian_suites_backports_enabled: true
+
+    unattended_upgrades_updates_enabled: true
+    unattended_upgrades_automatic_reboot_enabled: true
+
+    custom_sshd_config_enabled: false
 
   tasks:
     - ansible.builtin.import_role:
