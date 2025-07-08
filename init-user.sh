@@ -25,12 +25,38 @@ check_root() {
     fi
 }
 
+check_distro() {
+    distro="$(awk -F= '/^ID=/ {print $2}' /etc/os-release)"
+    if [[ "${distro}" != "debian" ]]; then
+        die "This script currently only support Debian."
+    fi
+}
+
 require_command() {
     for cmd in "$@"; do
         if ! command -v "$cmd" &>/dev/null; then
             die "Required command '$cmd' is not installed. Please install it and try again."
         fi
     done
+}
+
+init_apt_sources() {
+    codename="$(awk -F= '/^VERSION_CODENAME/ {print $2}' /etc/os-release)"
+
+    cat >/etc/apt/sources.list <<EOF
+deb https://deb.debian.org/debian/ ${codename} main contrib non-free non-free-firmware
+# deb-src https://deb.debian.org/debian/ ${codename} main contrib non-free non-free-firmware
+
+deb https://deb.debian.org/debian/ ${codename}-updates main contrib non-free non-free-firmware
+# deb-src https://deb.debian.org/debian/ ${codename}-updates main contrib non-free non-free-firmware
+
+deb https://deb.debian.org/debian-security/ ${codename}-security main contrib non-free non-free-firmware
+# deb-src https://deb.debian.org/debian-security/ ${codename}-security main contrib non-free non-free-firmware
+
+# deb https://deb.debian.org/debian/ ${codename}-backports main contrib non-free non-free-firmware
+# deb-src https://deb.debian.org/debian/ ${codename}-backports main contrib non-free non-free-firmware
+
+EOF
 }
 
 # --- Core functions ---
@@ -117,6 +143,8 @@ chpasswd_user() {
 # --- Main script logic ---
 main() {
     check_root
+    check_distro
+
     require_command apt-get groupadd useradd usermod chpasswd openssl getent
 
     local user
@@ -126,6 +154,7 @@ main() {
         die "Usage: $0 <username>"
     fi
 
+    init_apt_sources
     install_dependencies
     setup_sudo
     create_user "$user"
