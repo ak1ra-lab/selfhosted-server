@@ -93,6 +93,11 @@ create_user() {
             log "User '$user' is already in 'sudo' group."
         fi
     fi
+}
+
+chpasswd_user() {
+    local user="$1"
+    log "Change password for user '$user'..."
 
     # Generate and set password
     log "Generating a new password for '$user'."
