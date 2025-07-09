@@ -1,0 +1,15 @@
+---
+- name: Disable swap
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  tasks:
+    - name: Disable active swap
+      ansible.builtin.command: swapoff -a
+
+    - name: Comment out swap entry in /etc/fstab
+      ansible.builtin.replace:
+        path: /etc/fstab
+        # /dev/mapper/host--vg-swap_1 none            swap    sw              0       0
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
+        backup: yes
