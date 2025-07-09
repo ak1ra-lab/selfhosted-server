@@ -3,10 +3,10 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    apt_repo_debian_suites_backports_enabled: true
+    apt_repo_debian_suites_backports_enabled: false
 
     unattended_upgrades_updates_enabled: true
-    unattended_upgrades_automatic_reboot_enabled: true
+    unattended_upgrades_automatic_reboot_enabled: false
 
     custom_sshd_config_enabled: false
 
