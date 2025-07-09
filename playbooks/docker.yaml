@@ -2,6 +2,10 @@
 - name: install docker
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
+  vars:
+    apt_pinning: true
+    apt_unattended_upgrades: false
+    apt_mark_hold: false
 
   tasks:
     - ansible.builtin.import_role:

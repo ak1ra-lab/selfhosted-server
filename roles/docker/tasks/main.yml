@@ -13,10 +13,6 @@
     apt_keyrings_url: "{{ docker_apt_keyrings_url }}"
     apt_keyrings_dest: "{{ docker_apt_keyrings_dest }}"
 
-    apt_pinning: true
-    apt_unattended_upgrades: true
-    apt_mark_hold: false
-
     # skopeo is not from docker_apt_repo
     apt_repo_packages:
       - docker-ce
