@@ -112,3 +112,17 @@
         - (apt_mark_hold | ansible.builtin.bool)
       ansible.builtin.debug:
         var: apt_mark_hold_register
+
+- name: remove apt pinning
+  when:
+    - not (apt_pinning | ansible.builtin.bool)
+  ansible.builtin.file:
+    path: "/etc/apt/preferences.d/90{{ apt_repo }}"
+    state: absent
+
+- name: remove unattended-upgrades origins pattern
+  when:
+    - not (apt_unattended_upgrades | ansible.builtin.bool)
+  ansible.builtin.file:
+    path: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
+    state: absent
