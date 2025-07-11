@@ -3,7 +3,7 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    # curl -s https://sing-box.app/gpg.key | gpg
+    # curl -sL https://sing-box.app/gpg.key | gpg
     # pub   rsa4096 2024-03-12 [SC]
     #       2C317FBD5D886B4E89BAE8DA6D9152172A2B2F0C
     # uid           Project S <contact@sagernet.org>

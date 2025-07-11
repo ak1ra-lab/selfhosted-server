@@ -4,7 +4,7 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    # curl -s https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg
+    # curl -sL https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg
     # pub   rsa2048 2013-09-16 [SC]
     #       46095ACC8548582C1A2699A9D27D666CD88E42B4
     # uid           Elasticsearch (Elasticsearch Signing Key) <dev_ops@elasticsearch.org>

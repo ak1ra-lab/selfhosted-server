@@ -3,7 +3,7 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    # curl -s https://apt.grafana.com/gpg.key | gpg
+    # curl -sL https://apt.grafana.com/gpg.key | gpg
     # pub   rsa3072 2023-08-24 [SC] [expires: 2025-08-23]
     #       B53AE77BADB630A683046005963FA27710458545
     # uid           Grafana Labs <engineering@grafana.com>

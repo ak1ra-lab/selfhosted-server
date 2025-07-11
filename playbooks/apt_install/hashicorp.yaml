@@ -4,7 +4,7 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    # curl -s https://apt.releases.hashicorp.com/gpg | gpg
+    # curl -sL https://apt.releases.hashicorp.com/gpg | gpg
     # pub   rsa4096 2023-01-10 [SC] [expires: 2028-01-09]
     #       798AEC654E5C15428C8E42EEAA16FCBCA621E701
     # uid           HashiCorp Security (HashiCorp Package Signing) <security+packaging@hashicorp.com>

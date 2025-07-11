@@ -3,7 +3,7 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    # curl -s https://pkg.cloudflare.com/cloudflare-main.gpg | gpg
+    # curl -sL https://pkg.cloudflare.com/cloudflare-main.gpg | gpg
     # pub   rsa2048 2015-01-28 [SC]
     #       FBA8C0EE63617C5EED695C43254B391D8CACCBF8
     # uid           CloudFlare Software Packaging <help@cloudflare.com>

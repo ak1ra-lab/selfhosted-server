@@ -8,7 +8,7 @@
     # This key was Microsoft’s standard Linux-signing key until Spring 2025, as discussed above. This key will not be used for newly-created repositories.
     # microsoft-2025.asc (AA86F75E427A19DD33346403EE4D7792F748182B):
     # This is the current standard Linux-signing key that will be used in newly-created repositories. It will work properly in distributions that disallow SHA1 signatures.
-    # curl -s https://packages.microsoft.com/keys/microsoft.asc | gpg
+    # curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg
     # pub   rsa2048 2015-10-28 [SC]
     #       BC528686B50D79E339D3721CEB3E94ADBE1229CF
     # uid           Microsoft (Release signing) <gpgsecurity@microsoft.com>

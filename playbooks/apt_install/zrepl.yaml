@@ -3,7 +3,7 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    # curl -s https://zrepl.cschwarz.com/apt/apt-key.asc | gpg
+    # curl -sL https://zrepl.cschwarz.com/apt/apt-key.asc | gpg
     # pub   rsa2048 2019-10-17 [SC]
     #       E101418FD3D6FBCB9D65A62D708699FC5F2EBF16
     # uid           Christian Schwarz <zrepl-debian-pkgs@cschwarz.com>
