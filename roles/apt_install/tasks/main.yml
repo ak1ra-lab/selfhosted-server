@@ -58,8 +58,8 @@
   ansible.builtin.deb822_repository:
     name: "{{ apt_repo }}"
     state: present
-    enabled: true
-    types: deb
+    enabled: "{{ apt_repo_enabled | ansible.builtin.bool }}"
+    types: "{{ apt_repo_types | default(['deb']) }}"
     uris: "{{ apt_repo_uris }}"
     suites: "{{ apt_repo_suites }}"
     components: "{{ apt_repo_components }}"

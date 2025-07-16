@@ -4,6 +4,13 @@
 # /etc/apt/sources.list.d/{{ apt_repo }}.sources
 apt_repo: ""
 
+# Tells APT whether the source is enabled or not
+apt_repo_enabled: true
+
+# list[str]: Which types of packages to look for from a given source; either binary deb or source code deb-src.
+apt_repo_types:
+  - deb
+
 # Try to avoid using 'ansible_lsb', which depends on 'lsb_release',
 # which may be missing related fields in some distro like alpine.
 apt_repo_uris: ""
