@@ -10,7 +10,7 @@ apt_repo_mirrors:
   hit: https://mirrors.hit.edu.cn
   sjtu: https://mirror.sjtu.edu.cn
 
-# list[str]
+# list[str]: Which types of packages to look for from a given source; either binary deb or source code deb-src.
 apt_repo_types:
   - deb
 
@@ -46,11 +46,11 @@ apt_repo_debian_suites_backports_enabled: false
 # bool: 是否启用 ${distro_codename}-updates 自动更新
 # 默认配置文件中 "origin=Debian,codename=${distro_codename}-updates"; 行被注释掉的
 # 启用 ${distro_codename}-updates 同样存在潜在的副作用, 此处默认禁用
-unattended_upgrades_updates_enabled: false
+unattended_upgrade_updates_enabled: false
 
 # bool: 是否允许 unattended-upgrades 更新后自动重启
-unattended_upgrades_automatic_reboot_enabled: false
-unattended_upgrades_automatic_reboot_time: "02:00"
+unattended_upgrade_automatic_reboot_enabled: false
+unattended_upgrade_automatic_reboot_time: "02:00"
 
 # bool: 强制 apt 使用 IPv4
 apt_force_ipv4_enabled: true

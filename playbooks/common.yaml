@@ -5,8 +5,8 @@
   vars:
     apt_repo_debian_suites_backports_enabled: false
 
-    unattended_upgrades_updates_enabled: true
-    unattended_upgrades_automatic_reboot_enabled: false
+    unattended_upgrade_updates_enabled: true
+    unattended_upgrade_automatic_reboot_enabled: false
 
     custom_sshd_config_enabled: false
 

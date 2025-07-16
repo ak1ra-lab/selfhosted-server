@@ -49,7 +49,7 @@
 
 - name: set unattended-upgrades on ${distro_codename}-updates
   when:
-    - (unattended_upgrades_updates_enabled | ansible.builtin.bool)
+    - (unattended_upgrade_updates_enabled | ansible.builtin.bool)
   ansible.builtin.copy:
     dest: "/etc/apt/apt.conf.d/90unattended-upgrades-updates"
     mode: "0644"
