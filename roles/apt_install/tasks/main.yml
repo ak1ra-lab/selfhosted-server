@@ -54,7 +54,12 @@
     content: |
       {{ apt_keyrings_content }}
 
-- name: add apt repo in DEB822 format
+- name: remove apt_repo in legacy format
+  ansible.builtin.file:
+    path: "/etc/apt/sources.list.d/{{ apt_repo }}.list"
+    state: absent
+
+- name: add apt_repo in DEB822 format
   ansible.builtin.deb822_repository:
     name: "{{ apt_repo }}"
     state: present
