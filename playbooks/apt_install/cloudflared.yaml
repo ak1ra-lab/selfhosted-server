@@ -18,6 +18,8 @@
     apt_pinning: true
     apt_unattended_upgrade: true
     apt_mark_hold: false
+    apt_pinning_pin_release: "o=cloudflared,n=any"
+    apt_unattended_upgrade_origins_pattern: "origin=cloudflared,codename=any"
 
     apt_repo_packages:
       - cloudflared

@@ -18,6 +18,8 @@
     apt_pinning: true
     apt_unattended_upgrade: true
     apt_mark_hold: false
+    apt_pinning_pin_release: "o=cloud-sdk,n=cloud-sdk,c=main"
+    apt_unattended_upgrade_origins_pattern: "origin=cloud-sdk,codename=cloud-sdk,component=main"
 
     apt_repo_packages:
       - google-cloud-cli

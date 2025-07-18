@@ -34,6 +34,8 @@
     apt_pinning: false
     apt_unattended_upgrade: false
     apt_mark_hold: false
+    apt_pinning_pin_release: "o=Proxmox,n={{ ansible_distribution_release }},c=no-subscription,l=Proxmox Ceph 19 Squid Debian Repository"
+    apt_unattended_upgrade_origins_pattern: "origin=Proxmox,codename={{ ansible_distribution_release }},component=no-subscription,label=Proxmox Ceph 19 Squid Debian Repository"
 
     apt_repo_packages: []
 

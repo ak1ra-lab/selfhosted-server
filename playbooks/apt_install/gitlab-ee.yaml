@@ -20,6 +20,8 @@
     apt_pinning: true
     apt_unattended_upgrade: true
     apt_mark_hold: false
+    apt_pinning_pin_release: "o=packages.gitlab.com/gitlab/gitlab-ee,n={{ ansible_distribution_release }},c=main"
+    apt_unattended_upgrade_origins_pattern: "origin=packages.gitlab.com/gitlab/gitlab-ee,codename={{ ansible_distribution_release }},component=main"
 
     apt_repo_packages:
       - gitlab-ee

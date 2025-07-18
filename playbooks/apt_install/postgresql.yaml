@@ -24,6 +24,8 @@
     apt_pinning: true
     apt_unattended_upgrade: false
     apt_mark_hold: false
+    apt_pinning_pin_release: "o=apt.postgresql.org,n={{ apt_repo_suites }}"
+    apt_unattended_upgrade_origins_pattern: "origin=apt.postgresql.org,codename={{ apt_repo_suites }}"
 
     # postgresql-17
     apt_repo_packages: []

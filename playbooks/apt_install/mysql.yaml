@@ -30,6 +30,8 @@
     apt_pinning: true
     apt_unattended_upgrade: false
     apt_mark_hold: false
+    apt_pinning_pin_release: "o=MySQL,n={{ ansible_distribution_release }}"
+    apt_unattended_upgrade_origins_pattern: "origin=MySQL,codename={{ ansible_distribution_release }}"
 
     # mysql-17
     apt_repo_packages: []
