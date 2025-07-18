@@ -32,7 +32,7 @@
     apt_repo_components: no-subscription
 
     apt_pinning: false
-    apt_unattended_upgrades: false
+    apt_unattended_upgrade: false
     apt_mark_hold: false
 
     apt_repo_packages: []

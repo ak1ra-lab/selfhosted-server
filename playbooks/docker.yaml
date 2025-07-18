@@ -4,7 +4,7 @@
   become: true
   vars:
     apt_pinning: true
-    apt_unattended_upgrades: false
+    apt_unattended_upgrade: false
     apt_mark_hold: false
 
   tasks:

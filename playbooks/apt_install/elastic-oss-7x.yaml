@@ -18,7 +18,7 @@
     apt_repo_components: main
 
     apt_pinning: true
-    apt_unattended_upgrades: false
+    apt_unattended_upgrade: false
     apt_mark_hold: false
 
     # elasticsearch-oss, logstash-oss, kibana-oss, filebeat-oss
