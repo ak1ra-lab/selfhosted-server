@@ -71,26 +71,50 @@
     architectures: "{{ dpkg_architectures[ansible_architecture] | default(ansible_architecture) }}"
     signed_by: "{{ apt_keyrings_dest }}"
 
-# https://manpages.debian.org/bookworm/apt/apt_preferences.5.en.html
-# The pattern "*" in a Package field is not considered a glob(7) expression in itself.
-- name: add apt pinning
+# A note of caution: the keyword used here is "origin" which can be used to match a hostname
+# This should not be confused with the Origin of a distribution as specified in a Release file
+- name: add apt pinning by apt_repo_uri_hostname
   when:
     - (apt_pinning | ansible.builtin.bool)
+    - (apt_pinning_pin_release | default('') | length == 0)
   ansible.builtin.copy:
     dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
     content: |
-      Package: *
-      Pin: origin {{ apt_pinning_origin }}
-      Pin-Priority: 900
+      Package: {{ apt_pinning_package }}
+      Pin: origin {{ apt_repo_uri_hostname }}
+      Pin-Priority: {{ apt_pinning_pin_priority | int }}
     mode: "0644"
 
-- name: add unattended-upgrades origins pattern
+- name: add apt pinning by Release file
   when:
-    - (apt_unattended_upgrades | ansible.builtin.bool)
+    - (apt_pinning | ansible.builtin.bool)
+    - (apt_pinning_pin_release | default('') | length > 0)
+  ansible.builtin.copy:
+    dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
+    content: |
+      Package: {{ apt_pinning_package }}
+      Pin: release {{ apt_pinning_pin_release }}
+      Pin-Priority: {{ apt_pinning_pin_priority | int }}
+    mode: "0644"
+
+- name: add unattended-upgrades origins pattern by apt_repo_uri_hostname
+  when:
+    - (apt_unattended_upgrade | ansible.builtin.bool)
+    - (apt_unattended_upgrade_origins_pattern | default('') | length == 0)
   ansible.builtin.copy:
     dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
     content: |
-      Unattended-Upgrade::Origins-Pattern:: "site={{ apt_unattended_upgrades_site }}";
+      Unattended-Upgrade::Origins-Pattern:: "site={{ apt_repo_uri_hostname }}";
+    mode: "0644"
+
+- name: add unattended-upgrades origins pattern by Release file
+  when:
+    - (apt_unattended_upgrade | ansible.builtin.bool)
+    - (apt_unattended_upgrade_origins_pattern | default('') | length > 0)
+  ansible.builtin.copy:
+    dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
+    content: |
+      Unattended-Upgrade::Origins-Pattern:: "{{ apt_unattended_upgrade_origins_pattern }}";
     mode: "0644"
 
 - name: apt_install packages from apt_repo
@@ -127,7 +151,7 @@
 
 - name: remove unattended-upgrades origins pattern
   when:
-    - not (apt_unattended_upgrades | ansible.builtin.bool)
+    - not (apt_unattended_upgrade | ansible.builtin.bool)
   ansible.builtin.file:
     path: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
     state: absent

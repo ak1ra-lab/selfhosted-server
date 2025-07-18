@@ -16,6 +16,9 @@ apt_repo_types:
 apt_repo_uris: ""
 apt_repo_suites: "{{ ansible_distribution_release }}"
 apt_repo_components: main
+# apt_repo_uris can be string or list of string
+apt_repo_uri_hostname: >-
+  {{ (apt_repo_uris[0] if apt_repo_uris is iterable and apt_repo_uris is not string and apt_repo_uris | length > 0 else apt_repo_uris) | ansible.builtin.urlsplit('hostname') }}
 
 # At least one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] must be set
 apt_keyrings_url: ""
@@ -25,18 +28,40 @@ apt_keyrings_content: ""
 # armored keys should use .asc extension, binary should use .gpg
 apt_keyrings_dest: ""
 
-# https://manpages.debian.org/bookworm/apt/apt_preferences.5.en.html
+# https://manpages.debian.org/bookworm/apt/apt_preferences.5.en.html#Determination_of_Package_Version_and_Distribution_Properties
 apt_pinning: true
-# A note of caution: the keyword used here is "origin" which can be used to match a hostname.
-# This **should not be confused with** the Origin of a distribution as specified in a Release file.
-apt_pinning_origin: "{{ apt_repo_uris | ansible.builtin.urlsplit('hostname') }}"
+# The pattern "*" in a Package field is not considered a glob(7) expression in itself.
+apt_pinning_package: "*"
+# the Archive: or Suite: line
+#   Pin: release a=stable
+# the Codename: line
+#   Pin: release n=trixie
+# the Version: line
+#   Pin: release a=stable, v=12
+# the Component: line
+#   Pin: release c=main
+# the Origin: line
+#   Pin: release: o=Debian
+# the Label: line
+#   Pin: release: l=Debian
+# All of the Packages and Release files retrieved from locations listed in the sources.list(5) file are stored in the directory /var/lib/apt/lists
+# If `apt_pinning_pin_release` is not set or empty,
+# it will be `Pin: origin "{{ apt_repo_uri_hostname }}"` by default,
+#   Pin: origin "deb.debian.org"
+# This should not be confused with `Pin: release: o=Debian`, which originate from the Release file
+# Question: Can the full names of the keywords from the Release file in the `Pin: release:` line be used?
+# After all, the examples above only use single-letter abbreviations.
+# 看起来 `Pin: release:` 行中只能用 单字母缩写
+# https://salsa.debian.org/apt-team/apt/-/blob/95ff30f3976d73b3dcfd60ab7518130252efbb79/apt-pkg/versionmatch.cc#L95-114
+apt_pinning_pin_release: ""
+apt_pinning_pin_priority: 900
 
 # https://wiki.debian.org/UnattendedUpgrades
-# Lines below have the format "keyword=value,...".  A
-# package will be upgraded only if the values in its metadata match
-# all the supplied keywords in a line.  (In other words, omitted
+# Lines below have the format "keyword=value,...".
+# A package will be upgraded only if the values in its metadata match
+# all the supplied keywords in a line. (In other words, omitted
 # keywords are wild cards.) The keywords originate from the Release
-# file, but several aliases are accepted.  The accepted keywords are:
+# file, but several aliases are accepted. The accepted keywords are:
 #   a,archive,suite (eg, "stable")
 #   c,component     (eg, "main", "contrib", "non-free")
 #   l,label         (eg, "Debian", "Debian-Security")
@@ -46,9 +71,9 @@ apt_pinning_origin: "{{ apt_repo_uris | ansible.builtin.urlsplit('hostname') }}"
 # The available values on the system are printed by the command
 # "apt-cache policy", and can be debugged by running
 # "unattended-upgrades -d" and looking at the log file.
-apt_unattended_upgrades: true
-# we prefer site here
-apt_unattended_upgrades_site: "{{ apt_repo_uris | ansible.builtin.urlsplit('hostname') }}"
+apt_unattended_upgrade: true
+# If `apt_unattended_upgrade_origins_pattern` is not set or empty, it will be "site {{ apt_repo_uri_hostname }}" by default
+apt_unattended_upgrade_origins_pattern: ""
 
 # apt-mark hold package
 apt_mark_hold: false
