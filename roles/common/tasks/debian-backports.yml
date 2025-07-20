@@ -7,7 +7,7 @@
     dest: /etc/apt/apt.conf.d/90unattended-upgrades-backports
     mode: "0644"
     content: |
-      Unattended-Upgrade::Origins-Pattern:: "origin=Debian,codename=${distro_codename}-backports";
+      Unattended-Upgrade::Origins-Pattern:: "origin=Debian,codename={{ ansible_distribution_release }}-backports";
 
 - name: set linux kernel preferences on debian-backports
   ansible.builtin.copy:

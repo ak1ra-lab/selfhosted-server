@@ -5,47 +5,52 @@
   ansible.builtin.include_tasks: debian-backports.yml
 
 - name: add debian apt repo in DEB822 format
+  vars:
+    default_types:
+      - deb
+    default_uris:
+      - https://deb.debian.org/debian/
+    default_suites:
+      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_distribution_release }}-updates"
+    default_components:
+      - main
   ansible.builtin.deb822_repository:
     name: debian
     state: present
     enabled: true
-    types: "{{ apt_repo_types | default(['deb']) }}"
-    uris: mirror+file:///etc/apt/mirrors/debian.list
-    suites: "{{ apt_repo_debian_suites | default([]) }}"
-    components: "{{ apt_repo_debian_components | default([]) }}"
+    types: "{{ apt_repo_debian_types | default(default_types) }}"
+    uris: "{{ apt_repo_debian_uris | default(default_uris) }}"
+    suites: "{{ apt_repo_debian_suites | default(default_suites) }}"
+    components: "{{ apt_repo_debian_components | default(default_components) }}"
     signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
 
 - name: add debian-security apt repo in DEB822 format
+  vars:
+    default_types:
+      - deb
+    default_uris:
+      - https://deb.debian.org/debian-security/
+    default_suites:
+      - "{{ ansible_distribution_release }}-security"
+    default_components:
+      - main
   ansible.builtin.deb822_repository:
     name: debian-security
     state: present
     enabled: true
-    types: "{{ apt_repo_types | default(['deb']) }}"
-    uris: mirror+file:///etc/apt/mirrors/debian-security.list
-    suites: "{{ apt_repo_debian_security_suites | default([]) }}"
-    components: "{{ apt_repo_debian_security_components | default([]) }}"
+    types: "{{ apt_repo_debian_security_types | default(default_types) }}"
+    uris: "{{ apt_repo_debian_security_uris | default(default_uris) }}"
+    suites: "{{ apt_repo_debian_security_suites | default(default_suites) }}"
+    components: "{{ apt_repo_debian_security_components | default(default_components) }}"
     signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
 
-- name: ensure /etc/apt/mirrors exists
-  ansible.builtin.file:
-    path: /etc/apt/mirrors
-    state: directory
-    mode: "0755"
-
-- name: template /etc/apt/sources.list
-  ansible.builtin.template:
-    src: "{{ template.src }}"
-    dest: "{{ template.dest }}"
+- name: copy /etc/apt/sources.list
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list
     mode: "0644"
-  loop:
-    - src: etc/apt/sources.list.j2
-      dest: /etc/apt/sources.list
-    - src: etc/apt/mirrors/debian.list.j2
-      dest: /etc/apt/mirrors/debian.list
-    - src: etc/apt/mirrors/debian-security.list.j2
-      dest: /etc/apt/mirrors/debian-security.list
-  loop_control:
-    loop_var: template
+    content: |
+      # See /etc/apt/sources.list.d/debian.sources and /etc/apt/sources.list.d/debian-security.sources
 
 - name: set unattended-upgrades on ${distro_codename}-updates
   when:
@@ -54,7 +59,7 @@
     dest: "/etc/apt/apt.conf.d/90unattended-upgrades-updates"
     mode: "0644"
     content: |
-      Unattended-Upgrade::Origins-Pattern:: "origin=Debian,codename=${distro_codename}-updates";
+      Unattended-Upgrade::Origins-Pattern:: "origin=Debian,codename={{ ansible_distribution_release }}-updates";
 
 - name: force apt use IPv4
   when: (apt_force_ipv4_enabled | ansible.builtin.bool)

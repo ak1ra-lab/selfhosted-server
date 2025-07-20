@@ -1,18 +1,17 @@
 ---
-# str: 此项设置为下方 apt_repo_mirrors 的某个 key
-apt_repo_key: debian
-apt_repo_mirrors:
-  debian: https://deb.debian.org
-  aliyun: https://mirrors.aliyun.com
-  tencent: https://mirrors.tencent.com
-  ustc: https://mirrors.ustc.edu.cn
-  tuna: https://mirrors.tuna.tsinghua.edu.cn
-  hit: https://mirrors.hit.edu.cn
-  sjtu: https://mirror.sjtu.edu.cn
-
 # list[str]: Which types of packages to look for from a given source; either binary deb or source code deb-src.
-apt_repo_types:
+apt_repo_debian_types:
   - deb
+
+# https://www.debian.org/mirror/list.html
+# list[str]: apt repo uris and mirrors
+# apt_repo_debian_uris:
+#   - https://deb.debian.org/debian/
+#   - https://mirror.xtom.com.hk/debian/
+#   - https://mirrors.tencent.com/debian/
+#   - https://mirrors.aliyun.com/debian/
+apt_repo_debian_uris:
+  - https://deb.debian.org/debian/
 
 # list[str]: debian repo suites
 # https://deb.debian.org/debian/dists/
@@ -26,6 +25,22 @@ apt_repo_debian_components:
   - contrib
   - non-free
   - non-free-firmware
+
+# list[str]: Which types of packages to look for from a given source; either binary deb or source code deb-src.
+apt_repo_debian_security_types:
+  - deb
+
+# 一般来说, 为了更及时地获得安全更新, 不推荐使用镜像站安全更新软件源, 因为镜像站往往有同步延迟.
+# Encouraging the use of unofficial mirrors would add extra complexity that is usually not needed and that can cause frustration if these mirrors are not kept up to date.
+# https://www.debian.org/security/faq.en.html#mirror
+# list[str]: apt repo uris and mirrors
+# apt_repo_debian_security_uris:
+#   - https://deb.debian.org/debian-security/
+#   - https://mirror.xtom.com.hk/debian-security/
+#   - https://mirrors.tencent.com/debian-security/
+#   - https://mirrors.aliyun.com/debian-security/
+apt_repo_debian_security_uris:
+  - https://deb.debian.org/debian-security/
 
 # list[str]: debian-security suites
 # https://deb.debian.org/debian-security/dists/
@@ -50,6 +65,8 @@ unattended_upgrade_updates_enabled: false
 
 # bool: 是否允许 unattended-upgrades 更新后自动重启
 unattended_upgrade_automatic_reboot_enabled: false
+# systemctl cat apt-daily-upgrade.timer
+# TODO: 默认是每天早上 06:00 执行自动更新, 有必要故意延迟 20 小时再重启吗?
 unattended_upgrade_automatic_reboot_time: "02:00"
 
 # bool: 强制 apt 使用 IPv4
