@@ -30,29 +30,32 @@
 
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
 # The apt-key command used by this module has been deprecated.
-- name: import apt keyrings from apt_keyrings_url
-  when:
-    - (apt_keyrings_url | default('') | length > 0)
-  ansible.builtin.get_url:
-    url: "{{ apt_keyrings_url }}"
-    dest: "{{ apt_keyrings_dest }}"
+- name: import apt keyrings
+  block:
+    - name: import apt keyrings from apt_keyrings_url
+      when:
+        - (apt_keyrings_url | default('') | length > 0)
+      ansible.builtin.get_url:
+        url: "{{ apt_keyrings_url }}"
+        dest: "{{ apt_keyrings_dest }}"
+        mode: "0644"
 
-- name: import apt keyrings from apt_keyrings_file
-  when:
-    - (apt_keyrings_file | default('') | length > 0)
-  ansible.builtin.copy:
-    src: "{{ apt_keyrings_file }}"
-    dest: "{{ apt_keyrings_dest }}"
-    mode: "0644"
+    - name: import apt keyrings from apt_keyrings_file
+      when:
+        - (apt_keyrings_file | default('') | length > 0)
+      ansible.builtin.copy:
+        src: "{{ apt_keyrings_file }}"
+        dest: "{{ apt_keyrings_dest }}"
+        mode: "0644"
 
-- name: import apt keyrings from apt_keyrings_content
-  when:
-    - (apt_keyrings_content | default('') | length > 0)
-  ansible.builtin.copy:
-    dest: "{{ apt_keyrings_dest }}"
-    mode: "0644"
-    content: |
-      {{ apt_keyrings_content }}
+    - name: import apt keyrings from apt_keyrings_content
+      when:
+        - (apt_keyrings_content | default('') | length > 0)
+      ansible.builtin.copy:
+        dest: "{{ apt_keyrings_dest }}"
+        mode: "0644"
+        content: |
+          {{ apt_keyrings_content }}
 
 - name: remove apt_repo in legacy format
   ansible.builtin.file:
@@ -71,65 +74,84 @@
     architectures: "{{ dpkg_architectures[ansible_architecture] | default(ansible_architecture) }}"
     signed_by: "{{ apt_keyrings_dest }}"
 
-# A note of caution: the keyword used here is "origin" which can be used to match a hostname
-# This should not be confused with the Origin of a distribution as specified in a Release file
-- name: add apt pinning by apt_repo_uri_hostname
-  when:
-    - (apt_pinning | ansible.builtin.bool)
-    - (apt_pinning_pin_release | default('') | length == 0)
-  ansible.builtin.copy:
-    dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
-    content: |
-      Package: {{ apt_pinning_package }}
-      Pin: origin {{ apt_repo_uri_hostname }}
-      Pin-Priority: {{ apt_pinning_pin_priority | int }}
-    mode: "0644"
+- name: manage apt pinning
+  block:
+    # A note of caution: the keyword used here is "origin" which can be used to match a hostname
+    # This should not be confused with the Origin of a distribution as specified in a Release file
+    - name: add apt pinning by apt_repo_uri_hostname if apt_pinning_pin_release is not set
+      when:
+        - (apt_pinning | ansible.builtin.bool)
+        - (apt_pinning_pin_release | default('') | length == 0)
+      ansible.builtin.copy:
+        dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
+        content: |
+          Package: {{ apt_pinning_package }}
+          Pin: origin {{ apt_repo_uri_hostname }}
+          Pin-Priority: {{ apt_pinning_pin_priority | int }}
+        mode: "0644"
 
-- name: add apt pinning by Release file
-  when:
-    - (apt_pinning | ansible.builtin.bool)
-    - (apt_pinning_pin_release | default('') | length > 0)
-  ansible.builtin.copy:
-    dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
-    content: |
-      Package: {{ apt_pinning_package }}
-      Pin: release {{ apt_pinning_pin_release }}
-      Pin-Priority: {{ apt_pinning_pin_priority | int }}
-    mode: "0644"
+    - name: add apt pinning by Release file if apt_pinning_pin_release is set
+      when:
+        - (apt_pinning | ansible.builtin.bool)
+        - (apt_pinning_pin_release | default('') | length > 0)
+      ansible.builtin.copy:
+        dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
+        content: |
+          Package: {{ apt_pinning_package }}
+          Pin: release {{ apt_pinning_pin_release }}
+          Pin-Priority: {{ apt_pinning_pin_priority | int }}
+        mode: "0644"
 
-- name: add unattended-upgrades origins pattern by apt_repo_uri_hostname
-  when:
-    - (apt_unattended_upgrade | ansible.builtin.bool)
-    - (apt_unattended_upgrade_origins_pattern | default('') | length == 0)
-  ansible.builtin.copy:
-    dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
-    content: |
-      Unattended-Upgrade::Origins-Pattern:: "site={{ apt_repo_uri_hostname }}";
-    mode: "0644"
+    - name: revert apt pinning if apt_pinning is not enabled
+      when:
+        - not (apt_pinning | ansible.builtin.bool)
+      ansible.builtin.file:
+        path: "/etc/apt/preferences.d/90{{ apt_repo }}"
+        state: absent
 
-- name: add unattended-upgrades origins pattern by Release file
-  when:
-    - (apt_unattended_upgrade | ansible.builtin.bool)
-    - (apt_unattended_upgrade_origins_pattern | default('') | length > 0)
-  ansible.builtin.copy:
-    dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
-    content: |
-      Unattended-Upgrade::Origins-Pattern:: "{{ apt_unattended_upgrade_origins_pattern }}";
-    mode: "0644"
+- name: manage unattended-upgrades origins pattern
+  block:
+    - name: add unattended-upgrades origins pattern by apt_repo_uri_hostname if apt_unattended_upgrade_origins_pattern is not set
+      when:
+        - (apt_unattended_upgrade | ansible.builtin.bool)
+        - (apt_unattended_upgrade_origins_pattern | default('') | length == 0)
+      ansible.builtin.copy:
+        dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
+        content: |
+          Unattended-Upgrade::Origins-Pattern:: "site={{ apt_repo_uri_hostname }}";
+        mode: "0644"
+
+    - name: add unattended-upgrades origins pattern by Release file if apt_unattended_upgrade_origins_pattern is set
+      when:
+        - (apt_unattended_upgrade | ansible.builtin.bool)
+        - (apt_unattended_upgrade_origins_pattern | default('') | length > 0)
+      ansible.builtin.copy:
+        dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
+        content: |
+          Unattended-Upgrade::Origins-Pattern:: "{{ apt_unattended_upgrade_origins_pattern }}";
+        mode: "0644"
+
+    - name: revert unattended-upgrades origins pattern if apt_unattended_upgrade is not enabled
+      when:
+        - not (apt_unattended_upgrade | ansible.builtin.bool)
+      ansible.builtin.file:
+        path: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
+        state: absent
 
 - name: apt_install packages from apt_repo
   when:
     - (apt_repo_packages | length) > 0
-  block:
-    - name: apt_install packages from apt_repo
-      ansible.builtin.apt:
-        name: "{{ apt_repo_packages }}"
-        update_cache: true
-        state: present
+  ansible.builtin.apt:
+    name: "{{ apt_repo_packages }}"
+    update_cache: true
+    state: present
 
+- name: apt install packages from apt_repo
+  when:
+    - (apt_repo_packages | length) > 0
+    - (apt_mark_hold | ansible.builtin.bool)
+  block:
     - name: apt-mark hold on apt_repo_packages
-      when:
-        - (apt_mark_hold | ansible.builtin.bool)
       ansible.builtin.command: "apt-mark hold {{ package }}"
       loop: "{{ apt_repo_packages }}"
       loop_control:
@@ -137,21 +159,5 @@
       register: apt_mark_hold_register
 
     - name: debug_var on apt_mark_hold_register
-      when:
-        - (apt_mark_hold | ansible.builtin.bool)
       ansible.builtin.debug:
         var: apt_mark_hold_register
-
-- name: remove apt pinning
-  when:
-    - not (apt_pinning | ansible.builtin.bool)
-  ansible.builtin.file:
-    path: "/etc/apt/preferences.d/90{{ apt_repo }}"
-    state: absent
-
-- name: remove unattended-upgrades origins pattern
-  when:
-    - not (apt_unattended_upgrade | ansible.builtin.bool)
-  ansible.builtin.file:
-    path: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
-    state: absent
