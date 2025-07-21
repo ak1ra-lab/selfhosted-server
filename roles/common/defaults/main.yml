@@ -5,13 +5,11 @@ apt_repo_debian_types:
 
 # https://www.debian.org/mirror/list.html
 # list[str]: apt repo uris and mirrors
-# apt_repo_debian_uris:
-#   - https://deb.debian.org/debian/
-#   - https://mirror.xtom.com.hk/debian/
-#   - https://mirrors.tencent.com/debian/
-#   - https://mirrors.aliyun.com/debian/
 apt_repo_debian_uris:
   - https://deb.debian.org/debian/
+  # - https://mirror-cdn.xtom.com/debian/
+  # - https://mirrors.tencent.com/debian/
+  # - https://mirrors.aliyun.com/debian/
 
 # list[str]: debian repo suites
 # https://deb.debian.org/debian/dists/
@@ -34,13 +32,11 @@ apt_repo_debian_security_types:
 # Encouraging the use of unofficial mirrors would add extra complexity that is usually not needed and that can cause frustration if these mirrors are not kept up to date.
 # https://www.debian.org/security/faq.en.html#mirror
 # list[str]: apt repo uris and mirrors
-# apt_repo_debian_security_uris:
-#   - https://deb.debian.org/debian-security/
-#   - https://mirror.xtom.com.hk/debian-security/
-#   - https://mirrors.tencent.com/debian-security/
-#   - https://mirrors.aliyun.com/debian-security/
 apt_repo_debian_security_uris:
   - https://deb.debian.org/debian-security/
+  # - https://mirror-cdn.xtom.com/debian-security/
+  # - https://mirrors.tencent.com/debian-security/
+  # - https://mirrors.aliyun.com/debian-security/
 
 # list[str]: debian-security suites
 # https://deb.debian.org/debian-security/dists/
@@ -79,7 +75,7 @@ tcp_bbr_enabled: false
 ip_forward_enabled: false
 
 # bool: 是否设置自定义 /etc/ssh/sshd_config
-custom_sshd_config_enabled: true
+custom_sshd_config_enabled: false
 custom_sshd_config_entries:
   ## Specifies whether root can log in using ssh(1).
   ## The argument must be yes, prohibit-password, forced-commands-only, or no. The default is prohibit-password.

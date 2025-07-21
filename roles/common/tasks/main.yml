@@ -6,25 +6,34 @@
     - (ansible_distribution_major_version | int) >= 11
   ansible.builtin.include_tasks: debian.yml
 
-- name: add unattended-upgrades automatic reboot
-  when:
-    - (unattended_upgrade_automatic_reboot_enabled | ansible.builtin.bool)
-  ansible.builtin.copy:
-    dest: "/etc/apt/apt.conf.d/90unattended-upgrades-automatic-reboot"
-    content: |
-      // Automatically reboot *WITHOUT CONFIRMATION* if
-      //  the file /var/run/reboot-required is found after the upgrade
-      Unattended-Upgrade::Automatic-Reboot "true";
+- name: manage unattended-upgrades automatic reboot
+  block:
+    - name: set unattended-upgrades automatic reboot if enabled
+      when:
+        - (unattended_upgrade_automatic_reboot_enabled | ansible.builtin.bool)
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/90unattended-upgrades-automatic-reboot
+        content: |
+          // Automatically reboot *WITHOUT CONFIRMATION* if
+          //  the file /var/run/reboot-required is found after the upgrade
+          Unattended-Upgrade::Automatic-Reboot "true";
 
-      // Automatically reboot even if there are users currently logged in
-      // when Unattended-Upgrade::Automatic-Reboot is set to true
-      //Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
+          // Automatically reboot even if there are users currently logged in
+          // when Unattended-Upgrade::Automatic-Reboot is set to true
+          //Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
 
-      // If automatic reboot is enabled and needed, reboot at the specific
-      // time instead of immediately
-      //  Default: "now"
-      Unattended-Upgrade::Automatic-Reboot-Time "{{ unattended_upgrade_automatic_reboot_time }}";
-    mode: "0644"
+          // If automatic reboot is enabled and needed, reboot at the specific
+          // time instead of immediately
+          //  Default: "now"
+          Unattended-Upgrade::Automatic-Reboot-Time "{{ unattended_upgrade_automatic_reboot_time }}";
+        mode: "0644"
+
+    - name: revert unattended-upgrades automatic reboot if not enabled
+      when:
+        - not (unattended_upgrade_automatic_reboot_enabled | ansible.builtin.bool)
+      ansible.builtin.file:
+        path: /etc/apt/apt.conf.d/90unattended-upgrades-automatic-reboot
+        state: absent
 
 - name: enable net.ipv4.ip_forward
   when:
