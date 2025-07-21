@@ -1,4 +1,9 @@
 ---
+- name: assert ansible_distribution is debian
+  ansible.builtin.assert:
+    that: (ansible_distribution | lower) == 'debian'
+    fail_msg: "roles/apt_install currently only support Debian Linux"
+
 - name: assert required vars are set
   ansible.builtin.assert:
     that:
