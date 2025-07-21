@@ -8,14 +8,26 @@
         (apt_keyrings_dest | default('') | length > 0)
     fail_msg: "All of [apt_repo, apt_repo_uris, apt_keyrings_dest] must be set"
 
-- name: fail if none of the apt_keyrings vars are set
+- name: debug apt_keyrings vars
+  ansible.builtin.debug:
+    msg:
+      apt_keyrings_url: "{{ apt_keyrings_url | default('omit') }}"
+      apt_keyrings_file: "{{ apt_keyrings_file | default('omit') }}"
+      apt_keyrings_content: "{{ apt_keyrings_content | default('omit') }}"
+
+# [`map('default', '')`](https://jinja.palletsprojects.com/en/stable/templates/#jinja-filters.map) filter 中的 `default` 是也一个 filter, 因为 ...Alternatively you can let it invoke a filter by passing the name of the filter and the arguments afterwards. 而 [`select('ansible.builtin.truthy')`](https://jinja.palletsprojects.com/en/stable/templates/#jinja-filters.select) filter 可以接受 Tests 作为其参数, Jinja2 本身有一些 [Builtin Tests](https://jinja.palletsprojects.com/en/stable/templates/#list-of-builtin-tests), 而 [`ansible.builtin.truthy`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/truthy_test.html) 是 Ansible 的内置 Tests, 在非 Ansible 环境中使用时, 需要避免使用 Ansible 的 Tests, 所以这里也推荐使用 FQDN 写法, 避免混淆 Tests 来源.
+- name: fail if not exactly one of the apt_keyrings vars is set
   ansible.builtin.assert:
     that:
       - >
-        (apt_keyrings_url | default('') | length > 0) or
-        (apt_keyrings_file | default('') | length > 0) or
-        (apt_keyrings_content | default('') | length > 0)
-    fail_msg: "At least one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] must be set"
+        (
+          [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] |
+          map('default', '') |
+          select('ansible.builtin.truthy') |
+          list |
+          length
+        ) == 1
+    fail_msg: "Exactly one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] should be set"
 
 - name: ensure apt directories exists
   ansible.builtin.file:

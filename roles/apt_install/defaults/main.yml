@@ -20,7 +20,7 @@ apt_repo_components: main
 apt_repo_uri_hostname: >-
   {{ (apt_repo_uris[0] if apt_repo_uris is iterable and apt_repo_uris is not string and apt_repo_uris | length > 0 else apt_repo_uris) | ansible.builtin.urlsplit('hostname') }}
 
-# At least one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] must be set
+# Exactly one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] should be set
 apt_keyrings_url: ""
 apt_keyrings_file: ""
 apt_keyrings_content: ""
