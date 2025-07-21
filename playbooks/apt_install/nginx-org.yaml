@@ -1,0 +1,37 @@
+# https://nginx.org/en/linux_packages.html#Debian
+- name: apt_install - nginx-org
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # curl -sL https://nginx.org/keys/nginx_signing.key | gpg
+    # pub   rsa4096 2024-05-29 [SC]
+    #       8540A6F18833A80E9C1653A42FD21310B49F6B46
+    # uid           nginx signing key <signing-key-2@nginx.com>
+    # pub   rsa2048 2011-08-19 [SC] [expires: 2027-05-24]
+    #       573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+    # uid           nginx signing key <signing-key@nginx.com>
+    # pub   rsa4096 2024-05-29 [SC]
+    #       9E9BE90EACBCDE69FE9B204CBCDCD8A38D88A2B3
+    # uid           nginx signing key <signing-key-3@nginx.com>
+    apt_keyrings_url: https://nginx.org/keys/nginx_signing.key
+    apt_keyrings_dest: /etc/apt/keyrings/nginx-org-archive-keyring.asc
+
+    apt_repo: nginx-org
+    apt_repo_uris: "https://nginx.org/packages/{{ ansible_distribution | lower }}"
+    # If you would like to use mainline nginx packages,
+    # apt_repo_uris: "http://nginx.org/packages/mainline/{{ ansible_distribution | lower }}"
+    apt_repo_suites: "{{ ansible_distribution_release }}"
+    apt_repo_components: nginx
+
+    apt_pinning: true
+    apt_unattended_upgrade: false
+    apt_mark_hold: false
+    apt_pinning_pin_release: "o=nginx,c=nginx,n={{ ansible_distribution_release }}"
+    apt_unattended_upgrade_origins_pattern: "origin=nginx,component=nginx,codename={{ ansible_distribution_release }}"
+
+    # nginx
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
