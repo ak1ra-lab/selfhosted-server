@@ -1,19 +1,33 @@
 ---
-# tasks to apply changes
 - name: import roles/apt_install
-  when: (ansible_os_family | lower) == 'debian'
   ansible.builtin.import_role:
     name: apt_install
   vars:
-    apt_repo: "{{ docker_apt_repo }}"
-    apt_repo_uris: "{{ docker_apt_repo_uris }}"
-    apt_repo_suites: "{{ docker_apt_repo_suites }}"
-    apt_repo_components: "{{ docker_apt_repo_components }}"
+    # https://docs.docker.com/engine/install/debian/
+    # curl -sL https://download.docker.com/linux/debian/gpg | gpg
+    # pub   rsa4096 2017-02-22 [SCEA]
+    #       9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    # uid           Docker Release (CE deb) <docker@docker.com>
+    # sub   rsa4096 2017-02-22 [S]
+    apt_keyrings_url: https://download.docker.com/linux/debian/gpg
+    apt_keyrings_dest: /etc/apt/keyrings/docker-ce.asc
 
-    apt_keyrings_url: "{{ docker_apt_keyrings_url }}"
-    apt_keyrings_dest: "{{ docker_apt_keyrings_dest }}"
+    apt_repo: docker-ce
+    apt_repo_uris:
+      - https://download.docker.com/linux/debian
+      # - https://mirror-cdn.xtom.com/docker-ce/linux/debian
+      # - https://mirrors.tencent.com/docker-ce/linux/debian
+      # - https://mirrors.aliyun.com/docker-ce/linux/debian
+    apt_repo_suites: "{{ ansible_distribution_release }}"
+    apt_repo_components: stable
 
-    # skopeo is not from docker_apt_repo
+    apt_pinning: true
+    apt_pinning_package: "docker-* containerd.io"
+    apt_unattended_upgrade: false
+    apt_mark_hold: false
+    apt_pinning_pin_release: "o=Docker,a={{ apt_repo_suites }},c={{ apt_repo_components }}"
+    apt_unattended_upgrade_origins_pattern: "origin=Docker,suite={{ apt_repo_suites }},component={{ apt_repo_components }}"
+
     apt_repo_packages:
       - docker-ce
       - docker-ce-cli
@@ -22,13 +36,19 @@
       - docker-compose-plugin
       - skopeo
 
+- name: ensure /etc/docker directory exist
+  ansible.builtin.file:
+    path: /etc/docker
+    state: directory
+    mode: "0755"
+
 - name: add /etc/docker/daemon.json
   ansible.builtin.template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
     mode: "0644"
     force: true
-  notify: restart dockerd
+  notify: systemctl restart docker.service
 
 - name: register ansible regular user
   ansible.builtin.command:
