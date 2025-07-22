@@ -1,4 +1,9 @@
 ---
+- name: assert ansible_distribution is debian
+  ansible.builtin.assert:
+    that: (ansible_distribution | lower) == 'debian'
+    fail_msg: "roles/apt_install currently only support Debian Linux"
+
 - name: assert required vars are set
   ansible.builtin.assert:
     that:
@@ -8,14 +13,26 @@
         (apt_keyrings_dest | default('') | length > 0)
     fail_msg: "All of [apt_repo, apt_repo_uris, apt_keyrings_dest] must be set"
 
-- name: fail if none of the apt_keyrings vars are set
+- name: debug apt_keyrings vars
+  ansible.builtin.debug:
+    msg:
+      apt_keyrings_url: "{{ apt_keyrings_url | default('omit') }}"
+      apt_keyrings_file: "{{ apt_keyrings_file | default('omit') }}"
+      apt_keyrings_content: "{{ apt_keyrings_content | default('omit') }}"
+
+# [`map('default', '')`](https://jinja.palletsprojects.com/en/stable/templates/#jinja-filters.map) filter 中的 `default` 是也一个 filter, 因为 ...Alternatively you can let it invoke a filter by passing the name of the filter and the arguments afterwards. 而 [`select('ansible.builtin.truthy')`](https://jinja.palletsprojects.com/en/stable/templates/#jinja-filters.select) filter 可以接受 Tests 作为其参数, Jinja2 本身有一些 [Builtin Tests](https://jinja.palletsprojects.com/en/stable/templates/#list-of-builtin-tests), 而 [`ansible.builtin.truthy`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/truthy_test.html) 是 Ansible 的内置 Tests, 在非 Ansible 环境中使用时, 需要避免使用 Ansible 的 Tests, 所以这里也推荐使用 FQDN 写法, 避免混淆 Tests 来源.
+- name: fail if not exactly one of the apt_keyrings vars is set
   ansible.builtin.assert:
     that:
       - >
-        (apt_keyrings_url | default('') | length > 0) or
-        (apt_keyrings_file | default('') | length > 0) or
-        (apt_keyrings_content | default('') | length > 0)
-    fail_msg: "At least one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] must be set"
+        (
+          [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] |
+          map('default', '') |
+          select('ansible.builtin.truthy') |
+          list |
+          length
+        ) == 1
+    fail_msg: "Exactly one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] should be set"
 
 - name: ensure apt directories exists
   ansible.builtin.file:
@@ -30,77 +47,128 @@
 
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
 # The apt-key command used by this module has been deprecated.
-- name: import apt keyrings from apt_keyrings_url
-  when:
-    - (apt_keyrings_url | default('') | length > 0)
-  ansible.builtin.get_url:
-    url: "{{ apt_keyrings_url }}"
-    dest: "{{ apt_keyrings_dest }}"
+- name: import apt keyrings
+  block:
+    - name: import apt keyrings from apt_keyrings_url
+      when:
+        - (apt_keyrings_url | default('') | length > 0)
+      ansible.builtin.get_url:
+        url: "{{ apt_keyrings_url }}"
+        dest: "{{ apt_keyrings_dest }}"
+        mode: "0644"
 
-- name: import apt keyrings from apt_keyrings_file
-  when:
-    - (apt_keyrings_file | default('') | length > 0)
-  ansible.builtin.copy:
-    src: "{{ apt_keyrings_file }}"
-    dest: "{{ apt_keyrings_dest }}"
-    mode: "0644"
+    - name: import apt keyrings from apt_keyrings_file
+      when:
+        - (apt_keyrings_file | default('') | length > 0)
+      ansible.builtin.copy:
+        src: "{{ apt_keyrings_file }}"
+        dest: "{{ apt_keyrings_dest }}"
+        mode: "0644"
 
-- name: import apt keyrings from apt_keyrings_content
-  when:
-    - (apt_keyrings_content | default('') | length > 0)
-  ansible.builtin.copy:
-    dest: "{{ apt_keyrings_dest }}"
-    mode: "0644"
-    content: |
-      {{ apt_keyrings_content }}
+    - name: import apt keyrings from apt_keyrings_content
+      when:
+        - (apt_keyrings_content | default('') | length > 0)
+      ansible.builtin.copy:
+        dest: "{{ apt_keyrings_dest }}"
+        mode: "0644"
+        content: |
+          {{ apt_keyrings_content }}
 
-- name: add apt repo in DEB822 format
+- name: remove apt_repo in legacy format
+  ansible.builtin.file:
+    path: "/etc/apt/sources.list.d/{{ apt_repo }}.list"
+    state: absent
+
+- name: add apt_repo in DEB822 format
   ansible.builtin.deb822_repository:
     name: "{{ apt_repo }}"
     state: present
-    enabled: true
-    types: deb
+    enabled: "{{ apt_repo_enabled | ansible.builtin.bool }}"
+    types: "{{ apt_repo_types | default(['deb']) }}"
     uris: "{{ apt_repo_uris }}"
     suites: "{{ apt_repo_suites }}"
     components: "{{ apt_repo_components }}"
     architectures: "{{ dpkg_architectures[ansible_architecture] | default(ansible_architecture) }}"
     signed_by: "{{ apt_keyrings_dest }}"
 
-# https://manpages.debian.org/bookworm/apt/apt_preferences.5.en.html
-# The pattern "*" in a Package field is not considered a glob(7) expression in itself.
-- name: add apt pinning
-  when:
-    - (apt_pinning | ansible.builtin.bool)
-  ansible.builtin.copy:
-    dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
-    content: |
-      Package: *
-      Pin: origin {{ apt_pinning_origin }}
-      Pin-Priority: 900
-    mode: "0644"
+- name: manage apt pinning
+  block:
+    # A note of caution: the keyword used here is "origin" which can be used to match a hostname
+    # This should not be confused with the Origin of a distribution as specified in a Release file
+    - name: add apt pinning by apt_repo_uri_hostname if apt_pinning_pin_release is not set
+      when:
+        - (apt_pinning | ansible.builtin.bool)
+        - (apt_pinning_pin_release | default('') | length == 0)
+      ansible.builtin.copy:
+        dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
+        content: |
+          Package: {{ apt_pinning_package }}
+          Pin: origin {{ apt_repo_uri_hostname }}
+          Pin-Priority: {{ apt_pinning_pin_priority | int }}
+        mode: "0644"
 
-- name: add unattended-upgrades origins pattern
-  when:
-    - (apt_unattended_upgrades | ansible.builtin.bool)
-  ansible.builtin.copy:
-    dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
-    content: |
-      Unattended-Upgrade::Origins-Pattern:: "site={{ apt_unattended_upgrades_site }}";
-    mode: "0644"
+    - name: add apt pinning by Release file if apt_pinning_pin_release is set
+      when:
+        - (apt_pinning | ansible.builtin.bool)
+        - (apt_pinning_pin_release | default('') | length > 0)
+      ansible.builtin.copy:
+        dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
+        content: |
+          Package: {{ apt_pinning_package }}
+          Pin: release {{ apt_pinning_pin_release }}
+          Pin-Priority: {{ apt_pinning_pin_priority | int }}
+        mode: "0644"
+
+    - name: revert apt pinning if apt_pinning is not enabled
+      when:
+        - not (apt_pinning | ansible.builtin.bool)
+      ansible.builtin.file:
+        path: "/etc/apt/preferences.d/90{{ apt_repo }}"
+        state: absent
+
+- name: manage unattended-upgrades origins pattern
+  block:
+    - name: add unattended-upgrades origins pattern by apt_repo_uri_hostname if apt_unattended_upgrade_origins_pattern is not set
+      when:
+        - (apt_unattended_upgrade | ansible.builtin.bool)
+        - (apt_unattended_upgrade_origins_pattern | default('') | length == 0)
+      ansible.builtin.copy:
+        dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
+        content: |
+          Unattended-Upgrade::Origins-Pattern:: "site={{ apt_repo_uri_hostname }}";
+        mode: "0644"
+
+    - name: add unattended-upgrades origins pattern by Release file if apt_unattended_upgrade_origins_pattern is set
+      when:
+        - (apt_unattended_upgrade | ansible.builtin.bool)
+        - (apt_unattended_upgrade_origins_pattern | default('') | length > 0)
+      ansible.builtin.copy:
+        dest: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
+        content: |
+          Unattended-Upgrade::Origins-Pattern:: "{{ apt_unattended_upgrade_origins_pattern }}";
+        mode: "0644"
+
+    - name: revert unattended-upgrades origins pattern if apt_unattended_upgrade is not enabled
+      when:
+        - not (apt_unattended_upgrade | ansible.builtin.bool)
+      ansible.builtin.file:
+        path: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
+        state: absent
 
 - name: apt_install packages from apt_repo
   when:
     - (apt_repo_packages | length) > 0
-  block:
-    - name: apt_install packages from apt_repo
-      ansible.builtin.apt:
-        name: "{{ apt_repo_packages }}"
-        update_cache: true
-        state: present
+  ansible.builtin.apt:
+    name: "{{ apt_repo_packages }}"
+    update_cache: true
+    state: present
 
+- name: apt install packages from apt_repo
+  when:
+    - (apt_repo_packages | length) > 0
+    - (apt_mark_hold | ansible.builtin.bool)
+  block:
     - name: apt-mark hold on apt_repo_packages
-      when:
-        - (apt_mark_hold | ansible.builtin.bool)
       ansible.builtin.command: "apt-mark hold {{ package }}"
       loop: "{{ apt_repo_packages }}"
       loop_control:
@@ -108,21 +176,5 @@
       register: apt_mark_hold_register
 
     - name: debug_var on apt_mark_hold_register
-      when:
-        - (apt_mark_hold | ansible.builtin.bool)
       ansible.builtin.debug:
         var: apt_mark_hold_register
-
-- name: remove apt pinning
-  when:
-    - not (apt_pinning | ansible.builtin.bool)
-  ansible.builtin.file:
-    path: "/etc/apt/preferences.d/90{{ apt_repo }}"
-    state: absent
-
-- name: remove unattended-upgrades origins pattern
-  when:
-    - not (apt_unattended_upgrades | ansible.builtin.bool)
-  ansible.builtin.file:
-    path: "/etc/apt/apt.conf.d/90unattended-upgrades-{{ apt_repo }}"
-    state: absent

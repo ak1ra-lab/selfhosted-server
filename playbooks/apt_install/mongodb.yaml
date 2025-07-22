@@ -21,8 +21,10 @@
     apt_repo_components: main
 
     apt_pinning: true
-    apt_unattended_upgrades: false
+    apt_unattended_upgrade: false
     apt_mark_hold: false
+    apt_pinning_pin_release: "o=mongodb,a={{ apt_repo_suites }}"
+    apt_unattended_upgrade_origins_pattern: "origin=mongodb,suite={{ apt_repo_suites }}"
 
     # mongodb-org
     # Depends: mongodb-org-database, mongodb-org-tools, mongodb-mongosh

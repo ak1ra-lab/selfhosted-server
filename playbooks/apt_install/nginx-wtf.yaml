@@ -1,0 +1,31 @@
+# https://n.wtf/install/
+- name: apt_install - nginx-wtf
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # curl -sL https://n.wtf/public.key | gpg
+    # pub   ed25519 2018-11-11 [SCA]
+    #       1604614B4A6C2B73654BB8B6C5215CAF0055522F
+    # uid           SB Professional Services <sb@sb.sb>
+    # sub   cv25519 2018-11-11 [E]
+    apt_keyrings_url: https://n.wtf/public.key
+    apt_keyrings_dest: /etc/apt/keyrings/nginx-wtf-archive-keyring.asc
+
+    apt_repo: nginx-wtf
+    apt_repo_uris: "https://mirror-cdn.xtom.com/sb/nginx/"
+    apt_repo_suites: "{{ ansible_distribution_release }}"
+    apt_repo_components: main
+
+    apt_pinning: true
+    apt_unattended_upgrade: false
+    apt_mark_hold: false
+    apt_pinning_pin_release: "o=n.wtf,c=main,n={{ ansible_distribution_release }}"
+    apt_unattended_upgrade_origins_pattern: "origin=n.wtf,component=main,codename={{ ansible_distribution_release }}"
+
+    # nginx-extras
+    apt_repo_packages:
+      - nginx-extras
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install

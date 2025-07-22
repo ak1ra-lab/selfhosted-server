@@ -1,0 +1,44 @@
+# https://enterprise.proxmox.com/debian/
+# https://pve.proxmox.com/wiki/Package_Repositories#sysadmin_no_subscription_repo
+- name: apt_install - pve-ceph-squid-no-subscription
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # https://pve.proxmox.com/wiki/Package_Repositories#repos_secure_apt
+    # curl -sL https://enterprise.proxmox.com/debian/proxmox-release-bullseye.gpg | gpg
+    # pub   rsa4096 2020-11-09 [SC] [expires: 2030-11-07]
+    #       28139A2F830BD68478A1A01FDD4BA3917E23BF59
+    # uid           Proxmox Bullseye Release Key <proxmox-release@proxmox.com>
+    # curl -sL https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg | gpg
+    # pub   rsa4096 2022-11-27 [SC] [expires: 2032-11-24]
+    #       F4E136C67CDCE41AE6DE6FC81140AF8F639E0C39
+    # uid           Proxmox Bookworm Release Key <proxmox-release@proxmox.com>
+    # curl -sL https://enterprise.proxmox.com/debian/proxmox-release-trixie.gpg | gpg
+    # pub   rsa4096 2024-11-10 [SCEA] [expires: 2034-11-10]
+    #       24B30F06ECC1836A4E5EFECBA7BCD1420BFE778E
+    # uid           Proxmox Trixie Release Key <proxmox-release@proxmox.com>
+    apt_keyrings_url: "https://enterprise.proxmox.com/debian/proxmox-release-{{ ansible_distribution_release }}.gpg"
+    apt_keyrings_dest: "/etc/apt/keyrings/proxmox-release-{{ ansible_distribution_release }}.gpg"
+
+    apt_repo: pve-ceph-squid-no-subscription
+    apt_repo_enabled: true
+    # https://mirrorz.org/os/Proxmox
+    apt_repo_uris:
+      - https://mirror-cdn.xtom.com/proxmox/debian/ceph-squid
+      - https://mirrors.tencent.com/proxmox/debian/ceph-squid
+      - https://mirrors.aliyun.com/proxmox/debian/ceph-squid
+      - http://download.proxmox.com/debian/ceph-squid
+    apt_repo_suites: "{{ ansible_distribution_release }}"
+    apt_repo_components: no-subscription
+
+    apt_pinning: false
+    apt_unattended_upgrade: false
+    apt_mark_hold: false
+    apt_pinning_pin_release: "o=Proxmox,n={{ ansible_distribution_release }},c=no-subscription,l=Proxmox Ceph 19 Squid Debian Repository"
+    apt_unattended_upgrade_origins_pattern: "origin=Proxmox,codename={{ ansible_distribution_release }},component=no-subscription,label=Proxmox Ceph 19 Squid Debian Repository"
+
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
