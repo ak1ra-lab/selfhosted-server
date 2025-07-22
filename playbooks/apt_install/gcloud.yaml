@@ -11,9 +11,12 @@
     apt_keyrings_dest: /etc/apt/keyrings/gcloud.asc
 
     apt_repo: gcloud
-    apt_repo_uris: https://packages.cloud.google.com/apt
-    apt_repo_suites: cloud-sdk
-    apt_repo_components: main
+    apt_repo_uris:
+      - https://packages.cloud.google.com/apt
+    apt_repo_suites:
+      - cloud-sdk
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: true

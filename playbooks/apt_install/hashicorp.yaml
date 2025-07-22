@@ -13,9 +13,12 @@
     apt_keyrings_dest: /etc/apt/keyrings/hashicorp-archive-keyring.asc
 
     apt_repo: hashicorp
-    apt_repo_uris: https://apt.releases.hashicorp.com
-    apt_repo_suites: "{{ ansible_distribution_release }}"
-    apt_repo_components: main
+    apt_repo_uris:
+      - https://apt.releases.hashicorp.com
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: true

@@ -11,9 +11,12 @@
     apt_keyrings_dest: /etc/apt/keyrings/cloudflare.gpg
 
     apt_repo: cloudflared
-    apt_repo_uris: https://pkg.cloudflare.com/cloudflared
-    apt_repo_suites: any
-    apt_repo_components: main
+    apt_repo_uris:
+      - https://pkg.cloudflare.com/cloudflared
+    apt_repo_suites:
+      - any
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: true

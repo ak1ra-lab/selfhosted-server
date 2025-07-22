@@ -28,8 +28,10 @@
       - https://mirrors.tencent.com/proxmox/debian/ceph-squid
       - https://mirrors.aliyun.com/proxmox/debian/ceph-squid
       - http://download.proxmox.com/debian/ceph-squid
-    apt_repo_suites: "{{ ansible_distribution_release }}"
-    apt_repo_components: no-subscription
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - no-subscription
 
     apt_pinning: false
     apt_unattended_upgrade: false

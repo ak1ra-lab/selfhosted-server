@@ -12,10 +12,13 @@
     apt_keyrings_dest: /etc/apt/keyrings/grafana.asc
 
     apt_repo: grafana
-    apt_repo_uris: https://apt.grafana.com
+    apt_repo_uris:
+      - https://apt.grafana.com
     # stable / beta
-    apt_repo_suites: stable
-    apt_repo_components: main
+    apt_repo_suites:
+      - stable
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: false

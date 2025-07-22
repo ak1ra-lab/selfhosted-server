@@ -12,9 +12,12 @@
     apt_keyrings_dest: /etc/apt/keyrings/gitlab_gitlab-ce-archive-keyring.asc
 
     apt_repo: gitlab-ce
-    apt_repo_uris: "https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}"
-    apt_repo_suites: "{{ ansible_distribution_release }}"
-    apt_repo_components: main
+    apt_repo_uris:
+      - "https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}"
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: true

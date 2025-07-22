@@ -13,9 +13,12 @@
     apt_keyrings_dest: /etc/apt/keyrings/elasticsearch-keyring.asc
 
     apt_repo: elastic-7x
-    apt_repo_uris: https://artifacts.elastic.co/packages/7.x/apt
-    apt_repo_suites: stable
-    apt_repo_components: main
+    apt_repo_uris:
+      - https://artifacts.elastic.co/packages/7.x/apt
+    apt_repo_suites:
+      - stable
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: false

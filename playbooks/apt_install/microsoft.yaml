@@ -19,9 +19,12 @@
     apt_repo: microsoft
     # https://packages.microsoft.com/debian/12/prod/
     # 尽量避免使用 ansible_lsb, 它依赖 lsb_release, 在一些精简系统中可能缺失相关字段
-    apt_repo_uris: "https://packages.microsoft.com/{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/prod"
-    apt_repo_suites: "{{ ansible_distribution_release }}"
-    apt_repo_components: main
+    apt_repo_uris:
+      - "https://packages.microsoft.com/{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}/prod"
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: true

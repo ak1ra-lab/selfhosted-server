@@ -22,9 +22,12 @@
 
     apt_repo: pve-ceph-squid-enterprise
     apt_repo_enabled: false
-    apt_repo_uris: https://enterprise.proxmox.com/debian/ceph-squid
-    apt_repo_suites: "{{ ansible_distribution_release }}"
-    apt_repo_components: enterprise
+    apt_repo_uris:
+      - https://enterprise.proxmox.com/debian/ceph-squid
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - enterprise
 
     apt_pinning: false
     apt_unattended_upgrade: false

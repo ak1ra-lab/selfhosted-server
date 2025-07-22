@@ -21,11 +21,14 @@
 
     apt_repo: mysql
     # https://repo.mysql.com/apt/{debian|ubuntu}/
-    apt_repo_uris: "https://repo.mysql.com/apt/{{ ansible_distribution | lower }}"
+    apt_repo_uris:
+      - "https://repo.mysql.com/apt/{{ ansible_distribution | lower }}"
     # {bookworm|jammy}
-    apt_repo_suites: "{{ ansible_distribution_release }}"
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
     # {mysql-tools|mysql-8.4-lts|mysql-8.0}
-    apt_repo_components: mysql-8.4-lts
+    apt_repo_components:
+      - mysql-8.4-lts
 
     apt_pinning: true
     apt_unattended_upgrade: false

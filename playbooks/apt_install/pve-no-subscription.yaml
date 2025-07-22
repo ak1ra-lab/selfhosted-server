@@ -28,8 +28,10 @@
       - https://mirrors.tencent.com/proxmox/debian/pve
       - https://mirrors.aliyun.com/proxmox/debian/pve
       - http://download.proxmox.com/debian/pve
-    apt_repo_suites: "{{ ansible_distribution_release }}"
-    apt_repo_components: pve-no-subscription
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - pve-no-subscription
 
     apt_pinning: true
     apt_pinning_package: "proxmox-kernel-* zfs*"

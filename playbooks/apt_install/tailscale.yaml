@@ -13,9 +13,12 @@
     apt_keyrings_dest: /etc/apt/keyrings/tailscale-archive-keyring.gpg
 
     apt_repo: tailscale
-    apt_repo_uris: https://pkgs.tailscale.com/stable/debian
-    apt_repo_suites: "{{ ansible_distribution_release }}"
-    apt_repo_components: main
+    apt_repo_uris:
+      - https://pkgs.tailscale.com/stable/debian
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: true

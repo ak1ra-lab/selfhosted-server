@@ -17,15 +17,18 @@
     apt_keyrings_dest: /etc/apt/keyrings/apt.postgresql.org.asc
 
     apt_repo: postgresql
-    apt_repo_uris: https://apt.postgresql.org/pub/repos/apt
-    apt_repo_suites: "{{ ansible_distribution_release }}-pgdg"
-    apt_repo_components: main
+    apt_repo_uris:
+      - https://apt.postgresql.org/pub/repos/apt
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}-pgdg"
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: false
     apt_mark_hold: false
-    apt_pinning_pin_release: "o=apt.postgresql.org,n={{ apt_repo_suites }}"
-    apt_unattended_upgrade_origins_pattern: "origin=apt.postgresql.org,codename={{ apt_repo_suites }}"
+    apt_pinning_pin_release: "o=apt.postgresql.org,n={{ apt_repo_suites[0] }}"
+    apt_unattended_upgrade_origins_pattern: "origin=apt.postgresql.org,codename={{ apt_repo_suites[0] }}"
 
     # postgresql-17
     apt_repo_packages: []

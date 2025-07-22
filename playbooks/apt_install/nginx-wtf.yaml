@@ -12,9 +12,12 @@
     apt_keyrings_dest: /etc/apt/keyrings/nginx-wtf-archive-keyring.asc
 
     apt_repo: nginx-wtf
-    apt_repo_uris: "https://mirror-cdn.xtom.com/sb/nginx/"
-    apt_repo_suites: "{{ ansible_distribution_release }}"
-    apt_repo_components: main
+    apt_repo_uris:
+      - "https://mirror-cdn.xtom.com/sb/nginx/"
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: false

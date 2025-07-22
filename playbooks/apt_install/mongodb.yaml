@@ -16,15 +16,18 @@
     apt_keyrings_dest: "/etc/apt/keyrings/mongodb-server-{{ mongodb_version }}.asc"
 
     apt_repo: "mongodb-server-{{ mongodb_version | replace('.', '-') }}"
-    apt_repo_uris: https://repo.mongodb.org/apt/debian
-    apt_repo_suites: "{{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }}"
-    apt_repo_components: main
+    apt_repo_uris:
+      - https://repo.mongodb.org/apt/debian
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }}"
+    apt_repo_components:
+      - main
 
     apt_pinning: true
     apt_unattended_upgrade: false
     apt_mark_hold: false
-    apt_pinning_pin_release: "o=mongodb,a={{ apt_repo_suites }}"
-    apt_unattended_upgrade_origins_pattern: "origin=mongodb,suite={{ apt_repo_suites }}"
+    apt_pinning_pin_release: "o=mongodb,a={{ apt_repo_suites[0] }}"
+    apt_unattended_upgrade_origins_pattern: "origin=mongodb,suite={{ apt_repo_suites[0] }}"
 
     # mongodb-org
     # Depends: mongodb-org-database, mongodb-org-tools, mongodb-mongosh

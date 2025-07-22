@@ -17,11 +17,14 @@
     apt_keyrings_dest: /etc/apt/keyrings/nginx-org-archive-keyring.asc
 
     apt_repo: nginx-org
-    apt_repo_uris: "https://nginx.org/packages/{{ ansible_distribution | lower }}"
+    apt_repo_uris:
+      - "https://nginx.org/packages/{{ ansible_distribution | lower }}"
     # If you would like to use mainline nginx packages,
     # apt_repo_uris: "http://nginx.org/packages/mainline/{{ ansible_distribution | lower }}"
-    apt_repo_suites: "{{ ansible_distribution_release }}"
-    apt_repo_components: nginx
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - nginx
 
     apt_pinning: true
     apt_unattended_upgrade: false
