@@ -1,4 +1,37 @@
 ---
+# https://docs.docker.com/engine/install/debian/
+# curl -sL https://download.docker.com/linux/debian/gpg | gpg
+# pub   rsa4096 2017-02-22 [SCEA]
+#       9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+# uid           Docker Release (CE deb) <docker@docker.com>
+# sub   rsa4096 2017-02-22 [S]
+docker_apt_keyrings_url: https://download.docker.com/linux/debian/gpg
+docker_apt_keyrings_dest: /etc/apt/keyrings/docker-ce.asc
+
+docker_apt_repo: docker-ce
+docker_apt_repo_uris:
+  - https://download.docker.com/linux/debian
+  # - https://mirror-cdn.xtom.com/docker-ce/linux/debian
+  # - https://mirrors.tencent.com/docker-ce/linux/debian
+  # - https://mirrors.aliyun.com/docker-ce/linux/debian
+docker_apt_repo_suites: "{{ ansible_distribution_release }}"
+docker_apt_repo_components: stable
+
+docker_apt_pinning: true
+docker_apt_pinning_package: "docker-* containerd.io"
+docker_apt_unattended_upgrade: false
+docker_apt_mark_hold: false
+docker_apt_pinning_pin_release: "o=Docker,a={{ docker_apt_repo_suites }},c={{ docker_apt_repo_components }}"
+docker_apt_unattended_upgrade_origins_pattern: "origin=Docker,suite={{ docker_apt_repo_suites }},component={{ docker_apt_repo_components }}"
+
+docker_apt_repo_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+  - skopeo
+
 # docker daemon settings
 docker_daemon_registry_mirrors: []
 # - https://dockerproxy.net
