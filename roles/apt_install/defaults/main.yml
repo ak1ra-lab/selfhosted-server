@@ -13,9 +13,11 @@ apt_repo_types:
 
 # Try to avoid using 'ansible_lsb', which depends on 'lsb_release',
 # which may be missing related fields in some distro like alpine.
-apt_repo_uris: ""
-apt_repo_suites: "{{ ansible_distribution_release }}"
-apt_repo_components: main
+apt_repo_uris: []
+apt_repo_suites:
+  - "{{ ansible_distribution_release }}"
+apt_repo_components:
+  - main
 # apt_repo_uris can be string or list of string
 apt_repo_uri_hostname: >-
   {{ (apt_repo_uris[0] if apt_repo_uris is iterable and apt_repo_uris is not string and apt_repo_uris | length > 0 else apt_repo_uris) | ansible.builtin.urlsplit('hostname') }}

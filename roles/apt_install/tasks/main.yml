@@ -80,14 +80,21 @@
     state: absent
 
 - name: add apt_repo in DEB822 format
+  vars:
+    default_types:
+      - deb
+    default_suites:
+      - "{{ ansible_distribution_release }}"
+    default_components:
+      - main
   ansible.builtin.deb822_repository:
     name: "{{ apt_repo }}"
     state: present
     enabled: "{{ apt_repo_enabled | ansible.builtin.bool }}"
-    types: "{{ apt_repo_types | default(['deb']) }}"
+    types: "{{ apt_repo_types | default(default_types) }}"
     uris: "{{ apt_repo_uris }}"
-    suites: "{{ apt_repo_suites }}"
-    components: "{{ apt_repo_components }}"
+    suites: "{{ apt_repo_suites | default(default_suites) }}"
+    components: "{{ apt_repo_components | default(default_components) }}"
     architectures: "{{ dpkg_architectures[ansible_architecture] | default(ansible_architecture) }}"
     signed_by: "{{ apt_keyrings_dest }}"
 
