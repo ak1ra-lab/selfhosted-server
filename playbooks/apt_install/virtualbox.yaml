@@ -1,0 +1,37 @@
+# https://www.virtualbox.org/wiki/Linux_Downloads
+- name: apt_install - virtualbox
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # curl -sL https://www.virtualbox.org/download/oracle_vbox_2016.asc | gpg
+    # pub   rsa4096 2016-04-22 [SC]
+    #       B9F8D658297AF3EFC18D5CDFA2F683C52980AECF
+    # uid           Oracle Corporation (VirtualBox archive signing key) <info@virtualbox.org>
+    # sub   rsa4096 2016-04-22 [E]
+    # The key fingerprint for oracle_vbox_2016.asc is
+    # B9F8 D658 297A F3EF C18D  5CDF A2F6 83C5 2980 AECF
+    # Oracle Corporation (VirtualBox archive signing key) <info@virtualbox.org>
+    apt_keyrings_url: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+    apt_keyrings_dest: /etc/apt/keyrings/oracle-virtualbox-2016.asc
+
+    apt_repo: virtualbox
+    apt_repo_uris:
+      - "https://download.virtualbox.org/virtualbox/{{ ansible_distribution | lower }}"
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - contrib
+
+    apt_pinning: true
+    apt_unattended_upgrade: false
+    apt_mark_hold: false
+    # https://download.virtualbox.org/virtualbox/debian/dists/bookworm/InRelease
+    apt_pinning_pin_release: "o=Oracle Corporation,n={{ ansible_distribution_release }},c=contrib"
+    apt_unattended_upgrade_origins_pattern: "origin=Oracle Corporation,codename={{ ansible_distribution_release }},component=contrib"
+
+    # virtualbox-7.1
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
