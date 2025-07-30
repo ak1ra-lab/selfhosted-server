@@ -1,0 +1,7 @@
+# Without the Domains=~. option in resolved.conf(5), systemd-resolved might use the per-link DNS servers, if any of them set Domains=~. in the per-link configuration.
+# https://wiki.archlinux.org/title/Systemd-resolved
+[Resolve]
+DNS={{ default_nameservers | join(' ') }}
+Domains=~.
+DNSOverTLS={{ 'yes' if resolved_dns_over_tls else 'no' }}
+DNSStubListener={{ 'yes' if resolved_stub_listener else 'no' }}

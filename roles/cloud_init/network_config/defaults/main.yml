@@ -1,0 +1,30 @@
+---
+# 默认网关
+default_gateway: ""
+# list
+default_nameservers:
+  - 1.1.1.1#cloudflare-dns.com
+  - 1.0.0.1#cloudflare-dns.com
+
+# 是否启用旁路网关代理
+tproxy_enabled: false
+# 当 tproxy_enabled 为 true 时此项必填
+tproxy_gateway: ""
+
+# 是否禁用 cloud-init 的网络配置
+# /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+# network: {config: disabled}
+cloud_init_network_config: false
+
+# 此项设置为 false 是避免修改 cloud-init 配置时删除 `/etc/ssh/ssh_host_*` keys
+# /etc/cloud/cloud.cfg.d/99-keep-sshd-host-keys.cfg
+# ssh_deletekeys: false
+cloud_init_ssh_deletekeys: false
+
+# 是否创建全局 systemd-resolved 配置文件
+resolved_override: true
+resolved_dns_over_tls: false
+
+# 是否创建 systemd-resolved 的 stub listener
+# 此项 false 意为着 systemd-resolved 将运行在 uplink 模式
+resolved_stub_listener: false

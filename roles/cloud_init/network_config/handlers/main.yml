@@ -1,0 +1,16 @@
+---
+- name: netplan apply
+  ansible.builtin.command: netplan apply
+
+- name: resolvectl flush-caches
+  ansible.builtin.command: resolvectl flush-caches
+
+- name: systemctl restart systemd-resolved
+  ansible.builtin.systemd_service:
+    name: systemd-resolved
+    state: restarted
+
+- name: systemctl restart systemd-networkd
+  ansible.builtin.systemd_service:
+    name: systemd-networkd
+    state: restarted

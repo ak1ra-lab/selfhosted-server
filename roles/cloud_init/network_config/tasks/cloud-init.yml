@@ -1,0 +1,60 @@
+---
+- name: set_fact on default_gateway and default_nameservers
+  when:
+    - (tproxy_enabled | ansible.builtin.bool)
+  block:
+    - name: assert required vars are set
+      ansible.builtin.assert:
+        that:
+          - (tproxy_gateway | default('') | length > 0)
+        fail_msg: "tproxy_gateway must be set when tproxy_enabled is true"
+
+    - name: override default_gateway and default_nameservers
+      ansible.builtin.set_fact:
+        default_gateway: "{{ tproxy_gateway }}"
+        default_nameservers: "{{ [tproxy_gateway] }}"
+
+- name: ensure packages installed
+  ansible.builtin.package:
+    name:
+      - netplan.io
+    state: present
+
+- name: select physical interfaces
+  ansible.builtin.set_fact:
+    interfaces: >-
+      {{
+        ansible_facts.interfaces
+          | select('ansible.builtin.match', '^(eth|en[psx])')
+          | map('ansible.builtin.extract', ansible_facts)
+          | list
+      }}
+
+- name: create drop-in directory
+  ansible.builtin.file:
+    path: /etc/cloud/cloud.cfg.d
+    mode: "0755"
+    state: directory
+
+# All files with the '.cfg' extension in this directory will be read by cloud-init.
+# They are read in lexical order. Later files overwrite values in earlier files.
+- name: disable cloud-init network config
+  ansible.builtin.copy:
+    dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+    mode: "0600"
+    content: |
+      network: {config: disabled}
+
+- name: remove /etc/netplan/50-cloud-init.yaml
+  ansible.builtin.file:
+    path: /etc/netplan/50-cloud-init.yaml
+    state: absent
+
+- name: template /etc/netplan/90-default.yaml
+  ansible.builtin.template:
+    src: etc/netplan/90-default.yaml.j2
+    dest: /etc/netplan/90-default.yaml
+    mode: "0600"
+  notify:
+    - netplan apply
+    - resolvectl flush-caches
