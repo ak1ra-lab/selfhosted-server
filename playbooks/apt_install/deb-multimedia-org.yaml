@@ -1,0 +1,40 @@
+# https://deb-multimedia.org/
+- name: apt_install - deb-multimedia-org
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # https://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2024.9.1_all.deb
+    # 8dc6cbb266c701cfe58bd1d2eb9fe2245a1d6341c7110cfbfe3a5a975dcf97ca deb-multimedia-keyring_2024.9.1_all.deb
+    # $ gpg /usr/share/keyrings/deb-multimedia-keyring.pgp
+    # gpg: WARNING: no command supplied.  Trying to guess what you mean ...
+    # pub   rsa4096 2014-03-05 [SC]
+    #       A401FF99368FA1F98152DE755C808C2B65558117
+    # uid           Christian Marillat <marillat@debian.org>
+    # uid           Christian Marillat <marillat@free.fr>
+    # uid           Christian Marillat <marillat@deb-multimedia.org>
+    # uid           Christian Marillat <marillat@deb-multimedia>
+    # sub   rsa4096 2014-03-05 [E]
+    apt_keyrings_package: https://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2024.9.1_all.deb
+    apt_keyrings_package_checksum: "sha256:8dc6cbb266c701cfe58bd1d2eb9fe2245a1d6341c7110cfbfe3a5a975dcf97ca"
+    apt_keyrings_dest: /usr/share/keyrings/deb-multimedia-keyring.pgp
+
+    apt_repo: deb-multimedia-org
+    apt_repo_uris:
+      - https://www.deb-multimedia.org
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - main
+      - non-free
+
+    apt_pinning: false
+    apt_unattended_upgrade: false
+    apt_mark_hold: false
+    apt_pinning_pin_release: "o=Unofficial Multimedia Packages,n={{ ansible_distribution_release }},c=main non-free"
+    apt_unattended_upgrade_origins_pattern: "origin=Unofficial Multimedia Packages,codename={{ ansible_distribution_release }},component=main non-free"
+
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
