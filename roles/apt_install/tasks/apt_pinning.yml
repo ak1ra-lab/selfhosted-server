@@ -1,0 +1,33 @@
+---
+# A note of caution: the keyword used here is "origin" which can be used to match a hostname
+# This should not be confused with the Origin of a distribution as specified in a Release file
+- name: add apt pinning by apt_repo_uri_hostname if apt_pinning_pin_release is not set
+  when:
+    - (apt_pinning | ansible.builtin.bool)
+    - (apt_pinning_pin_release | default('') | length == 0)
+  ansible.builtin.copy:
+    dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
+    content: |
+      Package: {{ apt_pinning_package }}
+      Pin: origin {{ apt_repo_uri_hostname }}
+      Pin-Priority: {{ apt_pinning_pin_priority | int }}
+    mode: "0644"
+
+- name: add apt pinning by Release file if apt_pinning_pin_release is set
+  when:
+    - (apt_pinning | ansible.builtin.bool)
+    - (apt_pinning_pin_release | default('') | length > 0)
+  ansible.builtin.copy:
+    dest: "/etc/apt/preferences.d/90{{ apt_repo }}"
+    content: |
+      Package: {{ apt_pinning_package }}
+      Pin: release {{ apt_pinning_pin_release }}
+      Pin-Priority: {{ apt_pinning_pin_priority | int }}
+    mode: "0644"
+
+- name: revert apt pinning if apt_pinning is not enabled
+  when:
+    - not (apt_pinning | ansible.builtin.bool)
+  ansible.builtin.file:
+    path: "/etc/apt/preferences.d/90{{ apt_repo }}"
+    state: absent

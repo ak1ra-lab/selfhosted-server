@@ -1,0 +1,76 @@
+---
+- name: debug apt_keyrings vars
+  ansible.builtin.debug:
+    msg:
+      apt_keyrings_url: "{{ apt_keyrings_url | default('omit') }}"
+      apt_keyrings_file: "{{ apt_keyrings_file | default('omit') }}"
+      apt_keyrings_content: "{{ apt_keyrings_content | default('omit') }}"
+      apt_keyrings_package: "{{ apt_keyrings_package | default('omit') }}"
+
+- name: fail if not exactly one of the apt_keyrings vars is set
+  ansible.builtin.assert:
+    that:
+      - >
+        (
+          [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content, apt_keyrings_package] |
+          map('default', '') |
+          select('ansible.builtin.truthy') |
+          list |
+          length
+        ) == 1
+    fail_msg: "Exactly one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content, apt_keyrings_package] should be set"
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+# The apt-key command used by this module has been deprecated.
+- name: import apt keyrings from apt_keyrings_url
+  when:
+    - (apt_keyrings_url | default('') | length > 0)
+  ansible.builtin.get_url:
+    url: "{{ apt_keyrings_url }}"
+    dest: "{{ apt_keyrings_dest }}"
+    mode: "0644"
+
+- name: import apt keyrings from apt_keyrings_file
+  when:
+    - (apt_keyrings_file | default('') | length > 0)
+  ansible.builtin.copy:
+    src: "{{ apt_keyrings_file }}"
+    dest: "{{ apt_keyrings_dest }}"
+    mode: "0644"
+
+- name: import apt keyrings from apt_keyrings_content
+  when:
+    - (apt_keyrings_content | default('') | length > 0)
+  ansible.builtin.copy:
+    dest: "{{ apt_keyrings_dest }}"
+    mode: "0644"
+    content: |
+      {{ apt_keyrings_content }}
+
+# https://deb-multimedia.org/
+- name: import apt keyrings from apt_keyrings_package
+  when:
+    - (apt_keyrings_package | default('') | length > 0)
+  block:
+    - name: create tempfile for apt_keyrings_package
+      ansible.builtin.tempfile:
+        suffix: .deb
+      register: apt_keyrings_package_file
+
+    - name: download apt_keyrings_package
+      ansible.builtin.get_url:
+        url: "{{ apt_keyrings_package }}"
+        dest: "{{ apt_keyrings_package_file.path }}"
+        checksum: "{{ apt_keyrings_package_checksum }}"
+
+    # 尽管 ansible.builtin.apt 可以直接从 url 安装, 不过这种方式它不支持 checksum
+    # TODO: 是不是可以尝试向 ansible.builtin.apt 提个 PR 新增 checksum 参数?
+    - name: install apt_keyrings_package from local package
+      ansible.builtin.apt:
+        deb: "{{ apt_keyrings_package_file.path }}"
+        state: present
+
+    - name: remove apt_keyrings_package_file
+      ansible.builtin.file:
+        path: "{{ apt_keyrings_package_file.path }}"
+        state: absent
