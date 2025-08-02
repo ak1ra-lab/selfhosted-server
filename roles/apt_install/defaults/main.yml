@@ -26,6 +26,8 @@ apt_repo_uri_hostname: >-
 apt_keyrings_url: ""
 apt_keyrings_file: ""
 apt_keyrings_content: ""
+apt_keyrings_package: ""
+apt_keyrings_package_checksum: ""
 
 # armored keys should use .asc extension, binary should use .gpg
 apt_keyrings_dest: ""

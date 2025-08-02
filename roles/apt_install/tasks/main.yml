@@ -9,7 +9,7 @@
     that:
       - >
         (apt_repo | default('') | length > 0) and
-        (apt_repo_uris | default('') | length > 0) and
+        (apt_repo_uris | default([]) | length > 0) and
         (apt_keyrings_dest | default('') | length > 0)
     fail_msg: "All of [apt_repo, apt_repo_uris, apt_keyrings_dest] must be set"
 
@@ -19,6 +19,7 @@
       apt_keyrings_url: "{{ apt_keyrings_url | default('omit') }}"
       apt_keyrings_file: "{{ apt_keyrings_file | default('omit') }}"
       apt_keyrings_content: "{{ apt_keyrings_content | default('omit') }}"
+      apt_keyrings_package: "{{ apt_keyrings_package | default('omit') }}"
 
 # [`map('default', '')`](https://jinja.palletsprojects.com/en/stable/templates/#jinja-filters.map) filter 中的 `default` 是也一个 filter, 因为 ...Alternatively you can let it invoke a filter by passing the name of the filter and the arguments afterwards. 而 [`select('ansible.builtin.truthy')`](https://jinja.palletsprojects.com/en/stable/templates/#jinja-filters.select) filter 可以接受 Tests 作为其参数, Jinja2 本身有一些 [Builtin Tests](https://jinja.palletsprojects.com/en/stable/templates/#list-of-builtin-tests), 而 [`ansible.builtin.truthy`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/truthy_test.html) 是 Ansible 的内置 Tests, 在非 Ansible 环境中使用时, 需要避免使用 Ansible 的 Tests, 所以这里也推荐使用 FQDN 写法, 避免混淆 Tests 来源.
 - name: fail if not exactly one of the apt_keyrings vars is set
@@ -26,13 +27,13 @@
     that:
       - >
         (
-          [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] |
+          [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content, apt_keyrings_package] |
           map('default', '') |
           select('ansible.builtin.truthy') |
           list |
           length
         ) == 1
-    fail_msg: "Exactly one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content] should be set"
+    fail_msg: "Exactly one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content, apt_keyrings_package] should be set"
 
 - name: ensure apt directories exists
   ansible.builtin.file:
@@ -73,6 +74,32 @@
         mode: "0644"
         content: |
           {{ apt_keyrings_content }}
+
+    # https://deb-multimedia.org/
+    - name: import apt keyrings from apt_keyrings_package
+      when:
+        - (apt_keyrings_package | default('') | length > 0)
+      block:
+        - name: create tempfile for apt_keyrings_package
+          ansible.builtin.tempfile:
+            suffix: .deb
+          register: apt_keyrings_package_file
+
+        - name: download apt_keyrings_package
+          ansible.builtin.get_url:
+            url: "{{ apt_keyrings_package }}"
+            dest: "{{ apt_keyrings_package_file.path }}"
+            checksum: "{{ apt_keyrings_package_checksum }}"
+
+        - name: install apt_keyrings_package from local package
+          ansible.builtin.apt:
+            deb: "{{ apt_keyrings_package_file.path }}"
+            state: present
+
+        - name: remove apt_keyrings_package_file
+          ansible.builtin.file:
+            path: "{{ apt_keyrings_package_file.path }}"
+            state: absent
 
 - name: remove apt_repo in legacy format
   ansible.builtin.file:
