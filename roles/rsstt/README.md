@@ -4,8 +4,11 @@
 
 ## quick start
 
-可以在项目根目录使用 `make rsstt` 部署, [`playbooks/Makefile`](../../playbooks/Makefile) 中有引用一个叫做
-`credentials/rsstt.yaml` 的文件, 这个文件是经过 `ansible-vault` 加密过的文件, 需要自行创建, 用于存放一些相对敏感的凭据信息.
+```shell
+ansible-playbook playbooks/rsstt.yaml -e 'playbook_hosts=remote-server' -e @credentials/rsstt.yaml --ask-vault-pass
+```
+
+其中 `credentials/rsstt.yaml` 文件中包含一些敏感信息, 这个文件经过 `ansible-vault` 加密, 需要自行创建.
 
 ## `credentials/rsstt.yaml` 内容示例
 
@@ -14,7 +17,7 @@
 
 ```yaml
 # roles/rsstt
-rsstt_token: 987654321:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+rsstt_token: 1234567890:A1BCd2EF3gH45IJK6lMN7oPqr8ST9UvWX0Yz0
 rsstt_manager: 123456789
 rsstt_telegraph_token_count: 5
 ```
@@ -24,14 +27,14 @@ rsstt_telegraph_token_count: 5
 
 ```yaml
 # roles/rsstt
-rsstt_token: 987654321:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+rsstt_token: 1234567890:A1BCd2EF3gH45IJK6lMN7oPqr8ST9UvWX0Yz0
 rsstt_manager: 123456789
 rsstt_telegraph_token:
-  - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-  - bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-  - cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-  - dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
-  - eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  - 1a23b456c78de90f1a23b456c78de90f1a23b456c78de90f1a23b456c78d
+  - 1a23b456c78de90f1a23b456c78de90f1a23b456c78de90f1a23b456c78d
+  - 1a23b456c78de90f1a23b456c78de90f1a23b456c78de90f1a23b456c78d
+  - 1a23b456c78de90f1a23b456c78de90f1a23b456c78de90f1a23b456c78d
+  - 1a23b456c78de90f1a23b456c78de90f1a23b456c78de90f1a23b456c78d
 ```
 
 这样下次重新部署或更新软件版本时就可以重用过去申请的 telegraph token.
