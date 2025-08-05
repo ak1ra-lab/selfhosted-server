@@ -4,12 +4,11 @@ rsstt_systemd_dir: /etc/systemd/system
 
 # You may also install RSStT from PyPI (tracking master branch)
 # or TestPyPI (tracking dev branch, which is always up-to-date) using pip.
-# pypi or testpypi
+# 安装来源: [pypi, testpypi]
 rsstt_install_source: pypi
-rsstt_install_upgrade: false
-rsstt_pip_extra_args: |
-  {% if rsstt_install_upgrade %}--upgrade{%- endif -%}
-  {% if rsstt_install_source == 'testpypi' %} --index-url=https://test.pypi.org/simple/{%- endif -%}
+rsstt_pip_extra_args:
+  pypi: ""
+  testpypi: "--index-url=https://test.pypi.org/simple/"
 
 # .env settings
 ## Telegram bot token, get it from @BotFather
