@@ -2,13 +2,13 @@ network:
   version: 2
   renderer: networkd
   ethernets:
-{% for interface in interfaces %}
+{% for interface in ethernet_interfaces %}
     {{ interface.device }}:
       set-name: {{ interface.device }}
       match:
         macaddress: {{ interface.macaddress }}
       addresses:
-        - {{ interface.ipv4.address }}/{{ interface.ipv4.prefix }}
+        - {{ interface.ipv4.address }}/{{ (interface_prefix_overrides.get(interface.device) or interface.ipv4.prefix) | int }}
 {% if interface.device == ansible_default_ipv4.interface %}
       routes:
         - to: default

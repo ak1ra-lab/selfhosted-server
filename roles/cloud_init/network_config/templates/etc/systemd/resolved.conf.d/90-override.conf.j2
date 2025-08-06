@@ -1,4 +1,6 @@
-# Without the Domains=~. option in resolved.conf(5), systemd-resolved might use the per-link DNS servers, if any of them set Domains=~. in the per-link configuration.
+# It is highly advised to use an encrypted protocol when connecting to third-party DNS services. See DNS over TLS.
+# Without the `Domains=~.` option in resolved.conf(5), systemd-resolved might use the per-link DNS servers, if any of them set `Domains=~.` in the per-link configuration.
+# This option will not affect queries of domain names that match the more specific search domains specified in per-link configuration, they will still be resolved using their respective per-link DNS servers.
 # https://wiki.archlinux.org/title/Systemd-resolved
 [Resolve]
 DNS={{ default_nameservers | join(' ') }}

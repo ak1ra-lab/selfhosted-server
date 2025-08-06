@@ -1,0 +1,69 @@
+---
+- name: assert vars default_gateway
+  ansible.builtin.assert:
+    that:
+      - (default_gateway | default('') | length > 0)
+    fail_msg: default_gateway must be set
+
+- name: override default_gateway and default_nameservers
+  when:
+    - (tproxy_enabled | ansible.builtin.bool)
+  block:
+    - name: assert vars tproxy_gateway
+      ansible.builtin.assert:
+        that:
+          - (tproxy_gateway | default('') | length > 0)
+        fail_msg: tproxy_gateway must be set when tproxy_enabled is true
+
+    - name: override default_gateway and default_nameservers
+      ansible.builtin.set_fact:
+        default_gateway: "{{ tproxy_gateway }}"
+        default_nameservers: "{{ [tproxy_gateway] }}"
+        resolved_stub_listener: false
+
+- name: select ethernet_interfaces
+  ansible.builtin.set_fact:
+    ethernet_interfaces: >-
+      {{
+        ansible_facts.interfaces
+          | select('ansible.builtin.match', '^(eth|en[psx])')
+          | sort
+          | map('ansible.builtin.extract', ansible_facts)
+          | list
+      }}
+
+- name: ensure packages installed
+  ansible.builtin.package:
+    name:
+      - netplan.io
+    state: present
+
+- name: create drop-in directory
+  ansible.builtin.file:
+    path: /etc/netplan
+    mode: "0700"
+    state: directory
+
+- name: manage netplan configuration
+  vars:
+    netplan_default: /etc/netplan/90-default.yaml
+    netplan_cloud_init: /etc/netplan/50-cloud-init.yaml
+    netplan_dest: "{{ netplan_default if not (cloud_init_network_config | ansible.builtin.bool) else netplan_cloud_init }}"
+    netplan_remove: "{{ netplan_default if (cloud_init_network_config | ansible.builtin.bool) else netplan_cloud_init }}"
+  block:
+    - name: "template {{ netplan_dest }}"
+      ansible.builtin.template:
+        src: etc/netplan/90-default.yaml.j2
+        dest: "{{ netplan_dest }}"
+        mode: "0600"
+      notify:
+        - netplan apply
+        - resolvectl flush-caches
+
+    - name: "remove {{ netplan_remove }}"
+      ansible.builtin.file:
+        path: "{{ netplan_remove }}"
+        state: absent
+      notify:
+        - netplan apply
+        - resolvectl flush-caches

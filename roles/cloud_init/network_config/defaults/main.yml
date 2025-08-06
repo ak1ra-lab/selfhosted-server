@@ -1,30 +1,44 @@
 ---
-# 默认网关
+# str: 默认网关
 default_gateway: ""
-# list
+# list: 默认 DNS servers
 default_nameservers:
   - 1.1.1.1#cloudflare-dns.com
   - 1.0.0.1#cloudflare-dns.com
 
-# 是否启用旁路网关代理
+# bool: 是否使用 tproxy_gateway 的地址覆盖 default_gateway 和 default_nameservers
 tproxy_enabled: false
-# 当 tproxy_enabled 为 true 时此项必填
+# str: 当 tproxy_enabled 为 true 时 tproxy_gateway 必须手动指定, 否则会报错
+# 手动指定可承担透明代理的主机作为旁路网关
+# https://github.com/ak1ra-lab/sing-box-tproxy
 tproxy_gateway: ""
 
-# 是否禁用 cloud-init 的网络配置
+# bool: 此项设置为 false 时用于禁用 cloud-init 的网络配置
 # /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 # network: {config: disabled}
 cloud_init_network_config: false
 
-# 此项设置为 false 是避免修改 cloud-init 配置时删除 `/etc/ssh/ssh_host_*` keys
+# bool: 此项设置为 false 用于避免修改 cloud-init drive 配置时被删除 `/etc/ssh/ssh_host_*` keys
 # /etc/cloud/cloud.cfg.d/99-keep-sshd-host-keys.cfg
 # ssh_deletekeys: false
 cloud_init_ssh_deletekeys: false
 
-# 是否创建全局 systemd-resolved 配置文件
+# bool: 是否创建全局 systemd-resolved 配置文件
+# /etc/systemd/resolved.conf.d/90-override.conf
 resolved_override: true
+# bool: 此项为 true 意味着将设置 DNSOverTLS=yes
+# 注意: 中国大陆几乎无法使用任何由国外公共 DNS 提供的 DoT (DNS over TLS) 和 DoH (DNS over HTTPS)
 resolved_dns_over_tls: false
 
-# 是否创建 systemd-resolved 的 stub listener
-# 此项 false 意为着 systemd-resolved 将运行在 uplink 模式
-resolved_stub_listener: false
+# bool: 是否创建 systemd-resolved 的 stub listener
+# 此项为 false 意为着 systemd-resolved 将运行在 uplink 模式
+# 此项为 true 意味着 systemd-resolved 将运行在 stub 模式
+# 旁路网关场景或者 container runtime 场景我们一般使用 uplink 模式
+resolved_stub_listener: true
+
+# dict: 用于覆盖原本的 netmask prefix, 默认未空 dict
+# 原因是网络中可能存在部分配置错误的 netmask
+# 比如网络规划初期将单个 VLAN 配置为 172.16.0.0/12, 其 netmask 为 255.240.0.0, 对于小规模办公内网不太合理
+interface_prefix_overrides: {}
+  # eth0: 16
+  # eth1: 22
