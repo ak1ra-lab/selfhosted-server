@@ -1,0 +1,112 @@
+---
+- name: debug truthy_values
+  hosts: localhost
+  vars:
+    # true, True, TRUE 是 YAML 中的 boolean type, 表示 True in Python
+    # TrUE 这种异形大小写在 YAML 中是非空 str, ansible.builtin.bool filter 将其转换为 True
+    # "true", "True", "TRUE", "TrUE", "yes", "on", "1" 都是非空 str, ansible.builtin.bool filter 将其转换为 True
+    # 1 type int, Python bool(1) 是 True, ansible.builtin.bool filter 将其转换为 True
+    # 42 type int, -7 type int, foo type str, Python bool(value) 中是 True, 但是 ansible.builtin.bool 是 False
+    # [1, 2, 3], {"key": "value"} 这种非空对象在 Python bool(value) 中是 True, 但是 ansible.builtin.bool 是 False
+    # (42,) 在 YAML 中被当作非空 str, 在 Python 中是 tuple, 非空 str 被 ansible.builtin.bool 当作 False
+    # Python 表达式 `bool(value) is True` 行为与 `value is ansible.builtin.truthy` 结果一致, 与 ansible.builtin.bool 差异很大
+    # 如果期望更 pythonic 的行为, 你应该使用 ansible.builtin.truthy, 注意它不能在 pure Jinja2 环境中使用
+    truthy_values:
+      - true
+      - True
+      - TRUE
+      - TrUE
+      - "true"
+      - "True"
+      - "TRUE"
+      - "TrUE"
+      - "yes"
+      - "on"
+      - "1"
+      - 1
+      - 42
+      - -7
+      - foo
+      - [1, 2, 3]
+      - { "key": "value" }
+      - (42,)
+  tasks:
+    - name: debug truthy_values with ansible.builtin.bool filter
+      ansible.builtin.debug:
+        msg: >-
+          `{{ value }}` of type `{{ value | ansible.builtin.type_debug }}` evaluates to `{{ value | ansible.builtin.bool }}`
+      loop: "{{ truthy_values }}"
+      loop_control:
+        loop_var: value
+
+    - name: debug truthy_values with ansible.builtin.truthy tests
+      ansible.builtin.debug:
+        msg: >-
+          `{{ value }}` of type `{{ value | ansible.builtin.type_debug }}` evaluates to `{{ value is ansible.builtin.truthy }}`
+      loop: "{{ truthy_values }}"
+      loop_control:
+        loop_var: value
+
+- name: debug falthy_values
+  hosts: localhost
+  vars:
+    # false, False, FALSE 是 YAML 中的 boolean type, 表示 False in Python
+    # FaLSe 这种异形大小写是非空 str, ansible.builtin.bool filter 将其转换为 False
+    # "false", "False", "FALSE", "FaLSe", "no", "off", "0" 都是非空 str, ansible.builtin.bool filter 将其转换为 False
+    # 0 type int, "" type str 二者在 Python bool(value) 中是 False, ansible.builtin.bool filter 也将其转换为 False
+    # [] type list, {} type dict 二者在 Python bool(value) 中是 False, ansible.builtin.bool filter 也将其转换为 False
+    # () 是非空 str, 因为 YAML 不支持 tuple, 但是它被 ansible.builtin.bool 处理为 False, 这是在模拟 Python 空 tuple 的行为
+    # null, Null, NULL 在 YAML 表示 "lack of a value", 会转换成 None in Python, None 经过 ansible.builtin.bool 处理会变成 False
+    # NuLL 这种异形大小写是非空 str, 与 "null", "Null", "NULL", "NuLL" 一样都是非空 str, ansible.builtin.bool filter 将其转换为 False
+    # YAML 中没有 none 关键字, 因此相关的它们都是非空 str, 不过 ansible.builtin.bool filter 会将其转换为 False
+    # 所有非空 str 在 Python 表达式 `bool(value) is False` 中结果是 True, 与表达式 `value is ansible.builtin.falsy` 结果相同
+    # 所以 ansible.builtin.falsy 的结果与 ansible.builtin.bool 很不一样, 初次看到会觉得很怪异
+    falthy_values:
+      - false
+      - False
+      - FALSE
+      - FaLSe
+      - "false"
+      - "False"
+      - "FALSE"
+      - "FaLSe"
+      - "no"
+      - "off"
+      - "0"
+      - 0
+      - ""
+      - []
+      - {}
+      - ()
+      - null
+      - Null
+      - NULL
+      - NuLL
+      - "null"
+      - "Null"
+      - "NULL"
+      - "NuLL"
+      - none
+      - None
+      - NONE
+      - NoNE
+      - "none"
+      - "None"
+      - "NONE"
+      - "NoNE"
+  tasks:
+    - name: debug falthy_values with ansible.builtin.bool filter
+      ansible.builtin.debug:
+        msg: >-
+          `{{ value }}` of type `{{ value | ansible.builtin.type_debug }}` evaluates to `{{ value | ansible.builtin.bool }}`
+      loop: "{{ falthy_values }}"
+      loop_control:
+        loop_var: value
+
+    - name: debug falthy_values with ansible.builtin.falsy tests
+      ansible.builtin.debug:
+        msg: >-
+          `{{ value }}` of type `{{ value | ansible.builtin.type_debug }}` evaluates to `{{ value is ansible.builtin.falsy }}`
+      loop: "{{ falthy_values }}"
+      loop_control:
+        loop_var: value
