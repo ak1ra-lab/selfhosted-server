@@ -21,7 +21,7 @@
 - name: fail if not exactly one of the apt_keyrings vars is set
   ansible.builtin.assert:
     that:
-      - apt_keyrings_vars_count == 1
+      - (apt_keyrings_vars_count | int) == 1
     fail_msg: "Exactly one of [apt_keyrings_url, apt_keyrings_file, apt_keyrings_content, apt_keyrings_package] should be set"
 
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
