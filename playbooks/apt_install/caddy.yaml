@@ -1,0 +1,39 @@
+# https://caddyserver.com/docs/install#debian-ubuntu-raspbian
+- name: apt_install - caddy
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    caddy_channel: stable
+    # $ curl -sL https://dl.cloudsmith.io/public/caddy/stable/gpg.key | gpg
+    # pub   rsa4096 2016-04-01 [SC]
+    #       65760C51EDEA2017CEA2CA15155B6D79CA56EA34
+    # uid           Caddy Web Server <contact@caddyserver.com>
+    # sub   rsa4096 2020-12-29 [S] [expires: 2025-12-28]
+    # $ curl -sL https://dl.cloudsmith.io/public/caddy/testing/gpg.key | gpg
+    # pub   rsa4096 2016-04-01 [SC]
+    #       65760C51EDEA2017CEA2CA15155B6D79CA56EA34
+    # uid           Caddy Web Server <contact@caddyserver.com>
+    # sub   rsa4096 2020-12-29 [S] [expires: 2025-12-28]
+    apt_keyrings_url: "https://dl.cloudsmith.io/public/caddy/{{ caddy_channel }}/gpg.key"
+    apt_keyrings_dest: "/etc/apt/keyrings/caddy-{{ caddy_channel }}-archive-keyring.asc"
+
+    apt_repo: "caddy-{{ caddy_channel }}"
+    apt_repo_uris:
+      - "https://dl.cloudsmith.io/public/caddy/{{ caddy_channel }}/deb/{{ ansible_distribution | lower }}"
+    apt_repo_suites:
+      - any-version
+    apt_repo_components:
+      - main
+
+    apt_pinning: true
+    apt_unattended_upgrade: true
+    apt_mark_hold: false
+    apt_pinning_pin_release: "o=cloudsmith/caddy/{{ caddy_channel }},c=main,n=any-version"
+    apt_unattended_upgrade_origins_pattern: "origin=cloudsmith/caddy/{{ caddy_channel }},component=main,codename=any-version"
+
+    # caddy
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
