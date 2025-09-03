@@ -1,0 +1,31 @@
+---
+- name: common tasks | vps
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    apt_repo_debian_uris:
+      - https://deb.debian.org/debian/
+      # - https://mirror-cdn.xtom.com/debian/
+      # - https://mirrors.tencent.com/debian/
+      # - https://mirrors.aliyun.com/debian/
+
+    apt_repo_debian_security_uris:
+      - https://deb.debian.org/debian-security/
+      # - https://mirror-cdn.xtom.com/debian-security/
+      # - https://mirrors.tencent.com/debian-security/
+      # - https://mirrors.aliyun.com/debian-security/
+
+    apt_repo_debian_suites_backports_enabled: false
+
+    unattended_upgrade_updates_enabled: true
+    unattended_upgrade_automatic_reboot_enabled: true
+
+    apt_force_ipv4_enabled: false
+
+    tcp_bbr_enabled: true
+    custom_sshd_config_enabled: true
+    custom_sysctl_conf_enabled: false
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: common
