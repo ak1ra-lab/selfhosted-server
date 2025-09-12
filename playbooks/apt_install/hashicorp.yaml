@@ -24,7 +24,7 @@
     apt_unattended_upgrade: true
     apt_mark_hold: false
 
-    # consul, packer, terraform, vagrant
+    # consul, nomad, packer, sentinel, terraform, vagrant, vault, waypoint
     apt_repo_packages:
       - packer
       - terraform
