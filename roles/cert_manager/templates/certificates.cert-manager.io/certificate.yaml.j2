@@ -1,0 +1,18 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ certificate_name }}
+spec:
+  # Secret names are always required.
+  secretName: {{ certificate_name }}
+  usages:
+    - server auth
+  # At least one of a DNS Name, URI, or IP address is required.
+  dnsNames: {{ certificate_dns_names | list }}
+  # Issuer references are always required.
+  issuerRef:
+    # We can reference ClusterIssuers by changing the kind here.
+    # The default value is Issuer (i.e. a locally namespaced Issuer)
+    kind: ClusterIssuer
+    name: {{ certificate_clusterissuer }}
