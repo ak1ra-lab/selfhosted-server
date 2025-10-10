@@ -1,0 +1,12 @@
+---
+# ansible-playbook playbooks/cert-manager.yaml -e @credentials/cert-manager.yaml --ask-vault-pass
+- name: template cert-manager clusterissuer and ingresses
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: false
+  vars:
+    cert_manager_namespace: default
+    cert_manager_apply_manifest: true
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: cert_manager
