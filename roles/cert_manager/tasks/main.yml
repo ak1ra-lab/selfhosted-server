@@ -1,0 +1,48 @@
+---
+# tasks file for roles/cert_manager
+- name: assert required vars are set
+  ansible.builtin.assert:
+    that:
+      - (acme_email | default('') | length) > 0
+      - (cloudflare_api_token | default('') | length) > 0
+      - (cloudflare_dns_zones | default([]) | length) > 0
+      - (zerossl_eab_key_id | default('') | length) > 0
+      - (zerossl_eab_hmac_key | default('') | length) > 0
+    fail_msg: "one of required vars are not set"
+
+- name: create drop-in directory
+  vars:
+    templates: "{{ (cert_manager_clusterissuers + cert_manager_ingresses + cert_manager_certificates) | list }}"
+  ansible.builtin.file:
+    path: "{{ [cert_manager_dir, item] | ansible.builtin.path_join }}"
+    state: directory
+  loop: "{{ templates | map('ansible.builtin.dirname') | select('!=', '') | ansible.builtin.unique }}"
+
+- name: include_tasks venv.yml
+  when:
+    - (cert_manager_apply_manifest | ansible.builtin.bool)
+  ansible.builtin.include_tasks: venv.yml
+
+- name: "loop include_tasks on {{ cert_manager_clusterissuers }}"
+  ansible.builtin.include_tasks: clusterissuer.yml
+  loop: "{{ cert_manager_clusterissuers }}"
+  loop_control:
+    loop_var: template
+
+- name: "loop include_tasks on {{ cert_manager_ingresses }}"
+  when:
+    - (ingress_hosts | default([]) | length) == 0
+    - (ingress_rules | default([]) | length) > 0
+  ansible.builtin.include_tasks: ingress.yml
+  loop: "{{ cert_manager_ingresses }}"
+  loop_control:
+    loop_var: template
+
+- name: "loop include_tasks on {{ cert_manager_certificates }}"
+  when:
+    - (ingress_hosts | default([]) | length) > 0
+    - (ingress_rules | default([]) | length) == 0
+  ansible.builtin.include_tasks: ingress.yml
+  loop: "{{ cert_manager_certificates }}"
+  loop_control:
+    loop_var: template

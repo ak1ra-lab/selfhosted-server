@@ -1,0 +1,36 @@
+---
+- name: set_fact ingress_hosts from ingress_rules
+  when:
+    - (ingress_hosts | default([]) | length) == 0
+    - (ingress_rules | default([]) | length) > 0
+  ansible.builtin.set_fact:
+    ingress_hosts: "{{ ingress_rules | map(attribute='host') | list }}"
+
+- name: set_fact ingress_name
+  ansible.builtin.set_fact:
+    ingress_name: "{{ cert_manager_clusterissuer }}-{{ ingress_hosts[0] | replace('.', '-') }}"
+
+- name: set_fact tls_secret_name and tls_certificate_name
+  ansible.builtin.set_fact:
+    tls_certificate_name: "{{ ingress_name }}"
+    tls_secret_name: "{{ ingress_name }}"
+
+- name: "template {{ template }} on local machine"
+  vars:
+    relpath: "{{ [(template | ansible.builtin.dirname), ingress_name ~ '.yaml'] | ansible.builtin.path_join }}"
+  ansible.builtin.template:
+    src: "{{ template }}"
+    dest: "{{ [cert_manager_dir, relpath] | ansible.builtin.path_join }}"
+
+- name: "apply {{ template }} into kubernetes cluster"
+  when:
+    - (cert_manager_apply_manifest | ansible.builtin.bool)
+  vars:
+    ansible_python_interpreter: "{{ ansible_venv }}/bin/python3"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    namespace: "{{ cert_manager_namespace }}"
+    template: "{{ template }}"
+    state: present
+    validate:
+      fail_on_error: true

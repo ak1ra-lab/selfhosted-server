@@ -1,0 +1,13 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: {{ cert_manager_clusterissuer }}
+  name: {{ ingress_name }}
+spec:
+  ingressClassName: {{ ingress_class }}
+  rules: {{ ingress_rules | list }}
+  tls:
+    - hosts: {{ ingress_hosts | list }}
+      secretName: {{ tls_secret_name }}

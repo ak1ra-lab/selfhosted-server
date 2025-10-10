@@ -1,0 +1,33 @@
+---
+- name: ensure required packages
+  become: true
+  ansible.builtin.package:
+    name:
+      - python3-venv
+    state: present
+
+- name: ensure required packages in ansible venvs
+  ansible.builtin.pip:
+    name:
+      - jsonpatch
+      - kubernetes
+      - kubernetes-validate
+      - PyYAML
+    virtualenv: "{{ ansible_venv }}"
+
+# Can also be specified via K8S_AUTH_KUBECONFIG environment variable.
+- name: set_fact on KUBECONFIG
+  ansible.builtin.set_fact:
+    KUBECONFIG: "{{ lookup('ansible.builtin.env', 'KUBECONFIG') }}"
+
+- name: assert on KUBECONFIG
+  ansible.builtin.assert:
+    that:
+      - (KUBECONFIG | default('') | length) > 0
+    fail_msg: "KUBECONFIG are not set"
+
+- name: debug_var on KUBECONFIG
+  ansible.builtin.debug:
+    msg:
+      KUBECONFIG: "{{ KUBECONFIG }}"
+      ansible_python_interpreter: "{{ ansible_venv }}/bin/python3"

@@ -1,0 +1,79 @@
+---
+# str: ansible venv on remote host
+ansible_venv: "{{ ansible_env.HOME }}/.ansible/venvs/ansible"
+
+# defaults file for roles/cert_manager
+# You must replace this email address with your own.
+# Let's Encrypt will use this to contact you about expiring
+# certificates, and issues related to your account.
+acme_email: ""
+
+# cloudflare-api-token-all-zones
+cloudflare_api_token: ""
+cloudflare_dns_zones: []
+
+# https://cert-manager.io/docs/tutorials/zerossl/zerossl/
+zerossl_eab_key_id: ""
+zerossl_eab_hmac_key: ""
+
+# cert-manager manifests directory
+cert_manager_dir: /etc/kubernetes/cert-manager
+
+# instance of cert_manager_clusterissuers
+cert_manager_clusterissuer: zerossl-dns01-cloudflare
+
+# Kubernetes NAMESPACED resource namespace
+# [ingresses.networking.k8s.io, certificates.cert-manager.io]
+cert_manager_namespace: default
+
+# 是否应用 manifests
+cert_manager_apply_manifest: false
+
+# clusterissuers.cert-manager.io templates
+cert_manager_clusterissuers:
+  - clusterissuers.cert-manager.io/letsencrypt-http01.yaml.j2
+  - clusterissuers.cert-manager.io/letsencrypt-dns01-cloudflare.yaml.j2
+  - clusterissuers.cert-manager.io/zerossl-http01.yaml.j2
+  - clusterissuers.cert-manager.io/zerossl-dns01-cloudflare.yaml.j2
+
+# ingresses.networking.k8s.io templates
+cert_manager_ingresses:
+  - ingresses.networking.k8s.io/ingress.yaml.j2
+
+# certificates.cert-manager.io templates
+cert_manager_certificates:
+  - certificates.cert-manager.io/certificate.yaml.j2
+
+# ingress-nginx
+ingress_class: nginx
+
+# 直接创建 certificates.cert-manager.io 资源
+ingress_hosts:
+  []
+  # - nginx-114.example.com
+  # - nginx-514.example.com
+
+# kubectl explain ingresses.spec.rules
+# 通过 ingresses.networking.k8s.io 创建 certificates.cert-manager.io 资源
+ingress_rules:
+  []
+  # - host: nginx-114.example.com
+  #   http:
+  #     paths:
+  #       - path: /
+  #         pathType: Prefix
+  #         backend:
+  #           service:
+  #             name: nginx-114
+  #             port:
+  #               number: 80
+  # - host: nginx-514.example.com
+  #   http:
+  #     paths:
+  #       - path: /
+  #         pathType: Prefix
+  #         backend:
+  #           service:
+  #             name: nginx-514
+  #             port:
+  #               number: 80

@@ -1,0 +1,19 @@
+---
+- name: "template {{ template }} on local machine"
+  vars:
+    relpath: "{{ template | ansible.builtin.splitext | first }}"
+  ansible.builtin.template:
+    src: "{{ template }}"
+    dest: "{{ [cert_manager_dir, relpath] | ansible.builtin.path_join }}"
+
+- name: "apply {{ template }} into kubernetes cluster"
+  when:
+    - (cert_manager_apply_manifest | ansible.builtin.bool)
+  vars:
+    ansible_python_interpreter: "{{ ansible_venv }}/bin/python3"
+  kubernetes.core.k8s:
+    kubeconfig: "{{ KUBECONFIG }}"
+    template: "{{ template }}"
+    state: present
+    validate:
+      fail_on_error: true
