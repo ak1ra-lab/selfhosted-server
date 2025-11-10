@@ -13,6 +13,9 @@
     docker_apt_unattended_upgrade: true
     docker_apt_mark_hold: false
 
+    docker_daemon_registry_mirrors: []
+    # - https://docker-registry.example.com
+
   tasks:
     - ansible.builtin.import_role:
         name: docker

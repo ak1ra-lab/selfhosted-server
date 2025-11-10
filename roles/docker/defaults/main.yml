@@ -34,4 +34,4 @@ docker_apt_repo_packages:
 
 # docker daemon settings
 docker_daemon_registry_mirrors: []
-# - https://dockerproxy.net
+# - https://docker-registry.example.com
