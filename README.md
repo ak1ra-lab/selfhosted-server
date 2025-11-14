@@ -1,4 +1,6 @@
-# [selfhosted_server](https://github.com/ak1ra-lab/selfhosted-server)
+# [ak1ra-lab/selfhosted-server](https://github.com/ak1ra-lab/selfhosted-server)
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ak1ra-lab/selfhosted-server)
 
 ## Quick start
 
