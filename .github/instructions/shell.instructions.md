@@ -13,7 +13,7 @@ applyTo: "**/*.sh"
 ### Code Quality & Style
 
 - Quote all variable expansions to prevent word splitting and globbing
-- Use `[[ ... ]]` for conditional tests in bash; `case` for pattern matching
+- Always use `[[ ... ]]` for conditional tests in bash; `case` for pattern matching
 - Group related logic into well-named functions
 - Use descriptive variable names and avoid magic numbers
 - Maintain idempotency where possible
@@ -27,7 +27,7 @@ applyTo: "**/*.sh"
 
 ### Tooling & Maintenance
 
-- Use `getopt` for complex command-line argument parsing
+- Use `getopt` (not `getopts`) for command-line argument parsing
 - Validate scripts with `shellcheck` and address all warnings
 - Format code consistently using `shfmt`
 - Ensure scripts pass all linting and validation checks
