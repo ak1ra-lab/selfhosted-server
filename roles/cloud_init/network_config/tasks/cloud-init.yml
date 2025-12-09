@@ -5,7 +5,7 @@
     mode: "0755"
     state: directory
 
-- name: ensure cloud_init_network_config
+- name: manage /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
   block:
     # All files with the '.cfg' extension in this directory will be read by cloud-init.
     # They are read in lexical order. Later files overwrite values in earlier files.
@@ -25,7 +25,7 @@
         path: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
         state: absent
 
-- name: ensure cloud_init_ssh_deletekeys
+- name: manage /etc/cloud/cloud.cfg.d/99-keep-sshd-host-keys.cfg
   block:
     # https://github.com/lima-vm/lima/issues/678
     - name: cloud-init - keep sshd host keys

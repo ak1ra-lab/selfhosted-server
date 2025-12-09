@@ -7,16 +7,3 @@
 
 - name: ensure systemd-resolved config
   ansible.builtin.include_tasks: resolved.yml
-
-- name: ensure qemu-guest-agent
-  block:
-    - name: ensure qemu-guest-agent package installed
-      ansible.builtin.package:
-        name:
-          - qemu-guest-agent
-        state: present
-
-    - name: ensure qemu-guest-agent enabled
-      ansible.builtin.systemd_service:
-        name: qemu-guest-agent
-        enabled: true
