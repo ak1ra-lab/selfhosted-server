@@ -1,8 +1,18 @@
 ---
-- name: include_tasks if debian-backports enabled
-  ansible.builtin.include_tasks: debian-backports.yml
+- name: append debian-backports on apt_repo_debian_suites
+  when:
+    - (apt_repo_debian_backports_enabled | ansible.builtin.bool)
+  ansible.builtin.set_fact:
+    apt_repo_debian_suites: "{{ apt_repo_debian_suites | default([]) + [ansible_distribution_release ~ '-backports'] }}"
 
-- name: add debian apt repo in DEB822 format
+- name: create /etc/apt/sources.list placeholder
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list
+    mode: "0644"
+    content: |
+      # See /etc/apt/sources.list.d/debian.sources and /etc/apt/sources.list.d/debian-security.sources
+
+- name: add debian.sources in DEB822 format
   vars:
     default_types:
       - deb
@@ -23,7 +33,7 @@
     components: "{{ apt_repo_debian_components | default(default_components) }}"
     signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
 
-- name: add debian-security apt repo in DEB822 format
+- name: add debian-security.sources in DEB822 format
   vars:
     default_types:
       - deb
@@ -43,50 +53,16 @@
     components: "{{ apt_repo_debian_security_components | default(default_components) }}"
     signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
 
-- name: copy /etc/apt/sources.list
-  ansible.builtin.copy:
-    dest: /etc/apt/sources.list
-    mode: "0644"
-    content: |
-      # See /etc/apt/sources.list.d/debian.sources and /etc/apt/sources.list.d/debian-security.sources
+- name: include_tasks unattended-upgrades.yml
+  ansible.builtin.include_tasks: unattended-upgrades.yml
 
-- name: "manage unattended-upgrades on {{ ansible_distribution_release }}-updates"
-  block:
-    - name: "set unattended-upgrades on {{ ansible_distribution_release }}-updates if enabled"
-      when:
-        - (unattended_upgrade_updates_enabled | ansible.builtin.bool)
-      ansible.builtin.copy:
-        dest: /etc/apt/apt.conf.d/90unattended-upgrades-updates
-        mode: "0644"
-        content: |
-          Unattended-Upgrade::Origins-Pattern:: "origin=Debian,codename={{ ansible_distribution_release }}-updates";
+- name: include_tasks debian-backports.yml
+  ansible.builtin.include_tasks: debian-backports.yml
 
-    - name: "revert unattended-upgrades on {{ ansible_distribution_release }}-updates if not enabled"
-      when:
-        - not (unattended_upgrade_updates_enabled | ansible.builtin.bool)
-      ansible.builtin.file:
-        path: /etc/apt/apt.conf.d/90unattended-upgrades-updates
-        state: absent
+- name: include_tasks apt-force-ipv4.yml
+  ansible.builtin.include_tasks: apt-force-ipv4.yml
 
-- name: manage force apt use IPv4
-  block:
-    - name: force apt use IPv4 if enabled
-      when:
-        - (apt_force_ipv4_enabled | ansible.builtin.bool)
-      ansible.builtin.copy:
-        dest: /etc/apt/apt.conf.d/99force-ipv4
-        mode: "0644"
-        content: |
-          Acquire::ForceIPv4 "true";
-
-    - name: revert force apt use IPv4 if not enabled
-      when:
-        - not (apt_force_ipv4_enabled | ansible.builtin.bool)
-      ansible.builtin.file:
-        path: /etc/apt/apt.conf.d/99force-ipv4
-        state: absent
-
-- name: install common packages
+- name: apt install common_apt_packages
   ansible.builtin.apt:
     name: "{{ common_apt_packages }}"
     update_cache: true

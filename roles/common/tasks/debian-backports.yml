@@ -1,44 +1,20 @@
 ---
-- name: set_fact on apt_repo_debian_suites
-  when:
-    - (apt_repo_debian_suites_backports_enabled | ansible.builtin.bool)
-  ansible.builtin.set_fact:
-    apt_repo_debian_suites: "{{ apt_repo_debian_suites | default([]) + [ansible_distribution_release + '-backports'] }}"
-
-- name: manage unattended-upgrades on debian-backports
-  block:
-    - name: set unattended-upgrades on debian-backports if enabled
-      when:
-        - (apt_repo_debian_suites_backports_enabled | ansible.builtin.bool)
-      ansible.builtin.copy:
-        dest: /etc/apt/apt.conf.d/90unattended-upgrades-backports
-        mode: "0644"
-        content: |
-          Unattended-Upgrade::Origins-Pattern:: "origin=Debian,codename={{ ansible_distribution_release }}-backports";
-
-    - name: revert unattended-upgrades on debian-backports if not enabled
-      when:
-        - not (apt_repo_debian_suites_backports_enabled | ansible.builtin.bool)
-      ansible.builtin.file:
-        path: /etc/apt/apt.conf.d/90unattended-upgrades-backports
-        state: absent
-
-- name: manage linux kernel preferences on debian-backports
+- name: manage /etc/apt/preferences.d/90debian-backports
   block:
     - name: set linux kernel preferences on debian-backports if enabled
       when:
-        - (apt_repo_debian_suites_backports_enabled | ansible.builtin.bool)
+        - (apt_repo_debian_backports_enabled | ansible.builtin.bool)
       ansible.builtin.copy:
-        dest: /etc/apt/preferences.d/linux.pref
+        dest: /etc/apt/preferences.d/90debian-backports
         mode: "0644"
         content: |
-          Package: linux-* initramfs-tools
+          Package: {{ apt_repo_debian_backports_preferences_package }}
           Pin: release n={{ ansible_distribution_release }}-backports
-          Pin-Priority: 500
+          Pin-Priority: {{ apt_repo_debian_backports_preferences_pin_priority | int }}
 
     - name: revert linux kernel preferences on debian-backports if not enabled
       when:
-        - not (apt_repo_debian_suites_backports_enabled | ansible.builtin.bool)
+        - not (apt_repo_debian_backports_enabled | ansible.builtin.bool)
       ansible.builtin.file:
-        path: /etc/apt/preferences.d/linux.pref
+        path: /etc/apt/preferences.d/90debian-backports
         state: absent

@@ -1,0 +1,22 @@
+---
+- name: load tcp_bbr module
+  community.general.modprobe:
+    name: "{{ module }}"
+    state: present
+    persistent: present
+  loop:
+    - tcp_bbr
+  loop_control:
+    loop_var: module
+
+- name: enable tcp_bbr
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  loop:
+    # default 'pfifo_fast'
+    - name: net.core.default_qdisc
+      value: fq
+    - name: net.ipv4.tcp_congestion_control
+      value: bbr

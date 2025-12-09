@@ -1,39 +1,15 @@
 ---
-# tasks to apply changes
 - name: include_tasks if os_family is debian
   when:
     - (ansible_os_family | lower) == 'debian'
     - (ansible_distribution_major_version | int) >= 11
   ansible.builtin.include_tasks: debian.yml
 
-- name: manage unattended-upgrades automatic reboot
-  block:
-    - name: set unattended-upgrades automatic reboot if enabled
-      when:
-        - (unattended_upgrade_automatic_reboot_enabled | ansible.builtin.bool)
-      ansible.builtin.copy:
-        dest: /etc/apt/apt.conf.d/90unattended-upgrades-automatic-reboot
-        content: |
-          // Automatically reboot *WITHOUT CONFIRMATION* if
-          //  the file /var/run/reboot-required is found after the upgrade
-          Unattended-Upgrade::Automatic-Reboot "true";
-
-          // Automatically reboot even if there are users currently logged in
-          // when Unattended-Upgrade::Automatic-Reboot is set to true
-          //Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
-
-          // If automatic reboot is enabled and needed, reboot at the specific
-          // time instead of immediately
-          //  Default: "now"
-          Unattended-Upgrade::Automatic-Reboot-Time "{{ unattended_upgrade_automatic_reboot_time }}";
-        mode: "0644"
-
-    - name: revert unattended-upgrades automatic reboot if not enabled
-      when:
-        - not (unattended_upgrade_automatic_reboot_enabled | ansible.builtin.bool)
-      ansible.builtin.file:
-        path: /etc/apt/apt.conf.d/90unattended-upgrades-automatic-reboot
-        state: absent
+- name: enable tcp_bbr
+  when:
+    - ansible_kernel >= '4.9.0'
+    - (tcp_bbr_enabled | ansible.builtin.bool)
+  ansible.builtin.include_tasks: tcp_bbr.yml
 
 - name: enable net.ipv4.ip_forward
   when:
@@ -43,33 +19,6 @@
     value: 1
     state: present
     ignoreerrors: true
-
-- name: enable tcp_bbr
-  when:
-    - ansible_kernel >= '4.9.0'
-    - (tcp_bbr_enabled | ansible.builtin.bool)
-  block:
-    - name: load tcp_bbr module
-      community.general.modprobe:
-        name: "{{ module }}"
-        state: present
-        persistent: present
-      loop:
-        - tcp_bbr
-      loop_control:
-        loop_var: module
-
-    - name: enable tcp_bbr
-      ansible.posix.sysctl:
-        name: "{{ item.name }}"
-        value: "{{ item.value }}"
-        state: present
-      loop:
-        # default 'pfifo_fast'
-        - name: net.core.default_qdisc
-          value: fq
-        - name: net.ipv4.tcp_congestion_control
-          value: bbr
 
 - name: update /etc/ssh/sshd_config entries
   when:
@@ -93,3 +42,13 @@
   loop: "{{ custom_sysctl_conf_entries }}"
   loop_control:
     loop_var: entry
+
+- name: ensure qemu-guest-agent package installed
+  when:
+    - (qemu_guest_agent_enabled | ansible.builtin.bool)
+  ansible.builtin.package:
+    name:
+      - qemu-guest-agent
+    state: present
+  notify:
+    - ensure qemu-guest-agent enabled

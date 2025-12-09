@@ -29,7 +29,8 @@ apt_repo_debian_security_types:
   - deb
 
 # 一般来说, 为了更及时地获得安全更新, 不推荐使用镜像站安全更新软件源, 因为镜像站往往有同步延迟.
-# Encouraging the use of unofficial mirrors would add extra complexity that is usually not needed and that can cause frustration if these mirrors are not kept up to date.
+# Encouraging the use of unofficial mirrors would add extra complexity
+# that is usually not needed and that can cause frustration if these mirrors are not kept up to date.
 # https://www.debian.org/security/faq.en.html#mirror
 # list[str]: apt repo uris and mirrors
 apt_repo_debian_security_uris:
@@ -51,18 +52,25 @@ apt_repo_debian_security_components:
   - non-free-firmware
 
 # bool: 是否启用 debian-backports
-# 启用 debian-backports 会同时设置 linux kernel preferences 与自动更新来自 debian-backports 中的 packages, 可能存在副作用, 默认不启用
-apt_repo_debian_suites_backports_enabled: false
+apt_repo_debian_backports_enabled: false
+apt_repo_debian_backports_preferences_package: "linux-* initramfs-tools"
+apt_repo_debian_backports_preferences_pin_priority: 500
 
+# The default setup auto-updates packages in the main and security archives,
+# which means that only stable and security updates are applied.
+# https://github.com/mvo5/unattended-upgrades/blob/b94d28de01504b421f4c06e8a21569cea07890f0/data/50unattended-upgrades.Debian#L29-L34
 # bool: 是否启用 ${distro_codename}-updates 自动更新
-# 默认配置文件中 "origin=Debian,codename=${distro_codename}-updates"; 行被注释掉的
-# 启用 ${distro_codename}-updates 同样存在潜在的副作用, 此处默认禁用
 unattended_upgrade_updates_enabled: false
+# bool: 是否启用 ${distro_codename}-backports 自动更新
+unattended_upgrade_backports_enabled: false
 
 # bool: 是否允许 unattended-upgrades 更新后自动重启
 unattended_upgrade_automatic_reboot_enabled: false
 # systemctl cat apt-daily-upgrade.timer
-# TODO: 默认是每天早上 06:00 执行自动更新, 有必要故意延迟 20 小时再重启吗?
+# [Timer]
+# OnCalendar=*-*-* 6:00
+# RandomizedDelaySec=60m
+# Persistent=true
 unattended_upgrade_automatic_reboot_time: "02:00"
 
 # bool: 强制 apt 使用 IPv4
@@ -73,6 +81,9 @@ tcp_bbr_enabled: false
 
 # bool: 是否设置 IPv4 ip_forward
 ip_forward_enabled: false
+
+# bool: 是否安装 qemu-guest-agent
+qemu_guest_agent_enabled: true
 
 # bool: 是否设置自定义 /etc/ssh/sshd_config
 custom_sshd_config_enabled: false
