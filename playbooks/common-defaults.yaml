@@ -15,9 +15,12 @@
       # - https://mirrors.tencent.com/debian-security/
       # - https://mirrors.aliyun.com/debian-security/
 
-    apt_repo_debian_suites_backports_enabled: false
+    apt_repo_debian_backports_enabled: false
+    apt_repo_debian_backports_preferences_package: "*"
+    apt_repo_debian_backports_preferences_pin_priority: 500
 
     unattended_upgrade_updates_enabled: false
+    unattended_upgrade_backports_enabled: false
     unattended_upgrade_automatic_reboot_enabled: false
 
     apt_force_ipv4_enabled: true

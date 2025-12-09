@@ -1,5 +1,5 @@
 ---
-- name: common tasks | unattended-upgrade
+- name: common tasks | debian-backports
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
@@ -15,9 +15,12 @@
       # - https://mirrors.tencent.com/debian-security/
       # - https://mirrors.aliyun.com/debian-security/
 
-    apt_repo_debian_suites_backports_enabled: true
+    apt_repo_debian_backports_enabled: true
+    apt_repo_debian_backports_preferences_package: "*"
+    apt_repo_debian_backports_preferences_pin_priority: 500
 
     unattended_upgrade_updates_enabled: true
+    unattended_upgrade_backports_enabled: true
     unattended_upgrade_automatic_reboot_enabled: true
 
     apt_force_ipv4_enabled: true
