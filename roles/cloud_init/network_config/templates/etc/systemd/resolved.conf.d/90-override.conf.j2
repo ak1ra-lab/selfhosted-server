@@ -4,6 +4,9 @@
 # https://wiki.archlinux.org/title/Systemd-resolved
 [Resolve]
 DNS={{ default_nameservers | join(' ') }}
+{% if (fallback_nameservers | default([]) | length) > 0 %}
+FallbackDNS={{ fallback_nameservers | join(' ') }}
+{% endif %}
 Domains=~.
 DNSOverTLS={{ 'yes' if resolved_dns_over_tls else 'no' }}
 DNSStubListener={{ 'yes' if resolved_stub_listener else 'no' }}

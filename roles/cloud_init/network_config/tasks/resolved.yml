@@ -11,7 +11,7 @@
     mode: "0755"
     state: directory
 
-- name: ensure systemd-resolved global DNS
+- name: manage /etc/systemd/resolved.conf.d/90-override.conf
   block:
     - name: ensure systemd-resolved global DNS
       when:
@@ -21,6 +21,7 @@
         dest: /etc/systemd/resolved.conf.d/90-override.conf
         mode: "0644"
       notify:
+        - resolvectl flush-caches
         - systemctl restart systemd-resolved
 
     - name: remove systemd-resolved global DNS
@@ -30,9 +31,10 @@
         path: /etc/systemd/resolved.conf.d/90-override.conf
         state: absent
       notify:
+        - resolvectl flush-caches
         - systemctl restart systemd-resolved
 
-- name: ensure systemd-resolved mode
+- name: manage /etc/resolv.conf
   block:
     - name: ensure systemd-resolved in stub mode
       when:
@@ -42,6 +44,7 @@
         dest: /etc/resolv.conf
         state: link
       notify:
+        - resolvectl flush-caches
         - systemctl restart systemd-resolved
 
     - name: ensure systemd-resolved in uplink mode
@@ -52,6 +55,7 @@
         dest: /etc/resolv.conf
         state: link
       notify:
+        - resolvectl flush-caches
         - systemctl restart systemd-resolved
 
 - name: ensure systemd-resolved enabled

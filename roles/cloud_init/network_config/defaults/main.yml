@@ -1,10 +1,16 @@
 ---
-# str: 默认网关
-default_gateway: ""
-# list: 默认 DNS servers
+# list: default DNS servers
 default_nameservers:
-  - 1.1.1.1#cloudflare-dns.com
   - 1.0.0.1#cloudflare-dns.com
+  - 8.8.4.4#dns.google
+# list: fallback DNS servers
+fallback_nameservers:
+  []
+  # - 1.1.1.1#cloudflare-dns.com
+  # - 8.8.8.8#dns.google
+
+# str: default gateway
+default_gateway: ""
 
 # bool: 是否使用 tproxy_gateway 的地址覆盖 default_gateway 和 default_nameservers
 tproxy_enabled: false
