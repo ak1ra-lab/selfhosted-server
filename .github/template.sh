@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -o errexit -o nounset -o pipefail
+set -euo pipefail
 
 SCRIPT_FILE="$(readlink -f "$0")"
 SCRIPT_NAME="$(basename "${SCRIPT_FILE}")"
@@ -108,18 +108,34 @@ set_log_format() {
 
 # Check if required commands are available
 require_command() {
+    local missing=()
     for c in "$@"; do
         if ! command -v "$c" >/dev/null 2>&1; then
-            log_error "Required command '$c' is not installed"
-            exit 1
+            missing+=("$c")
         fi
     done
+
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        log_error "Required command(s) not installed: ${missing[*]}"
+        log_error "Please install the missing dependencies and try again"
+        exit 1
+    fi
 }
+
+# Cleanup handler
+cleanup() {
+    local exit_code=$?
+    # Add cleanup logic here (e.g., remove temp files)
+    exit "${exit_code}"
+}
+
+trap cleanup EXIT INT TERM
 
 # Show usage information
 usage() {
+    local exit_code="${1:-0}"
     cat <<EOF
-Usage:
+USAGE:
     ${SCRIPT_NAME} [OPTIONS]
 
     A getopt example shell script
@@ -133,9 +149,9 @@ OPTIONS:
                               level:  [LEVEL] message
                               full:   [timestamp][LEVEL] message
                               Default: simple
-    -a, --alpha arg           Set ALPHA
-    -b, --bravo arg           Set BRAVO
-    -c, --charlie arg         Set CHARLIE
+    -a, --alpha ARG           Set ALPHA
+    -b, --bravo ARG           Set BRAVO
+    -c, --charlie ARG         Set CHARLIE
 
 EXAMPLES:
     ${SCRIPT_NAME} --alpha bravo
@@ -143,7 +159,7 @@ EXAMPLES:
     ${SCRIPT_NAME} --log-format level
 
 EOF
-    exit 0
+    exit "${exit_code}"
 }
 
 # Parse command line arguments
@@ -152,7 +168,7 @@ parse_args() {
     local options="ha:b:c:"
     local longoptions="help,log-level:,log-format:,alpha:,bravo:,charlie:"
     if ! args=$(getopt --options="${options}" --longoptions="${longoptions}" --name="${SCRIPT_NAME}" -- "$@"); then
-        usage
+        usage 1
     fi
 
     eval set -- "${args}"
@@ -165,7 +181,7 @@ parse_args() {
     while true; do
         case "$1" in
             -h | --help)
-                usage
+                usage 0
                 ;;
             --log-level)
                 set_log_level "$2"
@@ -193,7 +209,7 @@ parse_args() {
                 ;;
             *)
                 log_error "Unexpected option: $1"
-                usage
+                usage 1
                 ;;
         esac
     done
