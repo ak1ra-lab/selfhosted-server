@@ -3,19 +3,24 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    # str: 默认网关
-    default_gateway: "10.0.42.2"
-    # list: 默认 DNS servers
+    # list: default DNS servers
     default_nameservers:
-      - 1.1.1.1#cloudflare-dns.com
       - 1.0.0.1#cloudflare-dns.com
+      - 8.8.4.4#dns.google
+    # list: fallback DNS servers
+    # fallback_nameservers:
+      # - 1.1.1.1#cloudflare-dns.com
+      # - 8.8.8.8#dns.google
+
+    # str: default gateway
+    # default_gateway: "10.0.42.2"
 
     # bool: 是否使用 tproxy_gateway 的地址覆盖 default_gateway 和 default_nameservers
-    tproxy_enabled: true
+    # tproxy_enabled: true
     # str: 当 tproxy_enabled 为 true 时 tproxy_gateway 必须手动指定, 否则会报错
     # 手动指定可承担透明代理的主机作为旁路网关
     # https://github.com/ak1ra-lab/sing-box-tproxy
-    tproxy_gateway: "10.0.42.253"
+    # tproxy_gateway: "10.0.42.253"
 
   tasks:
     - ansible.builtin.import_role:
