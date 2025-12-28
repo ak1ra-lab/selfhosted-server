@@ -8,12 +8,14 @@
       # - https://mirror-cdn.xtom.com/debian/
       # - https://mirrors.tencent.com/debian/
       # - https://mirrors.aliyun.com/debian/
+      # - https://cdn-aws.deb.debian.org/debian/
 
     apt_repo_debian_security_uris:
       - https://deb.debian.org/debian-security/
       # - https://mirror-cdn.xtom.com/debian-security/
       # - https://mirrors.tencent.com/debian-security/
       # - https://mirrors.aliyun.com/debian-security/
+      # - https://cdn-aws.deb.debian.org/debian-security/
 
     apt_repo_debian_backports_enabled: false
     apt_repo_debian_backports_preferences_package: "*"

@@ -10,6 +10,7 @@ apt_repo_debian_uris:
   # - https://mirror-cdn.xtom.com/debian/
   # - https://mirrors.tencent.com/debian/
   # - https://mirrors.aliyun.com/debian/
+  # - https://cdn-aws.deb.debian.org/debian/
 
 # list[str]: debian repo suites
 # https://deb.debian.org/debian/dists/
@@ -38,6 +39,7 @@ apt_repo_debian_security_uris:
   # - https://mirror-cdn.xtom.com/debian-security/
   # - https://mirrors.tencent.com/debian-security/
   # - https://mirrors.aliyun.com/debian-security/
+  # - https://cdn-aws.deb.debian.org/debian-security/
 
 # list[str]: debian-security suites
 # https://deb.debian.org/debian-security/dists/
