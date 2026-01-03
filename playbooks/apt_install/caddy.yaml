@@ -8,12 +8,14 @@
     # pub   rsa4096 2016-04-01 [SC]
     #       65760C51EDEA2017CEA2CA15155B6D79CA56EA34
     # uid           Caddy Web Server <contact@caddyserver.com>
-    # sub   rsa4096 2020-12-29 [S] [expires: 2025-12-28]
+    # sub   rsa2048 2016-04-01 [E] [expired: 2024-03-30]
+    # sub   rsa2048 2016-04-01 [SA] [expired: 2024-03-30]
+    # sub   rsa4096 2020-12-29 [S]
     # $ curl -sL https://dl.cloudsmith.io/public/caddy/testing/gpg.key | gpg
     # pub   rsa4096 2016-04-01 [SC]
     #       65760C51EDEA2017CEA2CA15155B6D79CA56EA34
     # uid           Caddy Web Server <contact@caddyserver.com>
-    # sub   rsa4096 2020-12-29 [S] [expires: 2025-12-28]
+    # sub   rsa4096 2020-12-29 [S]
     apt_keyrings_url: "https://dl.cloudsmith.io/public/caddy/{{ caddy_channel }}/gpg.key"
     apt_keyrings_dest: "/etc/apt/keyrings/caddy-{{ caddy_channel }}-archive-keyring.asc"
 
