@@ -2,11 +2,11 @@
 - name: cloud-init network config
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
-  vars:
+  # vars:
     # list: default DNS servers
-    default_nameservers:
-      - 1.0.0.1#cloudflare-dns.com
-      - 8.8.4.4#dns.google
+    # default_nameservers:
+    #   - 1.0.0.1#cloudflare-dns.com
+    #   - 8.8.4.4#dns.google
     # list: fallback DNS servers
     # fallback_nameservers:
       # - 1.1.1.1#cloudflare-dns.com
