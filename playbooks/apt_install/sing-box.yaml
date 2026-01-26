@@ -22,9 +22,11 @@
     apt_pinning: true
     apt_unattended_upgrade: false
     apt_mark_hold: false
+    apt_pinning_pin_release: "l=sagernet_apt_fury_io"
+    apt_unattended_upgrade_origins_pattern: "label=sagernet_apt_fury_io"
 
     apt_repo_packages:
-      - sing-box-beta
+      - sing-box
 
   tasks:
     - ansible.builtin.import_role:
