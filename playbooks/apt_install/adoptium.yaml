@@ -1,0 +1,41 @@
+# https://adoptium.net/installation/linux
+- name: apt_install - adoptium
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # $ curl -sL https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg
+    # pub   rsa2048 2021-11-16 [SC]
+    #       3B04D753C9050D9A5D343F39843C48A565F8F04B
+    # uid           Adoptium GPG Key (DEB/RPM Signing Key) <temurin-dev@eclipse.org>
+    # sub   rsa2048 2021-11-16 [E]
+    apt_keyrings_url: https://packages.adoptium.net/artifactory/api/gpg/key/public
+    apt_keyrings_dest: /etc/apt/keyrings/adoptium.asc
+
+    apt_repo: adoptium
+    apt_repo_uris:
+      - https://packages.adoptium.net/artifactory/deb
+    apt_repo_suites:
+      - "{{ ansible_distribution_release }}"
+    apt_repo_components:
+      - main
+
+    apt_pinning: true
+    apt_unattended_upgrade: true
+    apt_mark_hold: false
+
+    # Origin: Artifactory
+    # Label: Artifactory
+    # Suite: trixie
+    # Codename: trixie
+    # Date: Fri, 23 Jan 2026 17:02:21 UTC
+    # Acquire-By-Hash: yes
+    # Components: main
+    # Architectures: amd64 arm64 armhf i386 ppc64el riscv64 s390x
+    apt_pinning_pin_release: ""
+    apt_unattended_upgrade_origins_pattern: ""
+
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
