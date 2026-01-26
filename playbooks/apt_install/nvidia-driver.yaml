@@ -1,0 +1,71 @@
+# https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/debian.html#debian-installation
+- name: apt_install - nvidia-driver
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # $ curl -sL https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/3bf863cc.pub | gpg
+    # pub   rsa4096 2022-04-14 [SC]
+    #       EB693B3035CD5710E231E123A4B469963BF863CC
+    # uid           cudatools <cudatools@nvidia.com>
+    # $ curl -sL https://developer.download.nvidia.com/compute/cuda/repos/debian13/x86_64/8793F200.pub | gpg
+    # pub   rsa4096 2025-08-15 [SCEA]
+    #       02182E60104FCDC26EAE1B8597A5D4CB8793F200
+    # uid           Kitmaker (Debian 13 Trixie) <kitmaker@nvidia.com>
+    apt_keyrings:
+      bookworm:
+        distro: debian12
+        url: https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/3bf863cc.pub
+        dest: /etc/apt/keyrings/cuda-archive-keyring-3bf863cc.asc
+      trixie:
+        distro: debian13
+        url: https://developer.download.nvidia.com/compute/cuda/repos/debian13/x86_64/8793F200.pub
+        dest: /etc/apt/keyrings/cuda-archive-keyring-8793F200.asc
+
+    apt_keyrings_url: "{{ apt_keyrings[ansible_facts['distribution_release']].url }}"
+    apt_keyrings_dest: "{{ apt_keyrings[ansible_facts['distribution_release']].dest }}"
+
+    apt_repo: nvidia-driver
+    apt_repo_uris:
+      - "https://developer.download.nvidia.com/compute/cuda/repos/{{ apt_keyrings[ansible_facts['distribution_release']].distro }}/{{ ansible_facts['architecture'] }}/"
+    apt_repo_suites:
+      - /
+    apt_repo_components:
+      - ""
+
+    apt_pinning: true
+    apt_unattended_upgrade: false
+    apt_mark_hold: false
+
+    # Origin: NVIDIA
+    # Label: NVIDIA CUDA
+    # Architecture: x86_64
+    # Date: Wed, 14 Jan 2026 18:36:17 +0000
+    apt_pinning_pin_release: "o=NVIDIA,l=NVIDIA CUDA"
+    apt_unattended_upgrade_origins_pattern: "origin=NVIDIA,label=NVIDIA CUDA"
+
+    # The following commands will install a full driver,
+    #   which will include all desktop components as well as CUDA libraries and tools for computational workloads.
+    # Open Kernel Modules
+    #   apt -V install nvidia-open
+    # Proprietary Kernel Modules
+    #   apt -V install cuda-drivers
+    #
+    # Starting in the 560 driver release series,
+    #   the Open Kernel Modules flavor is the default and suggested installation.
+    # Compute-only System / Open Kernel Modules
+    #   apt -V install nvidia-driver-cuda nvidia-kernel-open-dkms
+    # Desktop-only System / Open Kernel Modules
+    #   apt -V install nvidia-driver nvidia-kernel-open-dkms
+    #
+    # apt_repo_packages: []
+    #  - nvidia-driver
+    #  - nvidia-driver-cuda
+    #  - nvidia-kernel-open-dkms
+
+  tasks:
+    - name: install linux-headers-generic
+      ansible.builtin.apt:
+        name: "linux-headers-{{ dpkg_architectures[ansible_facts['architecture']] | default('generic', true) }}"
+
+    - ansible.builtin.import_role:
+        name: apt_install
