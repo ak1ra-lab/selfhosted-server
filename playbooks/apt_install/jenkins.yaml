@@ -3,13 +3,12 @@
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
-    # curl -sL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | gpg
-    # pub   rsa4096 2023-03-27 [SC] [expires: 2026-03-26]
-    #       63667EE74BBA1F0A08A698725BA31D57EF5975CA
+    # curl -sL https://pkg.jenkins.io/debian/jenkins.io-2026.key | gpg
+    # pub   rsa4096 2025-12-22 [SC] [expires: 2028-12-21]
+    #       5E386EADB55F01504CAE8BCF7198F4B714ABFC68
     # uid           Jenkins Project <jenkinsci-board@googlegroups.com>
-    # sub   rsa4096 2023-03-27 [E] [expires: 2026-03-26]
-    apt_keyrings_url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-    apt_keyrings_dest: /etc/apt/keyrings/jenkins-io.asc
+    apt_keyrings_url: https://pkg.jenkins.io/debian/jenkins.io-2026.key
+    apt_keyrings_dest: /etc/apt/keyrings/jenkins.io-2026.asc
 
     apt_repo: jenkins-io
     apt_repo_uris:
@@ -28,7 +27,7 @@
 
     apt_repo_packages:
       - fontconfig
-      - openjdk-17-jre-headless
+      - openjdk-21-jre-headless
       - jenkins
 
   tasks:
