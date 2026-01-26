@@ -4,7 +4,6 @@
   become: true
   vars:
     # curl -sL https://packages.gitlab.com/gitlab/gitlab-ee/gpgkey | gpg
-    # gpg: WARNING: no command supplied.  Trying to guess what you mean ...
     # pub   rsa4096 2020-03-02 [SC] [expires: 2026-02-27]
     #       F6403F6544A38863DAA0B6E03F01618A51312F3F
     # uid           GitLab B.V. (package repository signing key) <packages@gitlab.com>

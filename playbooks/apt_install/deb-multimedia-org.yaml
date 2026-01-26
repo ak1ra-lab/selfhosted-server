@@ -6,7 +6,6 @@
     # https://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2024.9.1_all.deb
     # 8dc6cbb266c701cfe58bd1d2eb9fe2245a1d6341c7110cfbfe3a5a975dcf97ca deb-multimedia-keyring_2024.9.1_all.deb
     # $ gpg /usr/share/keyrings/deb-multimedia-keyring.pgp
-    # gpg: WARNING: no command supplied.  Trying to guess what you mean ...
     # pub   rsa4096 2014-03-05 [SC]
     #       A401FF99368FA1F98152DE755C808C2B65558117
     # uid           Christian Marillat <marillat@debian.org>
