@@ -2,7 +2,7 @@
 - name: backup original /etc/nginx
   community.general.archive:
     path: /etc/nginx
-    dest: "/etc/nginx.{{ ansible_date_time.date }}.{{ ansible_date_time.epoch }}.tgz"
+    dest: "/etc/nginx.{{ ansible_facts['date_time'].date }}.{{ ansible_facts['date_time'].epoch }}.tgz"
     mode: "0644"
   when: nginx_config_template_base_config
 

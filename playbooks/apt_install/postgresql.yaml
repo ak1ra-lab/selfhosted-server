@@ -20,7 +20,7 @@
     apt_repo_uris:
       - https://apt.postgresql.org/pub/repos/apt
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}-pgdg"
+      - "{{ ansible_facts['distribution_release'] }}-pgdg"
     apt_repo_components:
       - main
 

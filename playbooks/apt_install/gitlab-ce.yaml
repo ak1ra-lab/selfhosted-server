@@ -13,17 +13,17 @@
 
     apt_repo: gitlab-ce
     apt_repo_uris:
-      - "https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_distribution | lower }}"
+      - "https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_facts['distribution'] | lower }}"
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - main
 
     apt_pinning: true
     apt_unattended_upgrade: true
     apt_mark_hold: false
-    apt_pinning_pin_release: "o=packages.gitlab.com/gitlab/gitlab-ce,n={{ ansible_distribution_release }},c=main"
-    apt_unattended_upgrade_origins_pattern: "origin=packages.gitlab.com/gitlab/gitlab-ce,codename={{ ansible_distribution_release }},component=main"
+    apt_pinning_pin_release: "o=packages.gitlab.com/gitlab/gitlab-ce,n={{ ansible_facts['distribution_release'] }},c=main"
+    apt_unattended_upgrade_origins_pattern: "origin=packages.gitlab.com/gitlab/gitlab-ce,codename={{ ansible_facts['distribution_release'] }},component=main"
 
     apt_repo_packages:
       - gitlab-ce

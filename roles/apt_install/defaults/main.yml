@@ -15,7 +15,7 @@ apt_repo_types:
 # which may be missing related fields in some distro like alpine.
 apt_repo_uris: []
 apt_repo_suites:
-  - "{{ ansible_distribution_release }}"
+  - "{{ ansible_facts['distribution_release'] }}"
 apt_repo_components:
   - main
 # apt_repo_uris can be string or list of string
@@ -85,7 +85,7 @@ apt_mark_hold: false
 # list of packages to installed
 apt_repo_packages: []
 
-# ansible_architecture return x86_64,
+# ansible_facts['architecture'] return x86_64,
 # but $(dpkg --print-architecture) returns "amd64"
 dpkg_architectures:
   x86_64: amd64 # Common Intel/AMD 64-bit

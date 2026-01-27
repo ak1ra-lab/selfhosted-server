@@ -21,7 +21,7 @@
 
     apt_repo: "caddy-{{ caddy_channel }}"
     apt_repo_uris:
-      - "https://dl.cloudsmith.io/public/caddy/{{ caddy_channel }}/deb/{{ ansible_distribution | lower }}"
+      - "https://dl.cloudsmith.io/public/caddy/{{ caddy_channel }}/deb/{{ ansible_facts['distribution'] | lower }}"
     apt_repo_suites:
       - any-version
     apt_repo_components:

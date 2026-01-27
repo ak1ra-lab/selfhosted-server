@@ -9,14 +9,14 @@
     # uid           Tailscale Inc. (Package repository signing key) <info@tailscale.com>
     # sub   rsa4096 2020-02-25 [E]
     # 虽然 tailscale 不同 codename 使用了不同的 apt keyring url, 但是 fingerprint 都是一样的?
-    apt_keyrings_url: "https://pkgs.tailscale.com/stable/debian/{{ ansible_distribution_release }}.noarmor.gpg"
+    apt_keyrings_url: "https://pkgs.tailscale.com/stable/debian/{{ ansible_facts['distribution_release'] }}.noarmor.gpg"
     apt_keyrings_dest: /etc/apt/keyrings/tailscale-archive-keyring.gpg
 
     apt_repo: tailscale
     apt_repo_uris:
       - https://pkgs.tailscale.com/stable/debian
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - main
 

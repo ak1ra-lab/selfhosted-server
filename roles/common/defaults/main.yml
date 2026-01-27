@@ -16,8 +16,8 @@ apt_repo_debian_uris:
 # https://deb.debian.org/debian/dists/
 # bookworm, bookworm-updates, bookworm-backports
 apt_repo_debian_suites:
-  - "{{ ansible_distribution_release }}"
-  - "{{ ansible_distribution_release }}-updates"
+  - "{{ ansible_facts['distribution_release'] }}"
+  - "{{ ansible_facts['distribution_release'] }}-updates"
 # list[str]: debian repo components
 apt_repo_debian_components:
   - main
@@ -45,7 +45,7 @@ apt_repo_debian_security_uris:
 # https://deb.debian.org/debian-security/dists/
 # bullseye-security, bookworm-security
 apt_repo_debian_security_suites:
-  - "{{ ansible_distribution_release }}-security"
+  - "{{ ansible_facts['distribution_release'] }}-security"
 # list[str]: debian-security components
 apt_repo_debian_security_components:
   - main

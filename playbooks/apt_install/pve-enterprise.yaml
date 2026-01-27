@@ -17,15 +17,15 @@
     # pub   rsa4096 2024-11-10 [SCEA] [expires: 2034-11-10]
     #       24B30F06ECC1836A4E5EFECBA7BCD1420BFE778E
     # uid           Proxmox Trixie Release Key <proxmox-release@proxmox.com>
-    apt_keyrings_url: "https://enterprise.proxmox.com/debian/proxmox-release-{{ ansible_distribution_release }}.gpg"
-    apt_keyrings_dest: "/etc/apt/keyrings/proxmox-release-{{ ansible_distribution_release }}.gpg"
+    apt_keyrings_url: "https://enterprise.proxmox.com/debian/proxmox-release-{{ ansible_facts['distribution_release'] }}.gpg"
+    apt_keyrings_dest: "/etc/apt/keyrings/proxmox-release-{{ ansible_facts['distribution_release'] }}.gpg"
 
     apt_repo: pve-enterprise
     apt_repo_enabled: false
     apt_repo_uris:
       - https://enterprise.proxmox.com/debian/pve
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - pve-enterprise
 

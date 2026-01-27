@@ -1,13 +1,13 @@
 ---
 - name: include_tasks if os_family is debian
   when:
-    - (ansible_os_family | lower) == 'debian'
-    - (ansible_distribution_major_version | int) >= 11
+    - (ansible_facts['os_family'] | lower) == 'debian'
+    - (ansible_facts['distribution_major_version'] | int) >= 11
   ansible.builtin.include_tasks: debian.yml
 
 - name: enable tcp_bbr
   when:
-    - ansible_kernel >= '4.9.0'
+    - ansible_facts['kernel'] >= '4.9.0'
     - (tcp_bbr_enabled | ansible.builtin.bool)
   ansible.builtin.include_tasks: tcp_bbr.yml
 

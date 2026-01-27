@@ -16,7 +16,7 @@
     apt_repo_uris:
       - https://apt.releases.hashicorp.com
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - main
 

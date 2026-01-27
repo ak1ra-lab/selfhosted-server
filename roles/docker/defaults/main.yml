@@ -14,7 +14,7 @@ docker_apt_repo_uris:
   # - https://mirror-cdn.xtom.com/docker-ce/linux/debian
   # - https://mirrors.tencent.com/docker-ce/linux/debian
   # - https://mirrors.aliyun.com/docker-ce/linux/debian
-docker_apt_repo_suites: "{{ ansible_distribution_release }}"
+docker_apt_repo_suites: "{{ ansible_facts['distribution_release'] }}"
 docker_apt_repo_components: stable
 
 docker_apt_pinning: true

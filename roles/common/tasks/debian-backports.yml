@@ -9,7 +9,7 @@
         mode: "0644"
         content: |
           Package: {{ apt_repo_debian_backports_preferences_package }}
-          Pin: release n={{ ansible_distribution_release }}-backports
+          Pin: release n={{ ansible_facts['distribution_release'] }}-backports
           Pin-Priority: {{ apt_repo_debian_backports_preferences_pin_priority | int }}
 
     - name: revert linux kernel preferences on debian-backports if not enabled

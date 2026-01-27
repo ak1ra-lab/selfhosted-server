@@ -15,7 +15,7 @@
     apt_repo_uris:
       - https://packages.adoptium.net/artifactory/deb
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - main
 

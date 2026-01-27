@@ -16,9 +16,9 @@
 
     apt_repo: zrepl
     apt_repo_uris:
-      - "https://zrepl.cschwarz.com/apt/{{ ansible_distribution | lower }}"
+      - "https://zrepl.cschwarz.com/apt/{{ ansible_facts['distribution'] | lower }}"
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - main
 

@@ -19,7 +19,7 @@
     apt_repo_uris:
       - https://repo.mongodb.org/apt/debian
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }}"
+      - "{{ ansible_facts['distribution_release'] }}/mongodb-org/{{ mongodb_version }}"
     apt_repo_components:
       - main
 

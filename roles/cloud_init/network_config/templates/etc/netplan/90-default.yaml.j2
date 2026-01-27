@@ -9,7 +9,7 @@ network:
         macaddress: {{ interface.macaddress }}
       addresses:
         - {{ interface.ipv4.address }}/{{ (interface_prefix_overrides.get(interface.device) or interface.ipv4.prefix) | int }}
-{% if interface.device == ansible_default_ipv4.interface %}
+{% if interface.device == ansible_facts['default_ipv4'].interface %}
       routes:
         - to: default
           via: {{ default_gateway }}

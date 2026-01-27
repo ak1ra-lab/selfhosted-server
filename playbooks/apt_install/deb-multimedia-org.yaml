@@ -21,7 +21,7 @@
     apt_repo_uris:
       - https://www.deb-multimedia.org
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - main
       - non-free
@@ -29,8 +29,8 @@
     apt_pinning: false
     apt_unattended_upgrade: false
     apt_mark_hold: false
-    apt_pinning_pin_release: "o=Unofficial Multimedia Packages,n={{ ansible_distribution_release }},c=main non-free"
-    apt_unattended_upgrade_origins_pattern: "origin=Unofficial Multimedia Packages,codename={{ ansible_distribution_release }},component=main non-free"
+    apt_pinning_pin_release: "o=Unofficial Multimedia Packages,n={{ ansible_facts['distribution_release'] }},c=main non-free"
+    apt_unattended_upgrade_origins_pattern: "origin=Unofficial Multimedia Packages,codename={{ ansible_facts['distribution_release'] }},component=main non-free"
 
     apt_repo_packages: []
 

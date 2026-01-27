@@ -15,15 +15,15 @@
     apt_repo_uris:
       - "https://mirror-cdn.xtom.com/sb/nginx/"
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - main
 
     apt_pinning: true
     apt_unattended_upgrade: true
     apt_mark_hold: false
-    apt_pinning_pin_release: "o=n.wtf,c=main,n={{ ansible_distribution_release }}"
-    apt_unattended_upgrade_origins_pattern: "origin=n.wtf,component=main,codename={{ ansible_distribution_release }}"
+    apt_pinning_pin_release: "o=n.wtf,c=main,n={{ ansible_facts['distribution_release'] }}"
+    apt_unattended_upgrade_origins_pattern: "origin=n.wtf,component=main,codename={{ ansible_facts['distribution_release'] }}"
 
     # nginx-extras
     apt_repo_packages:

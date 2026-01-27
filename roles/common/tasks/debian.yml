@@ -3,7 +3,7 @@
   when:
     - (apt_repo_debian_backports_enabled | ansible.builtin.bool)
   ansible.builtin.set_fact:
-    apt_repo_debian_suites: "{{ apt_repo_debian_suites | default([]) + [ansible_distribution_release ~ '-backports'] }}"
+    apt_repo_debian_suites: "{{ apt_repo_debian_suites | default([]) + [ansible_facts['distribution_release'] ~ '-backports'] }}"
 
 - name: create /etc/apt/sources.list placeholder
   ansible.builtin.copy:
@@ -19,8 +19,8 @@
     default_uris:
       - https://deb.debian.org/debian/
     default_suites:
-      - "{{ ansible_distribution_release }}"
-      - "{{ ansible_distribution_release }}-updates"
+      - "{{ ansible_facts['distribution_release'] }}"
+      - "{{ ansible_facts['distribution_release'] }}-updates"
     default_components:
       - main
   ansible.builtin.deb822_repository:
@@ -40,7 +40,7 @@
     default_uris:
       - https://deb.debian.org/debian-security/
     default_suites:
-      - "{{ ansible_distribution_release }}-security"
+      - "{{ ansible_facts['distribution_release'] }}-security"
     default_components:
       - main
   ansible.builtin.deb822_repository:

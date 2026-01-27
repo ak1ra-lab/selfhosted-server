@@ -16,9 +16,9 @@
 
     apt_repo: virtualbox
     apt_repo_uris:
-      - "https://download.virtualbox.org/virtualbox/{{ ansible_distribution | lower }}"
+      - "https://download.virtualbox.org/virtualbox/{{ ansible_facts['distribution'] | lower }}"
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - contrib
 
@@ -26,8 +26,8 @@
     apt_unattended_upgrade: false
     apt_mark_hold: false
     # https://download.virtualbox.org/virtualbox/debian/dists/bookworm/InRelease
-    apt_pinning_pin_release: "o=Oracle Corporation,n={{ ansible_distribution_release }},c=contrib"
-    apt_unattended_upgrade_origins_pattern: "origin=Oracle Corporation,codename={{ ansible_distribution_release }},component=contrib"
+    apt_pinning_pin_release: "o=Oracle Corporation,n={{ ansible_facts['distribution_release'] }},c=contrib"
+    apt_unattended_upgrade_origins_pattern: "origin=Oracle Corporation,codename={{ ansible_facts['distribution_release'] }},component=contrib"
 
     # virtualbox-7.1
     apt_repo_packages: []

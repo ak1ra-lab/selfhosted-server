@@ -17,8 +17,8 @@
     # pub   rsa4096 2024-11-10 [SCEA] [expires: 2034-11-10]
     #       24B30F06ECC1836A4E5EFECBA7BCD1420BFE778E
     # uid           Proxmox Trixie Release Key <proxmox-release@proxmox.com>
-    apt_keyrings_url: "https://enterprise.proxmox.com/debian/proxmox-release-{{ ansible_distribution_release }}.gpg"
-    apt_keyrings_dest: "/etc/apt/keyrings/proxmox-release-{{ ansible_distribution_release }}.gpg"
+    apt_keyrings_url: "https://enterprise.proxmox.com/debian/proxmox-release-{{ ansible_facts['distribution_release'] }}.gpg"
+    apt_keyrings_dest: "/etc/apt/keyrings/proxmox-release-{{ ansible_facts['distribution_release'] }}.gpg"
 
     apt_repo: pve-ceph-squid-no-subscription
     apt_repo_enabled: true
@@ -29,15 +29,15 @@
       - https://mirrors.aliyun.com/proxmox/debian/ceph-squid
       - http://download.proxmox.com/debian/ceph-squid
     apt_repo_suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     apt_repo_components:
       - no-subscription
 
     apt_pinning: false
     apt_unattended_upgrade: false
     apt_mark_hold: false
-    apt_pinning_pin_release: "o=Proxmox,n={{ ansible_distribution_release }},c=no-subscription,l=Proxmox Ceph 19 Squid Debian Repository"
-    apt_unattended_upgrade_origins_pattern: "origin=Proxmox,codename={{ ansible_distribution_release }},component=no-subscription,label=Proxmox Ceph 19 Squid Debian Repository"
+    apt_pinning_pin_release: "o=Proxmox,n={{ ansible_facts['distribution_release'] }},c=no-subscription,l=Proxmox Ceph 19 Squid Debian Repository"
+    apt_unattended_upgrade_origins_pattern: "origin=Proxmox,codename={{ ansible_facts['distribution_release'] }},component=no-subscription,label=Proxmox Ceph 19 Squid Debian Repository"
 
     apt_repo_packages: []
 

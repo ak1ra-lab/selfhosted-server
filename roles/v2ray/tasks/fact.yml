@@ -1,7 +1,7 @@
 ---
 - name: set v2ray_asset_name
   ansible.builtin.set_fact:
-    v2ray_asset_name: "v2ray-{{ ansible_system | lower }}-{{ v2ray_machine_dict[ansible_architecture] }}.zip"
+    v2ray_asset_name: "v2ray-{{ ansible_facts['system'] | lower }}-{{ v2ray_machine_dict[ansible_facts['architecture']] }}.zip"
   vars:
     # ref: https://github.com/v2fly/fhs-install-v2ray/blob/a9c7b8d4912b1fd184fdac908d3884972d8b0df7/install-release.sh#L62
     v2ray_machine_dict:
