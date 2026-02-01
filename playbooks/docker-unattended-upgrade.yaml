@@ -1,13 +1,16 @@
 ---
+- name: import playbooks/common-vps.yaml
+  ansible.builtin.import_playbook: common-vps.yaml
+
 - name: install docker | unattended-upgrade
   hosts: "{{ playbook_hosts | default('localhost') }}"
   become: true
   vars:
     docker_apt_repo_uris:
-      - https://download.docker.com/linux/debian
       # - https://mirror-cdn.xtom.com/docker-ce/linux/debian
       # - https://mirrors.tencent.com/docker-ce/linux/debian
       # - https://mirrors.aliyun.com/docker-ce/linux/debian
+      - https://download.docker.com/linux/debian
 
     docker_apt_pinning: true
     docker_apt_unattended_upgrade: true
