@@ -181,15 +181,18 @@ custom_sysctl_conf_entries:
 
 common_apt_packages:
   - bash-completion
+  - bat
   - bc
   - btop
   - bzip2
+  - conntrack
   - curl
   - dnsutils
   - dos2unix
   - file
   - gawk
   - git
+  - git-lfs
   - gnupg2
   - htop
   - iftop
@@ -200,16 +203,22 @@ common_apt_packages:
   - logrotate
   - mtr
   - ncdu
+  - nfs-common
   - p7zip
   - p7zip-full
   - parallel
   - parted
   - pipx
+  - plocate
+  - pv
   - python3
   - python3-pip
   - rename
+  - ripgrep
   - rsync
   - screen
+  - shellcheck
+  - shfmt
   - stow
   - systemd-cron
   - systemd-oomd
