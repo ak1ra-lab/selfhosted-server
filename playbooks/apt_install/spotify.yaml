@@ -1,0 +1,42 @@
+# https://www.spotify.com/us/download/linux/
+- name: apt_install - spotify
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # $ curl -sL https://download.spotify.com/debian/pubkey_5384CE82BA52C83A.asc | gpg
+    # pub   rsa4096 2025-11-21 [SC] [expires: 2027-02-14]
+    #       E1096BCBFF6D418796DE78515384CE82BA52C83A
+    # uid           Spotify Public Repository Signing Key <tux@spotify.com>
+    apt_keyrings_url: https://download.spotify.com/debian/pubkey_5384CE82BA52C83A.asc
+    apt_keyrings_dest: /etc/apt/keyrings/spotify.asc
+
+    apt_repo: spotify
+    apt_repo_uris:
+      - https://repository.spotify.com
+    apt_repo_suites:
+      - stable
+    apt_repo_components:
+      - non-free
+
+    apt_pinning: true
+    apt_unattended_upgrade: true
+    apt_mark_hold: false
+
+    # Origin: Spotify LTD
+    # Label: Spotify Public Repository
+    # Suite: stable
+    # Codename: stable
+    # Version: 0.4
+    # Date: Tue, 09 Dec 2025 14:00:02 UTC
+    # Architectures: amd64 i386
+    # Components: non-free
+    # Description: Spotify's repository for the desktop client
+    apt_pinning_pin_release: "o=Spotify LTD,l=Spotify Public Repository,c=non-free"
+    apt_unattended_upgrade_origins_pattern: "origin=Spotify LTD,label=Spotify Public Repository,component=non-free"
+
+    apt_repo_packages:
+      - spotify-client
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
