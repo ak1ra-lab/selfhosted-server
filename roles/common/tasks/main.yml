@@ -5,6 +5,15 @@
     - (ansible_facts['distribution_major_version'] | int) >= 11
   ansible.builtin.include_tasks: debian.yml
 
+# The module automatically uses visudo for validation if available
+- name: Grant group 'sudo' with NOPASSWD sudo access
+  community.general.sudoers:
+    name: sudo
+    group: sudo
+    commands: ALL
+    runas: ALL
+    nopassword: true
+
 - name: enable tcp_bbr
   when:
     - ansible_facts['kernel'] >= '4.9.0'

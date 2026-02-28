@@ -62,8 +62,12 @@
 - name: include_tasks apt-force-ipv4.yml
   ansible.builtin.include_tasks: apt-force-ipv4.yml
 
+- name: apt update and apt upgrade
+  ansible.builtin.apt:
+    upgrade: true
+    update_cache: true
+
 - name: apt install common_apt_packages
   ansible.builtin.apt:
     name: "{{ common_apt_packages }}"
-    update_cache: true
     state: present
