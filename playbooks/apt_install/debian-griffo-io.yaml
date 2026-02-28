@@ -1,0 +1,39 @@
+# https://debian.griffo.io/
+- name: apt_install - debian.griffo.io
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: true
+  vars:
+    # $ curl -sL https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | gpg
+    # pub   ed25519 2025-02-24 [SC]
+    #       EA0F721D231FDD3A0A17B9AC7808B4DD62C41256
+    # uid           Dario Griffo <dariogriffo@gmail.com>
+    # sub   cv25519 2025-02-24 [E]
+    apt_keyrings_url: https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc
+    apt_keyrings_dest: /etc/apt/keyrings/debian.griffo.io.asc
+
+    apt_repo: debian-griffo-io
+    apt_repo_uris:
+      - https://debian.griffo.io/apt
+    apt_repo_suites:
+      - "{{ ansible_facts['distribution_release'] }}"
+    apt_repo_components:
+      - main
+
+    apt_pinning: true
+    apt_unattended_upgrade: true
+    apt_mark_hold: false
+
+    # Suite: trixie
+    # Codename: trixie
+    # Date: Sat, 28 Feb 2026 10:43:21 UTC
+    # Architectures: amd64 arm64 i386 armel armhf ppc64el s390x riscv64
+    # Components: main
+    # Description: Apt repository for several unofficial packages
+    # apt_pinning_pin_release: ""
+    # apt_unattended_upgrade_origins_pattern: ""
+
+    apt_repo_packages: []
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: apt_install
