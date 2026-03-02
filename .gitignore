@@ -332,6 +332,7 @@ config/*
 # Ansible
 **/host_vars/*
 **/group_vars/*
+collections/
 
 build/
 examples/
