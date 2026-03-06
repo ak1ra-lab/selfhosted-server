@@ -1,8 +1,8 @@
 ---
 # tasks to apply changes
 - name: install certbot
-  ansible.builtin.include_tasks: install.yml
   when: certbot_install
+  ansible.builtin.include_tasks: install.yml
 
 - name: ensure certbot credentials dir exist
   ansible.builtin.file:
@@ -28,6 +28,5 @@
       - "--dns-{{ certbot_dns_plugin }}"
       - "--dns-{{ certbot_dns_plugin }}-credentials={{ certbot_credentials }}"
       - "--dns-{{ certbot_dns_plugin }}-propagation-seconds={{ certbot_dns_propagation_seconds }}"
-    creates:
-      # If a matching file already exists, this step *will not* be run.
-      - "{{ certbot_dir }}/live/{{ certbot_domain }}/privkey.pem"
+    # If a matching file already exists, this step *will not* be run.
+    creates: "{{ certbot_dir }}/live/{{ certbot_domain }}/privkey.pem"

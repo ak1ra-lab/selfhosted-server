@@ -1,25 +1,26 @@
 ---
 - name: install certbot and dns plugin from apt repo
+  when: ansible_facts['os_family'] | lower == 'debian' and certbot_install_source == "apt"
   ansible.builtin.apt:
     name:
       - "certbot"
       - "python3-certbot-dns-{{ certbot_dns_plugin }}"
     update_cache: true
     state: present
-  when: ansible_facts['os_family']|lower == 'debian' and certbot_install_source == "apt"
 
 # for Debian 10 (buster), certbot from apt repo is very old
 - name: install certbot and dns plugin from PyPI
+  when: certbot_install_source == "pypi"
   ansible.builtin.pip:
     name:
       - "certbot"
       - "certbot-dns-{{ certbot_dns_plugin }}"
     executable: /usr/bin/pip3
     state: present
-  when: certbot_install_source == "pypi"
 
 # copied from certbot apt package
 - name: copy certbot systemd unit files for PyPI installation
+  when: certbot_install_source == "pypi"
   ansible.builtin.copy:
     # if path ends with "/", only inside contents of that directory are copied to destination.
     src: etc/
@@ -27,9 +28,9 @@
     mode: "u=rwX,g=rX,o=rX"
   notify:
     - systemctl daemon-reload
-  when: certbot_install_source == "pypi"
 
 - name: start and enable systemd target certbot.timer
+  when: certbot_install_source == "pypi"
   ansible.builtin.systemd:
     name: certbot.timer
     state: started
