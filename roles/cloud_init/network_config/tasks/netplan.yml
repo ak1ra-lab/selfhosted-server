@@ -1,37 +1,4 @@
 ---
-- name: assert vars default_gateway
-  ansible.builtin.assert:
-    that:
-      - (default_gateway | default('') | length > 0)
-    fail_msg: default_gateway must be set
-
-- name: override default_gateway and default_nameservers
-  when:
-    - (tproxy_enabled | ansible.builtin.bool)
-  block:
-    - name: assert vars tproxy_gateway
-      ansible.builtin.assert:
-        that:
-          - (tproxy_gateway | default('') | length > 0)
-        fail_msg: tproxy_gateway must be set when tproxy_enabled is true
-
-    - name: override default_gateway and default_nameservers
-      ansible.builtin.set_fact:
-        default_gateway: "{{ tproxy_gateway }}"
-        default_nameservers: "{{ [tproxy_gateway] }}"
-        resolved_stub_listener: false
-
-- name: select ethernet_interfaces
-  ansible.builtin.set_fact:
-    ethernet_interfaces: >-
-      {{
-        ansible_facts.interfaces
-          | select('ansible.builtin.match', '^(eth|en[psx])')
-          | sort
-          | map('ansible.builtin.extract', ansible_facts)
-          | list
-      }}
-
 - name: ensure packages installed
   ansible.builtin.package:
     name:
@@ -44,6 +11,7 @@
     mode: "0700"
     state: directory
 
+# 执行过一次后 50-cloud-init.yaml 无论如何都会被重写
 - name: manage netplan configuration
   vars:
     netplan_default: /etc/netplan/90-default.yaml

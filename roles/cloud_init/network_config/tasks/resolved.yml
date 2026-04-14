@@ -1,21 +1,27 @@
 ---
-- name: ensure packages installed
-  ansible.builtin.package:
-    name:
-      - systemd-resolved
-    state: present
+- name: manage systemd-resolved configuration
+  when:
+    - systemd_resolved_resolv_conf_mode != "foreign"
+  block:
+    - name: ensure packages installed
+      ansible.builtin.package:
+        name:
+          - systemd-resolved
+        state: present
 
-- name: create drop-in directory
-  ansible.builtin.file:
-    path: /etc/systemd/resolved.conf.d
-    mode: "0755"
-    state: directory
+    - name: create drop-in directory
+      when:
+        - (systemd_resolved_override | ansible.builtin.bool)
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d
+        mode: "0755"
+        state: directory
 
 - name: manage /etc/systemd/resolved.conf.d/90-override.conf
   block:
     - name: ensure systemd-resolved global DNS
       when:
-        - (resolved_override | ansible.builtin.bool)
+        - (systemd_resolved_override | ansible.builtin.bool)
       ansible.builtin.template:
         src: etc/systemd/resolved.conf.d/90-override.conf.j2
         dest: /etc/systemd/resolved.conf.d/90-override.conf
@@ -26,7 +32,7 @@
 
     - name: remove systemd-resolved global DNS
       when:
-        - not (resolved_override | ansible.builtin.bool)
+        - not (systemd_resolved_override | ansible.builtin.bool)
       ansible.builtin.file:
         path: /etc/systemd/resolved.conf.d/90-override.conf
         state: absent
@@ -34,11 +40,34 @@
         - resolvectl flush-caches
         - systemctl restart systemd-resolved
 
+- name: stat /etc/resolv.conf
+  ansible.builtin.stat:
+    path: /etc/resolv.conf
+  register: resolv_conf_stat
+
+- name: backup and remove /etc/resolv.conf if it is a regular file
+  when:
+    - resolv_conf_stat.stat.exists
+    - not resolv_conf_stat.stat.islnk
+    - systemd_resolved_resolv_conf_mode != "foreign"
+  block:
+    - name: backup /etc/resolv.conf
+      ansible.builtin.copy:
+        src: /etc/resolv.conf
+        dest: /etc/resolv.conf
+        backup: true
+        remote_src: true
+
+    - name: remove /etc/resolv.conf
+      ansible.builtin.file:
+        path: /etc/resolv.conf
+        state: absent
+
 - name: manage /etc/resolv.conf
   block:
     - name: ensure systemd-resolved in stub mode
       when:
-        - (resolved_stub_listener | ansible.builtin.bool)
+        - (systemd_resolved_resolv_conf_mode == "stub")
       ansible.builtin.file:
         src: /run/systemd/resolve/stub-resolv.conf
         dest: /etc/resolv.conf
@@ -49,7 +78,7 @@
 
     - name: ensure systemd-resolved in uplink mode
       when:
-        - not (resolved_stub_listener | ansible.builtin.bool)
+        - (systemd_resolved_resolv_conf_mode == "uplink")
       ansible.builtin.file:
         src: /run/systemd/resolve/resolv.conf
         dest: /etc/resolv.conf
@@ -57,6 +86,25 @@
       notify:
         - resolvectl flush-caches
         - systemctl restart systemd-resolved
+
+    - name: ensure systemd-resolved in static mode
+      when:
+        - (systemd_resolved_resolv_conf_mode == "static")
+      ansible.builtin.file:
+        src: /usr/lib/systemd/resolv.conf
+        dest: /etc/resolv.conf
+        state: link
+      notify:
+        - resolvectl flush-caches
+        - systemctl restart systemd-resolved
+
+    - name: ensure systemd-resolved in foreign mode
+      when:
+        - (systemd_resolved_resolv_conf_mode == "foreign")
+      ansible.builtin.template:
+        src: etc/resolv.conf.j2
+        dest: /etc/resolv.conf
+        mode: "0644"
 
 - name: ensure systemd-resolved enabled
   ansible.builtin.systemd_service:

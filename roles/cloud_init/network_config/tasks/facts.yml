@@ -1,0 +1,29 @@
+---
+- name: assert default_gateway
+  ansible.builtin.assert:
+    that:
+      - (default_gateway | default('') | length > 0)
+    fail_msg: default_gateway must be set
+
+- name: assert systemd_resolved_resolv_conf_mode
+  ansible.builtin.assert:
+    that:
+      - systemd_resolved_resolv_conf_mode in systemd_resolved_resolv_conf_mode_available
+    fail_msg: "Invalid systemd_resolved_resolv_conf_mode: {{ systemd_resolved_resolv_conf_mode }}. Must be one of {{ systemd_resolved_resolv_conf_mode_available }}."
+
+- name: override default_nameservers when tproxy_enabled
+  when:
+    - (tproxy_enabled | ansible.builtin.bool)
+  ansible.builtin.set_fact:
+    default_nameservers: "{{ [default_gateway] }}"
+
+- name: select ethernet_interfaces
+  ansible.builtin.set_fact:
+    ethernet_interfaces: >-
+      {{
+        ansible_facts.interfaces
+          | select('ansible.builtin.match', '^(eth|en[psx])')
+          | sort
+          | map('ansible.builtin.extract', ansible_facts)
+          | list
+      }}

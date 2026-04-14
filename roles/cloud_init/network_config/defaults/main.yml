@@ -8,15 +8,29 @@ fallback_nameservers: []
 # - 1.1.1.1#cloudflare-dns.com
 # - 8.8.8.8#dns.google
 
-# str: default gateway
+# bool: 是否使用 default_gateway 的地址覆盖 default_nameservers
+# default_gateway 的地址为 透明代理 的地址时需要设置 tproxy_enabled 为 true
+tproxy_enabled: false
+
+# str: 默认网关
+# 通过 netplan 在 ansible_facts['default_ipv4'].interface 上创建默认路由
 default_gateway: ""
 
-# bool: 是否使用 tproxy_gateway 的地址覆盖 default_gateway 和 default_nameservers
-tproxy_enabled: false
-# str: 当 tproxy_enabled 为 true 时 tproxy_gateway 必须手动指定, 否则会报错
-# 手动指定可承担透明代理的主机作为旁路网关
-# https://github.com/ak1ra-lab/sing-box-tproxy
-tproxy_gateway: ""
+# str: systemd-resolved 的 /etc/resolv.conf 模式
+# one of ["stub", "uplink", "static", "foreign"]
+# stub: symlink to /run/systemd/resolve/stub-resolv.conf
+# uplink: symlink to /run/systemd/resolve/resolv.conf
+# static: symlink to /usr/lib/systemd/resolv.conf
+# foreign: A plain text file not managed by systemd-resolved
+systemd_resolved_resolv_conf_mode: "stub"
+
+# bool: 是否创建全局 systemd-resolved 配置文件
+# /etc/systemd/resolved.conf.d/90-override.conf
+systemd_resolved_override: true
+# bool: 此项为 true 意味着将设置 DNSOverTLS=yes
+# systemd-resolved 现阶段只支持 DoT (DNS over TLS), 不支持 DoH (DNS over HTTPS)
+# 注意: 中国大陆几乎无法使用任何由**国外**公共 DNS 提供的 DoT 和 DoH 如 Google DNS, Cloudflare DNS 等
+systemd_resolved_dns_over_tls: false
 
 # bool: 此项设置为 false 时用于禁用 cloud-init 的网络配置
 # /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
@@ -27,19 +41,6 @@ cloud_init_network_config: false
 # /etc/cloud/cloud.cfg.d/99-keep-sshd-host-keys.cfg
 # ssh_deletekeys: false
 cloud_init_ssh_deletekeys: false
-
-# bool: 是否创建全局 systemd-resolved 配置文件
-# /etc/systemd/resolved.conf.d/90-override.conf
-resolved_override: true
-# bool: 此项为 true 意味着将设置 DNSOverTLS=yes
-# 注意: 中国大陆几乎无法使用任何由国外公共 DNS 提供的 DoT (DNS over TLS) 和 DoH (DNS over HTTPS)
-resolved_dns_over_tls: false
-
-# bool: 是否创建 systemd-resolved 的 stub listener
-# 此项为 false 意为着 systemd-resolved 将运行在 uplink 模式
-# 此项为 true 意味着 systemd-resolved 将运行在 stub 模式
-# 旁路网关场景或者 container runtime 场景我们一般使用 uplink 模式
-resolved_stub_listener: true
 
 # dict: 用于覆盖原本的 netmask prefix, 默认未空 dict
 # 原因是网络中可能存在部分配置错误的 netmask

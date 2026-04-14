@@ -1,0 +1,8 @@
+---
+# str: systemd-resolved 的 /etc/resolv.conf 模式
+# one of ["stub", "uplink", "static", "foreign"]
+# stub: symlink to /run/systemd/resolve/stub-resolv.conf
+# uplink: symlink to /run/systemd/resolve/resolv.conf
+# static: symlink to /usr/lib/systemd/resolv.conf
+# foreign: A plain text file not managed by systemd-resolved
+systemd_resolved_resolv_conf_mode_available: ["stub", "uplink", "static", "foreign"]

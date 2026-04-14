@@ -1,9 +1,12 @@
 ---
+- name: import facts
+  ansible.builtin.import_tasks: facts.yml
+
 - name: ensure cloud-init config
-  ansible.builtin.include_tasks: cloud-init.yml
+  ansible.builtin.import_tasks: cloud-init.yml
 
 - name: ensure netpaln config
-  ansible.builtin.include_tasks: netplan.yml
+  ansible.builtin.import_tasks: netplan.yml
 
 - name: ensure systemd-resolved config
-  ansible.builtin.include_tasks: resolved.yml
+  ansible.builtin.import_tasks: resolved.yml

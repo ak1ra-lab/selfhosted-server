@@ -2,19 +2,20 @@
 
 这个 Ansible roles 主要做了两件事情,
 
-1. (可选地)禁用 cloud-init network config
+1. (可选地) 禁用 cloud-init network config
 
 - 删除原本由 PVE cloud-init drive 创建的 `/etc/netplan/50-cloud-init.yaml`
 - 添加静态 netplan 配置文件 `/etc/netplan/90-default.yaml`
-- 根据 `tproxy_enabled` 选项决定是否覆盖 `default_gateway` 和 `default_nameservers`
-  - 如果 `tproxy_enabled` 为 true, 则将 `tproxy_gateway` 的值覆盖 `default_gateway` 和 `default_nameservers`
-  - 如果 `tproxy_enabled` 为 false, 则 `default_gateway` 保持当前默认值, `default_nameservers` 被设置为 Cloudflare DNS
+- 根据 `tproxy_enabled` 选项决定是否覆盖 `default_nameservers`
+  - 如果 `tproxy_enabled` 为 true, 则使用 `default_gateway` 的值作为 list 填入 `default_nameservers`
 
-2. (可选地)为 systemd-resolved 配置 global DNS
+2. (可选地) 为 systemd-resolved 配置 global DNS
 
-- 配置项 `resolved_override` 决定是否为 systemd-resolved 创建 global DNS
-  - 如果 `resolved_override` 为 true, 则会创建 `/etc/systemd/resolved.conf.d/90-override.conf` 文件
-  - 如果 `resolved_override` 为 false, 则会在 `/etc/netplan/90-default.yaml` 中添加 per interface nameservers
+- 配置项 `systemd_resolved_override` 决定是否为 systemd-resolved 创建 global DNS
+  - 如果 `systemd_resolved_override` 为 true, 则会创建 `/etc/systemd/resolved.conf.d/90-override.conf` 文件
+  - 如果 `systemd_resolved_override` 为 false, 则会在 `/etc/netplan/90-default.yaml` 中添加 per interface nameservers
+
+3. 新增 `systemd_resolved_resolv_conf_mode` 支持 systemd-resolved 所支持的 4 种模式
 
 ## 为什么要编写这个 Ansible roles?
 
