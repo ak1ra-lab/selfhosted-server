@@ -1,3 +1,4 @@
+---
 # https://pkg.jenkins.io/debian/
 - name: apt_install - jenkins
   hosts: "{{ playbook_hosts | default('localhost') }}"

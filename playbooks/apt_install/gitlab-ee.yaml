@@ -1,3 +1,4 @@
+---
 # https://packages.gitlab.com/gitlab/gitlab-ee/install#manual-deb
 - name: apt_install - gitlab-ee
   hosts: "{{ playbook_hosts | default('localhost') }}"

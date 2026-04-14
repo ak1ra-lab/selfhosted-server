@@ -48,32 +48,30 @@ cert_manager_certificates:
 ingress_class: nginx
 
 # 直接创建 certificates.cert-manager.io 资源
-ingress_hosts:
-  []
-  # - nginx-114.example.com
-  # - nginx-514.example.com
+ingress_hosts: []
+# - nginx-114.example.com
+# - nginx-514.example.com
 
 # kubectl explain ingresses.spec.rules
 # 通过 ingresses.networking.k8s.io 创建 certificates.cert-manager.io 资源
-ingress_rules:
-  []
-  # - host: nginx-114.example.com
-  #   http:
-  #     paths:
-  #       - path: /
-  #         pathType: Prefix
-  #         backend:
-  #           service:
-  #             name: nginx-114
-  #             port:
-  #               number: 80
-  # - host: nginx-514.example.com
-  #   http:
-  #     paths:
-  #       - path: /
-  #         pathType: Prefix
-  #         backend:
-  #           service:
-  #             name: nginx-514
-  #             port:
-  #               number: 80
+ingress_rules: []
+# - host: nginx-114.example.com
+#   http:
+#     paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: nginx-114
+#             port:
+#               number: 80
+# - host: nginx-514.example.com
+#   http:
+#     paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: nginx-514
+#             port:
+#               number: 80

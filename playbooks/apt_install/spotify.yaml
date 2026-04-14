@@ -1,3 +1,4 @@
+---
 # https://www.spotify.com/us/download/linux/
 - name: apt_install - spotify
   hosts: "{{ playbook_hosts | default('localhost') }}"

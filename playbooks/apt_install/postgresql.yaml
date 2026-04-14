@@ -1,3 +1,4 @@
+---
 # https://wiki.postgresql.org/wiki/Apt
 # Debian bullseye (11), bookworm (12), trixie (testing/13) and sid (unstable)
 # Ubuntu jammy (22.04), noble (24.04), oracular (24.10, amd64 only), plucky (25.04, amd64 only)

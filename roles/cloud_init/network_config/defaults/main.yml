@@ -4,10 +4,9 @@ default_nameservers:
   - 1.0.0.1#cloudflare-dns.com
   - 8.8.4.4#dns.google
 # list: fallback DNS servers
-fallback_nameservers:
-  []
-  # - 1.1.1.1#cloudflare-dns.com
-  # - 8.8.8.8#dns.google
+fallback_nameservers: []
+# - 1.1.1.1#cloudflare-dns.com
+# - 8.8.8.8#dns.google
 
 # str: default gateway
 default_gateway: ""
@@ -46,5 +45,5 @@ resolved_stub_listener: true
 # 原因是网络中可能存在部分配置错误的 netmask
 # 比如网络规划初期将单个 VLAN 配置为 172.16.0.0/12, 其 netmask 为 255.240.0.0, 对于小规模办公内网不太合理
 interface_prefix_overrides: {}
-  # eth0: 16
-  # eth1: 22
+# eth0: 16
+# eth1: 22

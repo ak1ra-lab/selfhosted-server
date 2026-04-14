@@ -1,3 +1,4 @@
+---
 # https://packages.gitlab.com/gitlab/gitlab-ce/install#manual-deb
 - name: apt_install - gitlab-ce
   hosts: "{{ playbook_hosts | default('localhost') }}"

@@ -1,3 +1,4 @@
+---
 # https://adoptium.net/installation/linux
 - name: apt_install - adoptium
   hosts: "{{ playbook_hosts | default('localhost') }}"

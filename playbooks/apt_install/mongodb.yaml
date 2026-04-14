@@ -1,3 +1,4 @@
+---
 # https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/
 - name: apt_install - mongodb-server
   hosts: "{{ playbook_hosts | default('localhost') }}"

@@ -1,3 +1,4 @@
+---
 # https://enterprise.proxmox.com/debian/
 # https://pve.proxmox.com/wiki/Package_Repositories#sysadmin_no_subscription_repo
 - name: apt_install - pve-ceph-squid-no-subscription

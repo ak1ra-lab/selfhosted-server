@@ -1,3 +1,4 @@
+---
 # https://sing-box.sagernet.org/installation/package-manager/
 - name: apt_install - sagernet
   hosts: "{{ playbook_hosts | default('localhost') }}"

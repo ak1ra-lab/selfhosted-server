@@ -1,3 +1,4 @@
+---
 # https://caddyserver.com/docs/install#debian-ubuntu-raspbian
 - name: apt_install - caddy
   hosts: "{{ playbook_hosts | default('localhost') }}"

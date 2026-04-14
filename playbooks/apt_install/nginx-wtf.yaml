@@ -1,3 +1,4 @@
+---
 # https://n.wtf/install/
 - name: apt_install - nginx-wtf
   hosts: "{{ playbook_hosts | default('localhost') }}"

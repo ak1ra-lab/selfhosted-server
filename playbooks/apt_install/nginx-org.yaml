@@ -1,3 +1,4 @@
+---
 # https://nginx.org/en/linux_packages.html#Debian
 - name: apt_install - nginx-org
   hosts: "{{ playbook_hosts | default('localhost') }}"

@@ -1,3 +1,4 @@
+---
 # https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/debian.html#debian-installation
 - name: apt_install - nvidia-driver
   hosts: "{{ playbook_hosts | default('localhost') }}"

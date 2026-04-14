@@ -1,3 +1,4 @@
+---
 # https://pkgs.tailscale.com/stable/#debian-bookworm
 - name: apt_install - tailscale
   hosts: "{{ playbook_hosts | default('localhost') }}"

@@ -1,3 +1,4 @@
+---
 # https://pkg.cloudflare.com/index.html
 - name: apt_install - cloudflared
   hosts: "{{ playbook_hosts | default('localhost') }}"

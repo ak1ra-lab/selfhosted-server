@@ -1,3 +1,4 @@
+---
 # https://cloud.google.com/sdk/docs/install?hl=zh-cn#deb
 - name: apt_install - gcloud
   hosts: "{{ playbook_hosts | default('localhost') }}"

@@ -28,7 +28,7 @@
       - -7
       - foo
       - [1, 2, 3]
-      - { "key": "value" }
+      - {"key": "value"}
       - (42,)
   tasks:
     - name: debug truthy_values with ansible.builtin.bool filter

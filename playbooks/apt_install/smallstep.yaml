@@ -1,3 +1,4 @@
+---
 # https://github.com/smallstep/cli
 # https://smallstep.com/docs/step-cli/installation/#debianubuntu
 - name: apt_install - smallstep
