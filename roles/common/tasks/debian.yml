@@ -5,6 +5,12 @@
   ansible.builtin.set_fact:
     apt_repo_debian_suites: "{{ apt_repo_debian_suites | default([]) + [ansible_facts['distribution_release'] ~ '-backports'] }}"
 
+- name: ensure python3-debian installed for deb822_repository module
+  ansible.builtin.apt:
+    name: python3-debian
+    state: present
+    update_cache: true
+
 - name: create /etc/apt/sources.list placeholder
   ansible.builtin.copy:
     dest: /etc/apt/sources.list
