@@ -31,7 +31,7 @@
 
 - name: start and enable systemd target certbot.timer
   when: certbot_install_source == "pypi"
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: certbot.timer
     state: started
     enabled: true
