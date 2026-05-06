@@ -1,0 +1,3 @@
+---
+- name: Import apt daily mitigation prepare tasks
+  ansible.builtin.import_tasks: prepare.yml

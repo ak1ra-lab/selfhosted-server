@@ -1,0 +1,10 @@
+---
+# systemd timer units that can start background apt jobs.
+apt_daily_mitigation_timer_units:
+  - apt-daily.timer
+  - apt-daily-upgrade.timer
+
+# systemd service units that commonly hold apt or dpkg locks.
+apt_daily_mitigation_service_units:
+  - apt-daily.service
+  - apt-daily-upgrade.service

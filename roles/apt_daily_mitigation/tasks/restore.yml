@@ -1,0 +1,12 @@
+---
+- name: Restore apt background timers after apt tasks
+  when:
+    - apt_daily_mitigation_required | default(false) | ansible.builtin.bool
+    - timer_unit in ansible_facts.services
+  ansible.builtin.systemd_service:
+    name: "{{ timer_unit }}"
+    state: started
+  loop: "{{ apt_daily_mitigation_timer_units }}"
+  loop_control:
+    loop_var: timer_unit
+    label: "{{ timer_unit }}"

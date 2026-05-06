@@ -1,0 +1,46 @@
+---
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: Determine whether apt daily mitigation is required
+  ansible.builtin.set_fact:
+    apt_daily_mitigation_required: false
+
+- name: Mark apt daily mitigation as required when services are not stopped
+  when:
+    - service_unit in ansible_facts.services
+    - ansible_facts.services[service_unit].state != 'stopped'
+  ansible.builtin.set_fact:
+    apt_daily_mitigation_required: true
+  loop: "{{ apt_daily_mitigation_service_units }}"
+  loop_control:
+    loop_var: service_unit
+    label: >-
+      {{
+        service_unit ~ ':' ~
+        ansible_facts.services[service_unit].state
+      }}
+
+- name: Stop apt background timers before apt tasks
+  when:
+    - apt_daily_mitigation_required | ansible.builtin.bool
+    - timer_unit in ansible_facts.services
+  ansible.builtin.systemd_service:
+    name: "{{ timer_unit }}"
+    state: stopped
+  loop: "{{ apt_daily_mitigation_timer_units }}"
+  loop_control:
+    loop_var: timer_unit
+    label: "{{ timer_unit }}"
+
+- name: Stop apt background services before apt tasks
+  when:
+    - apt_daily_mitigation_required | ansible.builtin.bool
+    - service_unit in ansible_facts.services
+  ansible.builtin.systemd_service:
+    name: "{{ service_unit }}"
+    state: stopped
+  loop: "{{ apt_daily_mitigation_service_units }}"
+  loop_control:
+    loop_var: service_unit
+    label: "{{ service_unit }}"
