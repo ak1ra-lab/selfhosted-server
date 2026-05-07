@@ -7,7 +7,6 @@
   become: true
   vars:
     docker_apt_repo_uris:
-      # - https://mirror-cdn.xtom.com/docker-ce/linux/debian
       # - https://mirrors.tencent.com/docker-ce/linux/debian
       # - https://mirrors.aliyun.com/docker-ce/linux/debian
       - https://download.docker.com/linux/debian

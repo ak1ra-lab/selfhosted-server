@@ -4,14 +4,14 @@
   become: true
   vars:
     apt_repo_debian_uris:
-      # - https://mirror-cdn.xtom.com/debian/
+      # - http://mirrors.tencentyun.com/debian/
       # - https://mirrors.tencent.com/debian/
       # - https://mirrors.aliyun.com/debian/
       # - https://cdn-aws.deb.debian.org/debian/
       - https://deb.debian.org/debian/
 
     apt_repo_debian_security_uris:
-      # - https://mirror-cdn.xtom.com/debian-security/
+      # - http://mirrors.tencentyun.com/debian-security/
       # - https://mirrors.tencent.com/debian-security/
       # - https://mirrors.aliyun.com/debian-security/
       # - https://cdn-aws.deb.debian.org/debian-security/
