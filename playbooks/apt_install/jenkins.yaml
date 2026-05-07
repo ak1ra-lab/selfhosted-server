@@ -28,7 +28,7 @@
 
     apt_repo_packages:
       - fontconfig
-      - openjdk-21-jre-headless
+      - default-jre-headless
       - jenkins
 
   tasks:
