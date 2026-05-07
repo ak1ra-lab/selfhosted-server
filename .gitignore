@@ -330,6 +330,7 @@ examples/*
 config/*
 
 # Ansible
+.ansible/*
 **/host_vars/*
 **/group_vars/*
 collections/
@@ -338,3 +339,6 @@ build/
 examples/
 credentials/
 credentials.yaml
+
+## LLM
+.agents/state/sessions/*
