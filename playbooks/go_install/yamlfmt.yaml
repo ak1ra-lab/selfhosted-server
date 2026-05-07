@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/refs/heads/main/src/ansiblelint/schemas/playbook.json
+---
+# ansible-playbook playbooks/go_install/yamlfmt.yaml -e 'playbook_hosts=localhost'
+- name: install yamlfmt on localhost
+  hosts: "{{ playbook_hosts | default('localhost') }}"
+  become: false
+
+  tasks:
+    - name: install yamlfmt via go_install
+      ansible.builtin.import_role:
+        name: go_install
+      vars:
+        go_install_package: "github.com/google/yamlfmt/cmd/yamlfmt"
+        go_install_version: "latest"
+        go_install_output_name: "yamlfmt"

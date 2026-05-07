@@ -1,0 +1,123 @@
+---
+- name: assert required go_install variables are set
+  ansible.builtin.assert:
+    that:
+      - go_install_package | length > 0
+      - go_install_output_name | length > 0
+    fail_msg: "go_install_package and go_install_output_name must be set"
+
+- name: set go_install facts
+  ansible.builtin.set_fact:
+    go_install_target_spec: "{{ go_install_package }}@{{ go_install_version }}"
+    go_install_binary_path: "{{ go_install_gobin }}/{{ go_install_output_name }}"
+    go_install_stamp_path: "{{ go_install_base_dir }}/.{{ go_install_output_name }}.install-meta"
+    go_install_expected_stamp: |
+      package={{ go_install_package }}
+      version={{ go_install_version }}
+      output={{ go_install_output_name }}
+      goos={{ go_install_goos }}
+      goarch={{ go_install_goarch }}
+      static={{ go_install_static }}
+      ldflags={{ go_install_ldflags }}
+
+- name: verify go binary is available on localhost
+  ansible.builtin.command:
+    argv:
+      - go
+      - version
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+
+- name: ensure go_install directories exist on localhost
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ go_install_base_dir }}"
+    - "{{ go_install_gobin }}"
+    - "{{ go_install_gopath }}"
+    - "{{ go_install_gomodcache }}"
+    - "{{ go_install_gocache }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: stat installed binary on localhost
+  ansible.builtin.stat:
+    path: "{{ go_install_binary_path }}"
+  register: go_install_binary_stat
+  delegate_to: localhost
+  run_once: true
+
+- name: stat go_install metadata on localhost
+  ansible.builtin.stat:
+    path: "{{ go_install_stamp_path }}"
+  register: go_install_stamp_stat
+  delegate_to: localhost
+  run_once: true
+
+- name: read go_install metadata on localhost
+  when: go_install_stamp_stat.stat.exists
+  ansible.builtin.slurp:
+    src: "{{ go_install_stamp_path }}"
+  register: go_install_stamp_content
+  delegate_to: localhost
+  run_once: true
+
+- name: determine whether go_install should run
+  ansible.builtin.set_fact:
+    go_install_needs_install: >-
+      {{
+        (not go_install_binary_stat.stat.exists)
+        or (not go_install_stamp_stat.stat.exists)
+        or ((go_install_stamp_content.content | default('') | b64decode | trim) != (go_install_expected_stamp | trim))
+      }}
+
+- name: execute go install command on localhost
+  when: go_install_needs_install
+  ansible.builtin.command:
+    argv:
+      - go
+      - install
+      - -trimpath
+      - -ldflags
+      - "{{ go_install_ldflags }}"
+      - "{{ go_install_target_spec }}"
+  environment:
+    CGO_ENABLED: "{{ '0' if go_install_static else '1' }}"
+    GOOS: "{{ go_install_goos }}"
+    GOARCH: "{{ go_install_goarch }}"
+    GOBIN: "{{ go_install_gobin }}"
+    GOPATH: "{{ go_install_gopath }}"
+    GOMODCACHE: "{{ go_install_gomodcache }}"
+    GOCACHE: "{{ go_install_gocache }}"
+  delegate_to: localhost
+  run_once: true
+  changed_when: true
+
+- name: verify installed binary path exists on localhost
+  ansible.builtin.stat:
+    path: "{{ go_install_binary_path }}"
+  register: go_install_installed_binary_stat
+  delegate_to: localhost
+  run_once: true
+
+- name: assert expected binary was installed on localhost
+  ansible.builtin.assert:
+    that:
+      - go_install_installed_binary_stat.stat.exists
+    fail_msg: >-
+      go install did not produce {{ go_install_binary_path }};
+      verify go_install_output_name matches the installed command name
+  delegate_to: localhost
+  run_once: true
+
+- name: record go_install metadata on localhost
+  when: go_install_needs_install
+  ansible.builtin.copy:
+    content: "{{ go_install_expected_stamp | trim }}\n"
+    dest: "{{ go_install_stamp_path }}"
+    mode: "0644"
+  delegate_to: localhost
+  run_once: true

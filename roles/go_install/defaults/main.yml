@@ -1,0 +1,22 @@
+---
+# Required variables (no defaults):
+#   go_install_package: "github.com/example/project/cmd/project"
+#   go_install_output_name: "project"
+
+# go install options
+go_install_package: ""
+go_install_version: "latest"
+go_install_output_name: ""
+go_install_static: true
+go_install_ldflags: "-s -w"
+
+# Local install directories on localhost
+go_install_base_dir: "/tmp/go-install"
+go_install_gobin: "{{ go_install_base_dir }}/bin"
+go_install_gopath: "{{ go_install_base_dir }}/gopath"
+go_install_gomodcache: "{{ go_install_base_dir }}/pkg/mod"
+go_install_gocache: "{{ go_install_base_dir }}/cache"
+
+# https://pkg.go.dev/internal/platform
+go_install_goos: "linux"
+go_install_goarch: "amd64"
