@@ -1,0 +1,63 @@
+#jinja2: lstrip_blocks: True, trim_blocks: True
+[general]
+# DNS interface. Note that systemd-resolved may reserve port 53 on 127.0.0.53
+# In this case acme-dns will error out and you will need to define the listening interface
+# for example: listen = "127.0.0.1:53"
+listen = "{{ acme_dns_listen }}"
+# protocol, "both", "both4", "both6", "udp", "udp4", "udp6" or "tcp", "tcp4", "tcp6"
+protocol = "both"
+# domain name to serve the requests off of
+domain = "{{ acme_dns_domain }}"
+# zone name server
+nsname = "{{ acme_dns_nsname | default(acme_dns_domain, true) }}"
+# admin email address, where @ is substituted with .
+nsadmin = "{{ acme_dns_nsadmin }}"
+# predefined records served in addition to the TXT
+records = [
+    # specify that {{ acme_dns_nsname }} will resolve any *.{{ acme_dns_domain }} records
+    "{{ acme_dns_domain }}. NS {{ acme_dns_nsname }}.",
+    "{{ acme_dns_nsname }}. A {{ acme_dns_server_ip }}",
+    # domain pointing to the public IP of your acme-dns server
+    "{{ acme_dns_domain }}. A {{ acme_dns_server_ip }}",
+]
+# debug messages from CORS etc
+debug = false
+
+[database]
+# Database engine to use, sqlite or postgres
+engine = "sqlite"
+# Connection string, filename for sqlite3 and postgres://$username:$password@$host/$db_name for postgres
+# Please note that the default Docker image uses path /var/lib/acme-dns/acme-dns.db for sqlite3
+connection = "acme-dns.db"
+
+[api]
+# listen ip eg. 127.0.0.1
+ip = "0.0.0.0"
+# disable registration endpoint
+disable_registration = false
+# listen port, eg. 443 for default HTTPS
+port = "{{ acme_dns_api_port }}"
+# possible values: "letsencrypt", "letsencryptstaging", "none"
+tls = "{{ acme_dns_api_tls }}"
+# only used if tls = "letsencrypt" or "letsencryptstaging"
+acme_cache_dir = "acme"
+# optional e-mail address to which Let's Encrypt will send expiration notices for the API's cert
+notification_email = ""
+# CORS AllowOrigins, wildcards can be used
+corsorigins = [
+    "*"
+]
+# use HTTP header to get the client ip
+use_header = false
+# header name to pull the ip address / list of ip addresses from
+header_name = "X-Forwarded-For"
+
+[logconfig]
+# logging level: "error", "warning", "info" or "debug"
+loglevel = "info"
+# possible values: stdout, file
+logtype = "stdout"
+# file path for logfile
+logfile = "./acme-dns.log"
+# format, either "json" or "text"
+logformat = "json"

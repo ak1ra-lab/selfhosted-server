@@ -1,0 +1,31 @@
+---
+# go_build options
+acme_dns_go_build_repo_url: "https://github.com/acme-dns/acme-dns.git"
+acme_dns_go_build_repo_version: "master"
+acme_dns_go_build_package: "."
+acme_dns_go_build_static: true
+acme_dns_go_build_goos: "linux"
+acme_dns_go_build_goarch: "amd64"
+acme_dns_go_build_base_dir: "/tmp/acme-dns"
+
+# system user / group / paths
+acme_dns_user: "acme-dns"
+acme_dns_group: "acme-dns"
+acme_dns_home_dir: "/var/lib/acme-dns"
+acme_dns_config_dir: "/etc/acme-dns"
+acme_dns_install_dir: "/usr/local/bin"
+
+# [general]
+acme_dns_listen: "0.0.0.0:53"
+
+# required: acme_dns_server_ip, acme_dns_domain, acme_dns_nsadmin
+acme_dns_server_ip: ""
+acme_dns_domain: ""
+# nsname defaults to acme_dns_domain when left empty
+acme_dns_nsname: ""
+acme_dns_nsadmin: ""
+
+# [api]
+acme_dns_api_port: "6443"
+# tls: none, letsencrypt, letsencryptstaging
+acme_dns_api_tls: "letsencrypt"

@@ -1,0 +1,88 @@
+---
+- name: assert required acme_dns variables are set
+  ansible.builtin.assert:
+    that:
+      - acme_dns_domain | length > 0
+      - acme_dns_server_ip | length > 0
+      - acme_dns_nsadmin | length > 0
+      - acme_dns_api_tls in ['letsencrypt', 'letsencryptstaging']
+    fail_msg: "acme_dns_server_ip, acme_dns_domain and acme_dns_nsadmin must be set"
+
+- name: build acme-dns binary on localhost
+  become: false
+  ansible.builtin.import_role:
+    name: go_build
+  vars:
+    go_build_repo_url: "{{ acme_dns_go_build_repo_url }}"
+    go_build_repo_version: "{{ acme_dns_go_build_repo_version }}"
+    go_build_package: "{{ acme_dns_go_build_package }}"
+    go_build_output_name: acme-dns
+    go_build_static: "{{ acme_dns_go_build_static }}"
+    go_build_goos: "{{ acme_dns_go_build_goos }}"
+    go_build_goarch: "{{ acme_dns_go_build_goarch }}"
+    go_build_base_dir: "{{ acme_dns_go_build_base_dir }}"
+
+- name: ensure acme-dns group exists
+  ansible.builtin.group:
+    name: "{{ acme_dns_group }}"
+    system: true
+    state: present
+
+- name: ensure acme-dns user exists
+  ansible.builtin.user:
+    name: "{{ acme_dns_user }}"
+    group: "{{ acme_dns_group }}"
+    system: true
+    home: "{{ acme_dns_home_dir }}"
+    shell: /usr/sbin/nologin
+    comment: acme-dns service
+    state: present
+
+- name: ensure acme-dns directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ acme_dns_user }}"
+    group: "{{ acme_dns_group }}"
+    mode: "0750"
+  loop:
+    - "{{ acme_dns_config_dir }}"
+    - "{{ acme_dns_home_dir }}"
+
+- name: copy acme-dns binary
+  ansible.builtin.copy:
+    src: "{{ go_build_binary_path }}"
+    dest: "{{ acme_dns_install_dir }}/acme-dns"
+    owner: root
+    group: root
+    mode: "0755"
+  notify:
+    - acme_dns restart acme-dns.service
+
+- name: template acme-dns config.cfg
+  ansible.builtin.template:
+    src: config.cfg.j2
+    dest: "{{ acme_dns_config_dir }}/config.cfg"
+    owner: "{{ acme_dns_user }}"
+    group: "{{ acme_dns_group }}"
+    mode: "0640"
+  notify:
+    - acme_dns restart acme-dns.service
+
+- name: template acme-dns.service
+  ansible.builtin.template:
+    src: acme-dns.service.j2
+    dest: /etc/systemd/system/acme-dns.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - acme_dns daemon-reload
+    - acme_dns restart acme-dns.service
+
+- name: ensure acme-dns.service is enabled and started
+  ansible.builtin.systemd_service:
+    name: acme-dns
+    daemon_reload: true
+    state: started
+    enabled: true

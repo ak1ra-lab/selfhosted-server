@@ -1,0 +1,9 @@
+---
+# ansible-playbook playbooks/acme-dns.yaml -e playbook_hosts=acme-dns
+- name: deploy acme-dns
+  hosts: "{{ playbook_hosts | default('acme-dns') }}"
+  become: true
+
+  tasks:
+    - ansible.builtin.import_role:
+        name: acme_dns
