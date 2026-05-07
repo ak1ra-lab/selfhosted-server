@@ -1,0 +1,137 @@
+---
+- name: assert required go_build variables are set
+  ansible.builtin.assert:
+    that:
+      - go_build_repo_url | length > 0
+      - go_build_output_name | length > 0
+    fail_msg: "go_build_repo_url and go_build_output_name must be set"
+
+- name: set go_build facts
+  ansible.builtin.set_fact:
+    go_build_binary_path: "{{ go_build_base_dir }}/bin/{{ go_build_output_name }}"
+    go_build_stamp_path: "{{ go_build_base_dir }}/.{{ go_build_output_name }}.build-meta"
+    go_build_expected_stamp: |
+      repo_url={{ go_build_repo_url }}
+      repo_version={{ go_build_repo_version }}
+      package={{ go_build_package }}
+      output={{ go_build_output_name }}
+      goos={{ go_build_goos }}
+      goarch={{ go_build_goarch }}
+      static={{ go_build_static }}
+      ldflags={{ go_build_ldflags }}
+
+- name: verify go binary is available on localhost
+  ansible.builtin.command:
+    argv:
+      - go
+      - version
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+
+- name: ensure go_build directories exist on localhost
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ go_build_base_dir }}"
+    - "{{ go_build_base_dir }}/bin"
+    - "{{ go_build_repo_dir | ansible.builtin.dirname }}"
+    - "{{ go_build_gopath }}"
+    - "{{ go_build_gomodcache }}"
+    - "{{ go_build_gocache }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: stat built binary on localhost
+  ansible.builtin.stat:
+    path: "{{ go_build_binary_path }}"
+  register: go_build_binary_stat
+  delegate_to: localhost
+  run_once: true
+
+- name: stat go_build metadata on localhost
+  ansible.builtin.stat:
+    path: "{{ go_build_stamp_path }}"
+  register: go_build_stamp_stat
+  delegate_to: localhost
+  run_once: true
+
+- name: read go_build metadata on localhost
+  when: go_build_stamp_stat.stat.exists
+  ansible.builtin.slurp:
+    src: "{{ go_build_stamp_path }}"
+  register: go_build_stamp_content
+  delegate_to: localhost
+  run_once: true
+
+- name: "git clone {{ go_build_repo_url }} on localhost"
+  ansible.builtin.git:
+    repo: "{{ go_build_repo_url }}"
+    dest: "{{ go_build_repo_dir }}"
+    version: "{{ go_build_repo_version }}"
+    force: false
+  register: go_build_git_result
+  delegate_to: localhost
+  run_once: true
+
+- name: determine whether go_build should run
+  ansible.builtin.set_fact:
+    go_build_needs_build: >-
+      {{
+        (not go_build_binary_stat.stat.exists)
+        or (not go_build_stamp_stat.stat.exists)
+        or go_build_git_result.changed
+        or ((go_build_stamp_content.content | default('') | b64decode | trim) != (go_build_expected_stamp | trim))
+      }}
+
+- name: execute go build command on localhost
+  when: go_build_needs_build
+  ansible.builtin.command:
+    argv:
+      - go
+      - build
+      - -trimpath
+      - -ldflags
+      - "{{ go_build_ldflags }}"
+      - -o
+      - "{{ go_build_binary_path }}"
+      - "{{ go_build_package }}"
+    chdir: "{{ go_build_repo_dir }}"
+  environment:
+    CGO_ENABLED: "{{ '0' if go_build_static else '1' }}"
+    GOOS: "{{ go_build_goos }}"
+    GOARCH: "{{ go_build_goarch }}"
+    GOPATH: "{{ go_build_gopath }}"
+    GOMODCACHE: "{{ go_build_gomodcache }}"
+    GOCACHE: "{{ go_build_gocache }}"
+  delegate_to: localhost
+  run_once: true
+  changed_when: true
+
+- name: verify built binary path exists on localhost
+  ansible.builtin.stat:
+    path: "{{ go_build_binary_path }}"
+  register: go_build_built_binary_stat
+  delegate_to: localhost
+  run_once: true
+
+- name: assert expected binary was built on localhost
+  ansible.builtin.assert:
+    that:
+      - go_build_built_binary_stat.stat.exists
+    fail_msg: >-
+      go build did not produce {{ go_build_binary_path }};
+      verify go_build_output_name and go_build_package are correct
+  delegate_to: localhost
+  run_once: true
+
+- name: record go_build metadata on localhost
+  when: go_build_needs_build
+  ansible.builtin.copy:
+    content: "{{ go_build_expected_stamp | trim }}\n"
+    dest: "{{ go_build_stamp_path }}"
+    mode: "0644"
+  delegate_to: localhost
+  run_once: true

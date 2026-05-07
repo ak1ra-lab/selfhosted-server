@@ -1,0 +1,23 @@
+---
+# Required variables (no defaults):
+#   go_build_repo_url: "https://github.com/example/project.git"
+#   go_build_output_name: "project"
+
+# git + go build options
+go_build_repo_url: ""
+go_build_repo_version: "HEAD"
+go_build_package: "."
+go_build_output_name: ""
+go_build_static: true
+go_build_ldflags: "-s -w"
+
+# Local build directories on localhost
+go_build_base_dir: "/tmp/go-build"
+go_build_repo_dir: "{{ go_build_base_dir }}/src/{{ go_build_output_name }}"
+go_build_gopath: "{{ go_build_base_dir }}/gopath"
+go_build_gomodcache: "{{ go_build_base_dir }}/pkg/mod"
+go_build_gocache: "{{ go_build_base_dir }}/cache"
+
+# https://pkg.go.dev/internal/platform
+go_build_goos: "linux"
+go_build_goarch: "amd64"
